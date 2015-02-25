@@ -1,0 +1,25 @@
+# Patterns of intentionally untracked files that Git should ignore
+
+# Python compiled files
+__pycache__/
+
+# GNU gettext compiled language files
+*.mo
+
+# Virtual Python Environment builder
+.virtualenv/
+
+# JavaScript tools and libraries
+bower_components/
+node_modules/
+
+# Deployment files and development SQLite3 database
+fetsy_deployment
+db.sqlite3
+
+# Coverage.py – Code coverage measurement for Python
+.coverage
+htmlcov/
+
+# Private development data
+private/

@@ -1,0 +1,9 @@
+{
+  "name": "FeTSy",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.3.2",
+    "html5shiv": "~3.7.2",
+    "respond": "~1.4.2"
+  }
+}
