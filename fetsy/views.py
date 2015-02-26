@@ -1,7 +1,21 @@
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 
-from .models import Ticket
-from .serializers import TicketCreateUpdateSerializer, TicketSerializer
+from .models import Status, Ticket
+from .serializers import (
+    StatusSerializer,
+    TicketCreateUpdateSerializer,
+    TicketSerializer,
+    UserSerializer
+)
+
+
+class StatusViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet to list and retrieve all possible status of a ticket.
+    """
+    queryset = Status.objects.all()
+    serializer_class = StatusSerializer
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -16,3 +30,11 @@ class TicketViewSet(viewsets.ModelViewSet):
         else:
             serializer = TicketSerializer
         return serializer
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet to list and retrieve all users.
+    """
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer

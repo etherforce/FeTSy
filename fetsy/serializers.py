@@ -1,6 +1,16 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Ticket
+from .models import Status, Ticket
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    """
+    Serializer for all possible status of a ticket.
+    """
+    class Meta:
+        model = Status
+        fields = ('name', )
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -19,11 +29,7 @@ class TicketSerializer(serializers.ModelSerializer):
 
     def get_assignee(self, value):
         if value.assignee is not None:
-            if value.assignee.first_name or value.assignee.last_name:
-                name = ' '.join(
-                    (value.assignee.first_name, value.assignee.last_name))
-            else:
-                name = value.assignee.username
+            name = value.assignee.get_full_name() or value.assignee.username
         else:
             name = None
         return name
@@ -40,3 +46,19 @@ class TicketCreateUpdateSerializer(serializers.ModelSerializer):
             'content',
             'status',
             'assignee', )
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for users.
+    """
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            'id',
+            'name', )
+
+    def get_name(self, value):
+        return value.get_full_name() or value.username
