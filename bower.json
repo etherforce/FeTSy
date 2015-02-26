@@ -2,6 +2,7 @@
   "name": "FeTSy",
   "private": true,
   "dependencies": {
+    "angular": "~1.3.14",
     "bootstrap": "~3.3.2",
     "html5shiv": "~3.7.2",
     "respond": "~1.4.2"

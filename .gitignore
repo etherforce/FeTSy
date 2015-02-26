@@ -17,6 +17,13 @@ node_modules/
 fetsy_deployment
 db.sqlite3
 
+# Files processed by gulp
+fetsy/static/css/fetsy-libs.css
+fetsy/static/js/fetsy-libs.js
+fetsy/static/js/html5shiv.min.js
+fetsy/static/js/respond.min.js
+fetsy/static/fonts/
+
 # Coverage.py – Code coverage measurement for Python
 .coverage
 htmlcov/
