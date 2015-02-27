@@ -15,15 +15,14 @@ router.register(r'users', UserViewSet)
 urlpatterns = patterns(
     '',
     url(r'^rest/', include(router.urls)),
-    # TODO: Remove the next lines when auth views are present.
-    url(r'^api-auth/',
-        include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', include(admin.site.urls)),
-
     url(r'^login/$',
         'django.contrib.auth.views.login',
         {'template_name': 'login.html'},
         name='login'),
+    url(r'^logout/$',
+        'django.contrib.auth.views.logout_then_login',
+        name='logout'),
     url(r'^$',
         login_required(ensure_csrf_cookie(TemplateView.as_view(template_name='home.html'))),
         name='home'),

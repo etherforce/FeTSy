@@ -25,7 +25,8 @@ class TicketSerializer(serializers.ModelSerializer):
             'id',
             'content',
             'status',
-            'assignee', )
+            'assignee',
+            'created', )
 
     def get_assignee(self, value):
         if value.assignee is not None:
@@ -45,7 +46,8 @@ class TicketCreateUpdateSerializer(serializers.ModelSerializer):
             'id',
             'content',
             'status',
-            'assignee', )
+            'assignee',
+            'created', )
 
 
 class UserSerializer(serializers.ModelSerializer):

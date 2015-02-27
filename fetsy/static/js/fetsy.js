@@ -8,8 +8,6 @@
 
 'use strict';
 
-var baseRestUrl = 'rest';
-
 var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap' ] );
 
 
@@ -80,6 +78,9 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     // sent to the REST API. If you supply the toScope argument, these data are
     // used to fill the scope instead of the given data. The response from the
     // REST API is not used.
+    //
+    // TODO: Use response from REST API and not such self made stuff.
+    //
     Ticket.prototype.change = function ( newData, toScope ) {
         var ticket = this;
         $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), newData )
@@ -100,24 +101,28 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     // Add destroy function.
     Ticket.prototype.destroy = function () {
         var ticket = this;
-        $http.delete([ baseRestUrl, 'tickets', ticket.id, '' ].join('/'))
-            .success(function ( data, status, headers, config ) {
-                var index = ticketCtrl.tickets.indexOf( ticket );
-                ticketCtrl.tickets.splice( index, 1 );
-            })
+        if ( confirm('Do you really want to delete ticket #' + ticket.id + '?') ) {
+            $http.delete([ baseRestUrl, 'tickets', ticket.id, '' ].join('/'))
+                .success(function ( data, status, headers, config ) {
+                    var index = ticketCtrl.tickets.indexOf( ticket );
+                    ticketCtrl.tickets.splice( index, 1 );
+                })
 
-            .error(function ( data, status, headers, config ) {
-                alert('There was an error. Please reload the page.');
-            });
+                .error(function ( data, status, headers, config ) {
+                    alert('There was an error. Please reload the page.');
+                });
+        }
     };
 
     // Add popover button function for info on tickets.
     Ticket.prototype.popOver = function ( $event ) {
         var ticket = this;
         var button = $($event.target);
+        var created = new Date(ticket.created);
         button.popover('destroy');
         button.popover({
-            'title': 'Ticket #' + ticket.id,
+            'title': 'Ticket #' + ticket.id + ' | ' + created.toLocaleString(),
+            'content': ticket.content,
             'placement': 'left'
         }).popover('show');
         button.next().click(function ( event ) {
