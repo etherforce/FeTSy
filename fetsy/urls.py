@@ -1,5 +1,6 @@
 from django.conf.urls import include, patterns, url
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import TemplateView
 from rest_framework import routers
@@ -19,7 +20,11 @@ urlpatterns = patterns(
         include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^login/$',
+        'django.contrib.auth.views.login',
+        {'template_name': 'login.html'},
+        name='login'),
     url(r'^$',
-        ensure_csrf_cookie(TemplateView.as_view(template_name='home.html')),
+        login_required(ensure_csrf_cookie(TemplateView.as_view(template_name='home.html'))),
         name='home'),
 )

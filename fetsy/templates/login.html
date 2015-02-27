@@ -1,0 +1,76 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>FetSy – {% trans 'Log in' %}</title>
+
+    <!-- Libraries styles -->
+    <link href="{% static 'css/fetsy-libs.css' %}" rel="stylesheet">
+
+    <!-- Custom styles -->
+    <link href="{% static 'css/fetsy.css' %}" rel="stylesheet">
+
+    <!-- HTML5 Shiv and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="{% static 'js/html5shiv.js' %}"></script>
+        <script src="{% static 'js/respond.src.js' %}"></script>
+    <![endif]-->
+
+    <!-- Libraries JS -->
+    <script src="{% static 'js/fetsy-libs.js' %}"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/fetsy.js' %}"></script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-sm-offset-3 col-sm-6">
+
+                <h1>FeTSy · {% trans 'Log in' %}</h1>
+
+                {% if form.errors %}
+                    <p class="label label-danger">{% trans 'Error: Your username and password did not match. Please try again.' %}</p>
+                {% endif %}
+
+                <div style="margin-top:1em;">
+                <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="sr-only" for="id_username">{{ form.username.label_tag }}</label>
+                        <input class="form-control" id="id_username" type="text" name="username" max-length="254" placeholder="{% trans 'Username' %}">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="id_password">{{ form.password.label_tag }}</label>
+                        <input class="form-control" id="id_password" type="password" name="password" placeholder="{% trans 'Password' %}">
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">{% trans 'Log in' %}</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

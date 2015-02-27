@@ -67,6 +67,7 @@ DATABASES = {
     }
 }
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -92,3 +93,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static')
+
+
+# Miscellaneous
+
+LOGIN_URL = 'login'
+
+LOGIN_REDIRECT_URL = 'home'
