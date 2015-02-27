@@ -10,12 +10,11 @@
 
 var baseRestUrl = 'rest';
 
-
 var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap' ] );
 
 
 app.run([ '$http', '$cookies', function ( $http, $cookies ) {
-    // Add CSRF token from cookie to relevant HTTP headers.
+    // Add CSRF token from csrftoken cookie to relevant HTTP headers as X-CSRFToken.
     var methods = [ 'post', 'put', 'patch', 'delete' ];
     for ( var i = 0; i < methods.length; ++i ) {
         var headers = $http.defaults.headers[methods[i]];
@@ -30,10 +29,6 @@ app.run([ '$http', '$cookies', function ( $http, $cookies ) {
 
 app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     var ticketCtrl = this;
-
-    // Limit of length of content in the table. If the content is longer, a
-    // popover button is added.
-    ticketCtrl.limit = 50;
 
     // Service that fetches all status data from the REST API.
     $http.get([ baseRestUrl, 'status', '' ].join('/'))
@@ -57,75 +52,102 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
             alert('There was an error. Please reload the page.');
         });
 
+    // Setup Ticket constructor.
+    var Ticket = function ( data ) {
+        var ticket = this;
+
+        // Add REST API data to ticket.
+        for ( var key in data ) {
+            ticket[key] = data[key];
+        }
+
+        // Add tmpContent property. This is only used for the change form and
+        // updated via AngularJS's magic.
+        ticket.tmpContent = ticket.content;
+    };
+
+    // Limit of length of content in the table. If the content is longer, some
+    // dots are added.
+    ticketCtrl.limit = 50;
+
+    // Add isLong function to deterine whether to print dots in content cell.
+    Ticket.prototype.isLong = function () {
+        var ticket = this;
+        return ticket.content.length > ticketCtrl.limit;
+    };
+
+    // Add change function. The argument newData is required. These data are
+    // sent to the REST API. If you supply the toScope argument, these data are
+    // used to fill the scope instead of the given data. The response from the
+    // REST API is not used.
+    Ticket.prototype.change = function ( newData, toScope ) {
+        var ticket = this;
+        $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), newData )
+            .success(function ( data, status, headers, config ) {
+                if ( toScope !== undefined ) {
+                    newData = toScope;
+                }
+                for ( var field in newData ) {
+                    ticket[field] = newData[field];
+                }
+            })
+
+            .error(function ( data, status, headers, config ) {
+                alert('There was an error. Please reload the page.');
+            });
+    };
+
+    // Add destroy function.
+    Ticket.prototype.destroy = function () {
+        var ticket = this;
+        $http.delete([ baseRestUrl, 'tickets', ticket.id, '' ].join('/'))
+            .success(function ( data, status, headers, config ) {
+                var index = ticketCtrl.tickets.indexOf( ticket );
+                ticketCtrl.tickets.splice( index, 1 );
+            })
+
+            .error(function ( data, status, headers, config ) {
+                alert('There was an error. Please reload the page.');
+            });
+    };
+
+    // Add popover button function for info on tickets.
+    Ticket.prototype.popOver = function ( $event ) {
+        var ticket = this;
+        var button = $($event.target);
+        button.popover('destroy');
+        button.popover({
+            'title': 'Ticket #' + ticket.id,
+            'placement': 'left'
+        }).popover('show');
+        button.next().click(function ( event ) {
+            button.popover('destroy');
+            event.preventDefault();
+        });
+    };
 
     // Service that fetches all ticket data from the REST API.
     $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
         .success(function ( data, status, headers, config ) {
-            // Setup table headers.
-            ticketCtrl.headers = [
-                { 'key': 'id', 'verboseName': '#' },
-                { 'key': 'content', 'verboseName': 'Content' },
-                { 'key': 'status', 'verboseName': 'Status' },
-                { 'key': 'assignee', 'verboseName': 'Assignee' }
-            ];
-
-            // Add several ticket properties.
-            angular.forEach( data, function ( ticket ) {
-                // Add change property.
-                ticket.change = function ( newData, toScope ) {
-                    $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), newData )
-                        .success(function ( data, status, headers, config ) {
-                            if ( toScope !== undefined ) {
-                                newData = toScope;
-                            }
-                            for ( var field in newData ) {
-                                ticket[field] = newData[field];
-                            }
-                        })
-
-                        .error(function ( data, status, headers, config ) {
-                            alert('There was an error. Please reload the page.');
-                        });
-                };
-
-                // Add delete property.
-                ticket.destroy = function () {
-                    $http.delete([ baseRestUrl, 'tickets', ticket.id, '' ].join('/'))
-                        .success(function ( data, status, headers, config ) {
-                            var index = ticketCtrl.tickets.indexOf( ticket );
-                            ticketCtrl.tickets.splice( index, 1 );
-                        })
-
-                        .error(function ( data, status, headers, config ) {
-                            alert('There was an error. Please reload the page.');
-                        });
-                };
-
-                // Add tmpContent property.
-                ticket.tmpContent = ticket.content;
-
-                // Add popover button to long tickets.
-                ticket.isLong = function () {
-                    return ticket.content.length > ticketCtrl.limit;
-                };
-                ticket.popOver = function ( $event ) {
-                    var button = $($event.target);
-                    button.popover('destroy');
-                    button.popover({ 'title': 'Ticket #' + ticket.id }).popover('show');
-                    button.next().click(function ( event ) {
-                        button.popover('destroy');
-                        event.preventDefault();
-                    });
-                };
-            });
-
-            // Finally add modified data to the scope.
-            ticketCtrl.tickets = data;
+            // Construct tickets and push them to scope.
+            ticketCtrl.tickets = [];
+            for (var index in data) {
+                var ticket = new Ticket(data[index]);
+                ticketCtrl.tickets.push(ticket);
+            }
         })
 
         .error(function ( data, status, headers, config ) {
             alert('There was an error. Please reload the page.');
         });
+
+    // Setup table headers.
+    ticketCtrl.headers = [
+        { 'key': 'id', 'verboseName': '#' },
+        { 'key': 'content', 'verboseName': 'Content' },
+        { 'key': 'status', 'verboseName': 'Status' },
+        { 'key': 'assignee', 'verboseName': 'Assignee' }
+    ];
 
     // Table filtering
     ticketCtrl.filter = undefined;
@@ -149,7 +171,8 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         modalInstance.result.then(function ( content ) {
             $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), { 'content': content, 'status': ticketCtrl.allStatus[0].name } )
                 .success(function ( data, status, headers, config ) {
-                    ticketCtrl.tickets.push( data );
+                    var ticket = new Ticket(data);
+                    ticketCtrl.tickets.push(ticket);
                 })
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
