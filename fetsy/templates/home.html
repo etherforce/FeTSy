@@ -84,7 +84,15 @@
                         <h3 class="modal-title">New ticket</h3>
                     </div>
                     <div class="modal-body">
-                        <textarea class="form-control" rows="3" required ng-model="newTicketFormModalCtrl.content"></textarea>
+                        <div class="form-group">
+                            <label for="newTicketContent" class="sr-only">Content</label>
+                            <textarea id="newTicketContent"
+                                      class="form-control"
+                                      rows="3"
+                                      required
+                                      ng-model="newTicketFormModalCtrl.content">
+                            </textarea>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">Save</button>
@@ -145,6 +153,7 @@
 
                         <!-- Ticket content, truncated, with tags and form to update the content -->
                         <td>
+
                             <!-- Ticket content and tags -->
                             <span ng-hide="ticket.editing">
                                 {{ ticket.content | limitTo : ticketCtrl.limit }}
@@ -163,11 +172,18 @@
                                     </button>
                                 </span>
                             </span>
+
                             <!-- Ticket content update form-->
                             <form ng-show="ticket.editing"
                                   ng-submit="ticket.change({'content': ticket.tmpContent}); ticket.editing = false">
                                 <div class="form-group">
-                                    <textarea class="form-control" rows="3" ng-model="ticket.tmpContent" required></textarea>
+                                    <label for="updateTicketContent" class="sr-only">Content</label>
+                                    <textarea id="updateTicketContent"
+                                              class="form-control"
+                                              rows="3"
+                                              required
+                                              ng-model="ticket.tmpContent">
+                                    </textarea>
                                 </div>
                                 <button type="submit"
                                         class="btn btn-primary">
@@ -179,6 +195,7 @@
                                     Cancel
                                 </button>
                             </form>
+
                         </td>
 
                         <!-- Ticket status with dropdown to change it -->
