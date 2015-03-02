@@ -39,6 +39,17 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
             alert('There was an error. Please reload the page.');
         });
 
+    // Service that fetches all tag data from the REST API.
+    $http.get([ baseRestUrl, 'tags', '' ].join('/'))
+        .success(function ( data, status, headers, config ) {
+            // Add data to the scope.
+            ticketCtrl.allTags = data;
+        })
+
+        .error(function ( data, status, headers, config ) {
+            alert('There was an error. Please reload the page.');
+        });
+
     // Service that fetches all users data from the REST API.
     $http.get([ baseRestUrl, 'users', '' ].join('/'))
         .success(function ( data, status, headers, config ) {

@@ -143,11 +143,17 @@
                         <!-- Ticket ID -->
                         <td>{{ ticket.id }}</td>
 
-                        <!-- Ticket content, truncated with more button and popover to edit the content -->
+                        <!-- Ticket content, truncated, with tags and form to update the content -->
                         <td>
+                            <!-- Ticket content and tags -->
                             <span ng-hide="ticket.editing">
                                 {{ ticket.content | limitTo : ticketCtrl.limit }}
                                 <span ng-show="ticket.isLong()">…</span>
+                                <span ng-repeat="tag in ticket.tags"
+                                      class="label label-{{ tag.color_css_class }}"
+                                      style="margin-right:0.3em;">
+                                      {{ tag.name }}
+                                </span>
                                 <span class="pull-right">
                                     <button type="button"
                                             class="btn btn-xs btn-default"
@@ -157,6 +163,7 @@
                                     </button>
                                 </span>
                             </span>
+                            <!-- Ticket content update form-->
                             <form ng-show="ticket.editing"
                                   ng-submit="ticket.change({'content': ticket.tmpContent}); ticket.editing = false">
                                 <div class="form-group">

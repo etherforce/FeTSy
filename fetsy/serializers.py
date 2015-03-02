@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Status, Ticket
+from .models import Status, Tag, Ticket
 
 
 class StatusSerializer(serializers.ModelSerializer):
@@ -13,10 +13,20 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = ('name', )
 
 
+class TagSerializer(serializers.ModelSerializer):
+    """
+    Serializer for all possible tags of a ticket.
+    """
+    class Meta:
+        model = Tag
+        fields = ('name', 'color_css_class', )
+
+
 class TicketSerializer(serializers.ModelSerializer):
     """
     Serializer for tickets.
     """
+    tags = TagSerializer(many=True)
     assignee = serializers.SerializerMethodField()
 
     class Meta:
@@ -25,6 +35,7 @@ class TicketSerializer(serializers.ModelSerializer):
             'id',
             'content',
             'status',
+            'tags',
             'assignee',
             'created', )
 

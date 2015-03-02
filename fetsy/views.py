@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 
-from .models import Status, Ticket
+from .models import Status, Tag, Ticket
 from .serializers import (
     StatusSerializer,
+    TagSerializer,
     TicketCreateUpdateSerializer,
     TicketSerializer,
     UserSerializer
@@ -16,6 +17,14 @@ class StatusViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet to list and retrieve all possible tags of a ticket.
+    """
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
 
 
 class TicketViewSet(viewsets.ModelViewSet):
