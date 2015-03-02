@@ -51,12 +51,15 @@ class TicketCreateUpdateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and updating tickets.
     """
+    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
+
     class Meta:
         model = Ticket
         fields = (
             'id',
             'content',
             'status',
+            'tags',
             'assignee',
             'created', )
 

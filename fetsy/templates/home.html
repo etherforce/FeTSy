@@ -175,7 +175,19 @@
 
                             <!-- Ticket content update form-->
                             <form ng-show="ticket.editing"
-                                  ng-submit="ticket.change({'content': ticket.tmpContent}); ticket.editing = false">
+                                  ng-submit="ticket.change(
+                                    {'content': ticket.tmpContent, 'tags': ticket.extractTagNames(ticket.tmpTags)},
+                                    {'content': ticket.tmpContent, 'tags': ticket.tmpTags}); ticket.editing = false">
+                                <div class="form-group">
+                                    <label for="updateTicketTags" class="sr-only">Tags</label>
+                                    <multiselect id="updateTicketTags"
+                                                 class=""
+                                                 ng-model="ticket.tmpTags"
+                                                 options="ticketCtrl.allTags"
+                                                 id-prop="name"
+                                                 display-prop="name">
+                                    </multiselect>
+                                </div>
                                 <div class="form-group">
                                     <label for="updateTicketContent" class="sr-only">Content</label>
                                     <textarea id="updateTicketContent"
@@ -191,7 +203,7 @@
                                 </button>
                                 <button type="button"
                                         class="btn btn-default"
-                                        ng-click="ticket.tmpContent = ticket.content; ticket.editing = false">
+                                        ng-click="ticket.tmpContent = ticket.content; ticket.tmpTags = ticket.tags; ticket.editing = false">
                                     Cancel
                                 </button>
                             </form>

@@ -8,7 +8,7 @@
 
 'use strict';
 
-var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap' ] );
+var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap', 'btorfs.multiselect' ] );
 
 
 app.run([ '$http', '$cookies', function ( $http, $cookies ) {
@@ -70,19 +70,30 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
             ticket[key] = data[key];
         }
 
-        // Add tmpContent property. This is only used for the change form and
-        // updated via AngularJS's magic.
+        // Add tmpContent and tmpTags properties. These are only used for the
+        // change form and updated via AngularJS's magic.
         ticket.tmpContent = ticket.content;
+        ticket.tmpTags = ticket.tags
     };
 
     // Limit of length of content in the table. If the content is longer, some
     // dots are added.
     ticketCtrl.limit = 50;
 
-    // Add isLong function to deterine whether to print dots in content cell.
+    // Add isLong function to determine whether to print dots in content cell.
     Ticket.prototype.isLong = function () {
         var ticket = this;
         return ticket.content.length > ticketCtrl.limit;
+    };
+
+    // Add extractTagNames function to extract only the names of an array of
+    // tags.
+    Ticket.prototype.extractTagNames = function ( tags ) {
+        var result = [];
+        for ( var index in tags ) {
+            result.push(tags[index].name);
+        }
+        return result;
     };
 
     // Add change function. The argument newData is required. These data are
@@ -185,7 +196,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
             controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl'
         });
         modalInstance.result.then(function ( content ) {
-            $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), { 'content': content, 'status': ticketCtrl.allStatus[0].name } )
+            $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), { 'content': content, 'status': ticketCtrl.allStatus[0].name, 'tags': [] } )
                 .success(function ( data, status, headers, config ) {
                     var ticket = new Ticket(data);
                     ticketCtrl.tickets.push(ticket);
