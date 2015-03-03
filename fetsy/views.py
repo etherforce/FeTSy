@@ -2,29 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 
 from .models import Status, Tag, Ticket
-from .serializers import (
-    StatusSerializer,
-    TagSerializer,
-    TicketCreateUpdateSerializer,
-    TicketSerializer,
-    UserSerializer
-)
-
-
-class StatusViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet to list and retrieve all possible status of a ticket.
-    """
-    queryset = Status.objects.all()
-    serializer_class = StatusSerializer
-
-
-class TagViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    ViewSet to list and retrieve all possible tags of a ticket.
-    """
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
+from .serializers import TicketSerializer, UserSerializer
 
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -32,13 +10,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     ViewSet to list, retrieve, create, update and destroy tickets.
     """
     queryset = Ticket.objects.all()
-
-    def get_serializer_class(self):
-        if self.action in ('create', 'update', 'partial_update'):
-            serializer = TicketCreateUpdateSerializer
-        else:
-            serializer = TicketSerializer
-        return serializer
+    serializer_class = TicketSerializer
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):

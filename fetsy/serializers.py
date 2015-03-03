@@ -1,16 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Status, Tag, Ticket
-
-
-class StatusSerializer(serializers.ModelSerializer):
-    """
-    Serializer for all possible status of a ticket.
-    """
-    class Meta:
-        model = Status
-        fields = ('name', )
+from .models import Tag, Ticket
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -22,46 +13,32 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ('name', 'color_css_class', )
 
 
-class TicketSerializer(serializers.ModelSerializer):
+class TagRelatedField(serializers.RelatedField):
     """
-    Serializer for tickets.
+    Field for serializing tags in tickets.
     """
-    tags = TagSerializer(many=True)
-    assignee = serializers.SerializerMethodField()
+    def to_representation(self, value):
+        """
+        Returns serialized data using TagSerializer.
+        """
+        return TagSerializer(value).data
 
-    class Meta:
-        model = Ticket
-        fields = (
-            'id',
-            'content',
-            'status',
-            'tags',
-            'assignee',
-            'created', )
-
-    def get_assignee(self, value):
-        if value.assignee is not None:
-            name = value.assignee.get_full_name() or value.assignee.username
-        else:
-            name = None
-        return name
-
-
-class TicketCreateUpdateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for creating and updating tickets.
-    """
-    tags = serializers.PrimaryKeyRelatedField(many=True, queryset=Tag.objects.all())
-
-    class Meta:
-        model = Ticket
-        fields = (
-            'id',
-            'content',
-            'status',
-            'tags',
-            'assignee',
-            'created', )
+    def to_internal_value(self, data):
+        """
+        Validates data and returns the respective Tag object. Data should be
+        a dictionary with a 'name' element.
+        """
+        if type(data) != dict or data.get('name') is None:
+            raise serializers.ValidationError(
+                "Invalid data. You must provide a dictionary with a 'name' "
+                "element.")
+        try:
+            tag = self.get_queryset().get(name=data['name'])
+        except Tag.DoesNotExist:
+            raise serializers.ValidationError(
+                "Invalid data. Tag with name '%s' does not "
+                "exist." % data['name'])
+        return tag
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -72,9 +49,57 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = (
-            'id',
-            'name', )
+        fields = ('id', 'name', )
 
     def get_name(self, value):
         return value.get_full_name() or value.username
+
+
+class UserRelatedField(serializers.RelatedField):
+    """
+    Field for serializing users as assignees in tickets.
+    """
+    def to_representation(self, value):
+        """
+        Returns serialized data using UserSerializer.
+        """
+        return UserSerializer(value).data
+
+    def to_internal_value(self, data):
+        """
+        Validates data and returns the respective User object. Data should be
+        a dictionary with an 'id' element.
+        """
+        if type(data) != dict or data.get('id') is None:
+            raise serializers.ValidationError(
+                "Invalid data. You must provide a dictionary with an 'id' "
+                "element.")
+        try:
+            user = self.get_queryset().get(pk=data['id'])
+        except get_user_model().DoesNotExist:
+            raise serializers.ValidationError(
+                'Invalid data. User with id %d does not exist.' % data['id'])
+        return user
+
+
+class TicketSerializer(serializers.ModelSerializer):
+    """
+    Serializer for tickets.
+    """
+    tags = TagRelatedField(
+        many=True,
+        queryset=Tag.objects.all(),
+        required=False)
+    assignee = UserRelatedField(
+        queryset=get_user_model().objects.all(),
+        required=False)
+
+    class Meta:
+        model = Ticket
+        fields = (
+            'id',
+            'content',
+            'status',
+            'tags',
+            'assignee',
+            'created', )

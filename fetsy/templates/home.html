@@ -175,13 +175,11 @@
 
                             <!-- Ticket content update form-->
                             <form ng-show="ticket.editing"
-                                  ng-submit="ticket.change(
-                                    {'content': ticket.tmpContent, 'tags': ticket.extractTagNames(ticket.tmpTags)},
-                                    {'content': ticket.tmpContent, 'tags': ticket.tmpTags}); ticket.editing = false">
+                                  ng-submit="ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags});
+                                             ticket.editing = false">
                                 <div class="form-group">
                                     <label for="updateTicketTags" class="sr-only">Tags</label>
                                     <multiselect id="updateTicketTags"
-                                                 class=""
                                                  ng-model="ticket.tmpTags"
                                                  options="ticketCtrl.allTags"
                                                  id-prop="name"
@@ -203,7 +201,9 @@
                                 </button>
                                 <button type="button"
                                         class="btn btn-default"
-                                        ng-click="ticket.tmpContent = ticket.content; ticket.tmpTags = ticket.tags; ticket.editing = false">
+                                        ng-click="ticket.tmpTags = ticket.tags;
+                                                  ticket.tmpContent = ticket.content;
+                                                  ticket.editing = false">
                                     Cancel
                                 </button>
                             </form>
@@ -223,8 +223,8 @@
                                     <span class="sr-only">Edit status</span>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownStatus">
-                                    <li ng-repeat="status in ticketCtrl.allStatus | filter : '!' + ticket.status">
-                                        <a ng-click="ticket.change({'status': status.name})">{{ status.name }}</a>
+                                    <li ng-repeat="choice in ticketCtrl.options.actions.POST.status.choices">
+                                        <a ng-click="ticket.change({'status': choice.value})">{{ choice.value }}</a>
                                     </li>
                                 </ul>
                             </span>
@@ -232,7 +232,7 @@
 
                         <!-- Ticket assignee with dropdown to change it -->
                         <td>
-                            {{ ticket.assignee }}
+                            {{ ticket.assignee.name }}
                             <span class="dropdown pull-right">
                                 <button id="dropdownAssignee"
                                         type="button"
@@ -244,7 +244,7 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownAssignee">
                                     <li ng-repeat="user in ticketCtrl.allUsers">
-                                        <a ng-click="ticket.change({'assignee': user.id }, {'assignee': user.name })">{{ user.name }}</a>
+                                        <a ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">{{ user.name }}</a>
                                     </li>
                                 </ul>
                             </span>
@@ -281,7 +281,6 @@
         <footer>
             <p>&copy; 2015 <a href="http://rechtsanwalt-jaeckel.de">Norman Jäckel</a></p>
         </footer>
-
 
     </div><!-- / Main container -->
 

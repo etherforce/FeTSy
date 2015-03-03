@@ -11,8 +11,8 @@
 var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap', 'btorfs.multiselect' ] );
 
 
+// Add CSRF token from csrftoken cookie to relevant HTTP headers as X-CSRFToken.
 app.run([ '$http', '$cookies', function ( $http, $cookies ) {
-    // Add CSRF token from csrftoken cookie to relevant HTTP headers as X-CSRFToken.
     var methods = [ 'post', 'put', 'patch', 'delete' ];
     for ( var i = 0; i < methods.length; ++i ) {
         var headers = $http.defaults.headers[methods[i]];
@@ -25,35 +25,13 @@ app.run([ '$http', '$cookies', function ( $http, $cookies ) {
 } ]);
 
 
+// Setup TicketListCtrl, the main controller for this project.
 app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     var ticketCtrl = this;
-
-    // Service that fetches all status data from the REST API.
-    $http.get([ baseRestUrl, 'status', '' ].join('/'))
-        .success(function ( data, status, headers, config ) {
-            // Add data to the scope.
-            ticketCtrl.allStatus = data;
-        })
-
-        .error(function ( data, status, headers, config ) {
-            alert('There was an error. Please reload the page.');
-        });
-
-    // Service that fetches all tag data from the REST API.
-    $http.get([ baseRestUrl, 'tags', '' ].join('/'))
-        .success(function ( data, status, headers, config ) {
-            // Add data to the scope.
-            ticketCtrl.allTags = data;
-        })
-
-        .error(function ( data, status, headers, config ) {
-            alert('There was an error. Please reload the page.');
-        });
 
     // Service that fetches all users data from the REST API.
     $http.get([ baseRestUrl, 'users', '' ].join('/'))
         .success(function ( data, status, headers, config ) {
-            // Add data to the scope.
             ticketCtrl.allUsers = data;
         })
 
@@ -66,9 +44,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         var ticket = this;
 
         // Add REST API data to ticket.
-        for ( var key in data ) {
-            ticket[key] = data[key];
-        }
+        angular.extend(ticket, data);
 
         // Add tmpContent and tmpTags properties. These are only used for the
         // change form and updated via AngularJS's magic.
@@ -86,35 +62,14 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         return ticket.content.length > ticketCtrl.limit;
     };
 
-    // Add extractTagNames function to extract only the names of an array of
-    // tags.
-    Ticket.prototype.extractTagNames = function ( tags ) {
-        var result = [];
-        for ( var index in tags ) {
-            result.push(tags[index].name);
-        }
-        return result;
-    };
-
-    // Add change function. The argument newData is required. These data are
-    // sent to the REST API. If you supply the toScope argument, these data are
-    // used to fill the scope instead of the given data. The response from the
-    // REST API is not used.
-    //
-    // TODO: Use response from REST API and not such self made stuff.
-    //
-    Ticket.prototype.change = function ( newData, toScope ) {
+    // Add change function. The argument changedData is required. These data are
+    // sent to the REST API.
+    Ticket.prototype.change = function ( changedData ) {
         var ticket = this;
-        $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), newData )
+        $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
             .success(function ( data, status, headers, config ) {
-                if ( toScope !== undefined ) {
-                    newData = toScope;
-                }
-                for ( var field in newData ) {
-                    ticket[field] = newData[field];
-                }
+                angular.extend(ticket, data);
             })
-
             .error(function ( data, status, headers, config ) {
                 alert('There was an error. Please reload the page.');
             });
@@ -129,7 +84,6 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
                     var index = ticketCtrl.tickets.indexOf( ticket );
                     ticketCtrl.tickets.splice( index, 1 );
                 })
-
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
                 });
@@ -137,6 +91,9 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     };
 
     // Add popover button function for info on tickets.
+    //
+    // TODO use angular ui bootstrap.
+    //
     Ticket.prototype.popOver = function ( $event ) {
         var ticket = this;
         var button = $($event.target);
@@ -154,16 +111,30 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     };
 
     // Service that fetches all ticket data from the REST API.
-    $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
+    // First it fetches Options from the REST API and save them into ticketCtrl.options.
+    $http({ 'method': 'OPTIONS', 'url': [ baseRestUrl, 'tickets', '' ].join('/') })
         .success(function ( data, status, headers, config ) {
-            // Construct tickets and push them to scope.
-            ticketCtrl.tickets = [];
-            for (var index in data) {
-                var ticket = new Ticket(data[index]);
-                ticketCtrl.tickets.push(ticket);
-            }
+            // Save option data.
+            ticketCtrl.options = data;
+            // Save special rendered tag options to ticketCtrl.allTags.
+            ticketCtrl.allTags = [];
+            angular.forEach(ticketCtrl.options.actions.POST.tags.choices, function ( value ) {
+                ticketCtrl.allTags.push({ 'name': value.value.match(/'name': '([\w]*)'/)[1] });
+            });
+            // Now fetch all other data.
+            $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
+                .success(function ( data, status, headers, config ) {
+                    // Construct tickets and push them to scope.
+                    ticketCtrl.tickets = [];
+                    for (var index in data) {
+                        var ticket = new Ticket(data[index]);
+                        ticketCtrl.tickets.push(ticket);
+                    }
+                })
+                .error(function ( data, status, headers, config ) {
+                    alert('There was an error. Please reload the page.');
+                });
         })
-
         .error(function ( data, status, headers, config ) {
             alert('There was an error. Please reload the page.');
         });
@@ -176,10 +147,10 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         { 'key': 'assignee', 'verboseName': 'Assignee' }
     ];
 
-    // Table filtering
+    // Setup table filtering
     ticketCtrl.filter = undefined;
 
-    // Table sorting
+    // Setup table sorting
     ticketCtrl.sortColumn = 'id';
     ticketCtrl.reverse = true;
     ticketCtrl.toggleSort = function ( index ) {
@@ -189,14 +160,19 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         ticketCtrl.sortColumn = ticketCtrl.headers[index].key;
     };
 
-    // Form for a new ticket via angular ui bootstrap modal.
+    // Setup form for a new ticket via angular ui bootstrap modal.
     ticketCtrl.newTicketForm = function () {
         var modalInstance = $modal.open({
             templateUrl: 'newTicketForm.html',
             controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl'
         });
         modalInstance.result.then(function ( content ) {
-            $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), { 'content': content, 'status': ticketCtrl.allStatus[0].name, 'tags': [] } )
+            var dataToSend = {
+                'content': content,
+                'status': ticketCtrl.options.actions.POST.status.choices[0].value,
+                'tags': []
+            }
+            $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), dataToSend )
                 .success(function ( data, status, headers, config ) {
                     var ticket = new Ticket(data);
                     ticketCtrl.tickets.push(ticket);
@@ -209,6 +185,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
 });
 
 
+// Setup controler for form for a new ticket (NewTicketFormModalCtrl).
 app.controller( 'NewTicketFormModalCtrl', function ( $modalInstance ) {
     this.save = function () {
         if ( this.content ) {
