@@ -76,18 +76,9 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     };
 
     // Add destroy function.
-    Ticket.prototype.destroy = function () {
+    Ticket.prototype.close = function () {
         var ticket = this;
-        if ( confirm('Do you really want to delete ticket #' + ticket.id + '?') ) {
-            $http.delete([ baseRestUrl, 'tickets', ticket.id, '' ].join('/'))
-                .success(function ( data, status, headers, config ) {
-                    var index = ticketCtrl.tickets.indexOf( ticket );
-                    ticketCtrl.tickets.splice( index, 1 );
-                })
-                .error(function ( data, status, headers, config ) {
-                    alert('There was an error. Please reload the page.');
-                });
-        }
+        ticket.change({'status': 'closed'});
     };
 
     // Add popover button function for info on tickets.

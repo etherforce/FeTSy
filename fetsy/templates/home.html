@@ -149,7 +149,13 @@
                     <tr ng-repeat="ticket in ticketCtrl.tickets | filter : ticketCtrl.filter | orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
 
                         <!-- Ticket ID -->
-                        <td>{{ ticket.id }}</td>
+                        <td>
+                            <span ng-show="ticket.status === 'closed'">
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                <span class="sr-only">Ticket is closed</span>
+                            </span>
+                            <span class="pull-right">{{ ticket.id }}</span>
+                        </td>
 
                         <!-- Ticket content, truncated, with tags and form to update the content -->
                         <td>
@@ -250,20 +256,21 @@
                             </span>
                         </td>
 
-                        <!-- Info and delete buttons -->
+                        <!-- Info and close buttons -->
                         <td>
                             <span class="pull-right">
                                 <button type="button"
                                         class="btn btn-xs btn-success"
+                                        ng-hide="ticket.status === 'closed'"
+                                        ng-click="ticket.close()">
+                                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                    <span class="sr-only">Remove ticket</span>
+                                </button>
+                                <button type="button"
+                                        class="btn btn-xs btn-info"
                                         ng-click="ticket.popOver($event)" >
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                                     <span class="sr-only">Get more info</span>
-                                </button>
-                                <button type="button"
-                                        class="btn btn-xs btn-danger"
-                                        ng-click="ticket.destroy()">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                    <span class="sr-only">Remove ticket</span>
                                 </button>
                             </span>
                         </td>
