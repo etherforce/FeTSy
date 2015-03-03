@@ -102,4 +102,5 @@ class TicketSerializer(serializers.ModelSerializer):
             'status',
             'tags',
             'assignee',
-            'created', )
+            'created',
+            'reminder', )

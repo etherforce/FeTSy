@@ -46,6 +46,11 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         // Add REST API data to ticket.
         angular.extend(ticket, data);
 
+        // Caluclate reminder time delta.
+        var created = new Date(ticket.created);
+        var timeToEnd = (created.getTime() + ticket.reminder * 60 * 1000 - Date.now()) / 1000 / 60;
+        ticket.timeToEnd = Math.trunc(timeToEnd);
+
         // Add tmpContent and tmpTags properties. These are only used for the
         // change form and updated via AngularJS's magic.
         ticket.tmpContent = ticket.content;
@@ -135,7 +140,8 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         { 'key': 'id', 'verboseName': '#' },
         { 'key': 'content', 'verboseName': 'Content' },
         { 'key': 'status', 'verboseName': 'Status' },
-        { 'key': 'assignee', 'verboseName': 'Assignee' }
+        { 'key': 'assignee', 'verboseName': 'Assignee' },
+        { 'key': 'timeToEnd', 'verboseName': 'Minutes' }
     ];
 
     // Setup table filtering using the checkboxes and the search filter.

@@ -73,6 +73,9 @@ class Ticket(models.Model):
     created = models.DateTimeField(
         ugettext_lazy('Created'),
         auto_now_add=True)
+    reminder = models.PositiveIntegerField(
+        ugettext_lazy('Remind me in ... minutes'),
+        default=120)
 
     def __str__(self):
         return str(self.pk)
