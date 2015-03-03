@@ -113,15 +113,25 @@
                            class="form-control"
                            placeholder="Search"
                            aria-describedby="searchIcon"
-                           ng-model="ticketCtrl.filter">
+                           ng-model="ticketCtrl.search">
                     <span type="button"
                           class="input-group-addon btn"
-                          ng-click="ticketCtrl.filter = ''">
+                          ng-click="ticketCtrl.search = ''">
                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                         <span class="sr-only">Reset search field</span>
                     </span>
                 </div>
             </div>
+
+            <!-- -->
+            <div class="pull-right" style="padding-right:1em;" >
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="ticketCtrl.showClosed"> Show closed tickets
+                    </label>
+                </div>
+            </div>
+
 
             <!-- Main table -->
             <table class="table table-striped table-bordered">
@@ -146,7 +156,10 @@
 
                 <!-- Table body -->
                 <tbody>
-                    <tr ng-repeat="ticket in ticketCtrl.tickets | filter : ticketCtrl.filter | orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
+                    <tr ng-repeat="ticket in ticketCtrl.tickets |
+                                   filter : ticketCtrl.search |
+                                   filter : ticketCtrl.filtering |
+                                   orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
 
                         <!-- Ticket ID -->
                         <td>

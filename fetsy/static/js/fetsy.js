@@ -75,7 +75,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
             });
     };
 
-    // Add destroy function.
+    // Add close function.
     Ticket.prototype.close = function () {
         var ticket = this;
         ticket.change({'status': 'closed'});
@@ -138,8 +138,12 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         { 'key': 'assignee', 'verboseName': 'Assignee' }
     ];
 
-    // Setup table filtering
-    ticketCtrl.filter = undefined;
+    // Setup table filtering using the checkboxes and the search filter.
+    ticketCtrl.search = undefined;
+    ticketCtrl.showClosed = false;
+    ticketCtrl.filtering = function ( value, index ) {
+        return ticketCtrl.showClosed || value.status !== 'closed';
+    };
 
     // Setup table sorting
     ticketCtrl.sortColumn = 'id';
