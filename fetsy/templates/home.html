@@ -173,7 +173,7 @@
                         <td>
 
                             <!-- Ticket content and tags -->
-                            <span ng-hide="ticket.editing">
+                            <span ng-hide="ticket.updatingTicketContentAndTags">
                                 {{ ticket.content | limitTo : ticketCtrl.limit }}
                                 <span ng-show="ticket.isLong()">…</span>
                                 <span ng-repeat="tag in ticket.tags"
@@ -184,7 +184,7 @@
                                 <span class="pull-right">
                                     <button type="button"
                                             class="btn btn-xs btn-default"
-                                            ng-click="ticket.editing = true">
+                                            ng-click="ticket.updatingTicketContentAndTags = true">
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                                         <span class="sr-only">Edit content</span>
                                     </button>
@@ -192,9 +192,9 @@
                             </span>
 
                             <!-- Ticket content update form-->
-                            <form ng-show="ticket.editing"
+                            <form ng-show="ticket.updatingTicketContentAndTags"
                                   ng-submit="ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags});
-                                             ticket.editing = false">
+                                             ticket.updatingTicketContentAndTags = false">
                                 <div class="form-group">
                                     <label for="updateTicketTags" class="sr-only">Tags</label>
                                     <multiselect id="updateTicketTags"
@@ -221,7 +221,7 @@
                                         class="btn btn-default"
                                         ng-click="ticket.tmpTags = ticket.tags;
                                                   ticket.tmpContent = ticket.content;
-                                                  ticket.editing = false">
+                                                  ticket.updatingTicketContentAndTags = false">
                                     Cancel
                                 </button>
                             </form>
@@ -229,48 +229,58 @@
                         </td>
 
                         <!-- Ticket status with dropdown to change it -->
-                        <td>
+                        <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.status }}
-                            <span class="dropdown pull-right">
-                                <button id="dropdownStatus"
-                                        type="button"
-                                        class="btn btn-xs btn-default"
-                                        data-toggle="dropdown"
-                                        aria-expanded="true">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                    <span class="sr-only">Edit status</span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownStatus">
-                                    <li ng-repeat="choice in ticketCtrl.options.actions.POST.status.choices">
-                                        <a ng-click="ticket.change({'status': choice.value})">{{ choice.value }}</a>
-                                    </li>
-                                </ul>
-                            </span>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="choice in ticketCtrl.options.actions.POST.status.choices">
+                                    <a ng-click="ticket.change({'status': choice.value})">{{ choice.value }}</a>
+                                </li>
+                            </ul>
                         </td>
 
                         <!-- Ticket assignee with dropdown to change it -->
-                        <td>
+                        <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.assignee.name }}
-                            <span class="dropdown pull-right">
-                                <button id="dropdownAssignee"
-                                        type="button"
-                                        class="btn btn-xs btn-default"
-                                        data-toggle="dropdown"
-                                        aria-expanded="true">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                    <span class="sr-only">Edit assignee</span>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownAssignee">
-                                    <li ng-repeat="user in ticketCtrl.allUsers">
-                                        <a ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">{{ user.name }}</a>
-                                    </li>
-                                </ul>
-                            </span>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="user in ticketCtrl.allUsers">
+                                    <a ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">{{ user.name }}</a>
+                                </li>
+                            </ul>
                         </td>
 
                         <!-- Ticket reminder -->
-                        <td>
-                            <span ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">{{ ticket.timeToEnd }}</span>
+                        <td ng-click="ticket.updatingTicketReminder = true">
+                            <span ng-hide="ticket.updatingTicketReminder" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
+                                {{ ticket.timeToEnd }} min.
+                            </span>
+                            <span ng-show="ticket.updatingTicketReminder">
+                                <label class="sr-only" for="updateTicketReminder">Remind me in ... minutes</label>
+                                <span  class="input-group input-group-sm">
+                                    <input id="updateTicketReminder"
+                                           type="text"
+                                           class="form-control"
+                                           placeholder="Minutes"
+                                           ng-model="ticket.tmpReminder">
+                                    <span class="input-group-btn">
+                                        <button type="button"
+                                                class="btn btn-sm btn-default"
+                                                ng-click="$event.stopPropagation();
+                                                          ticket.change({'reminder': ticket.tmpReminder});
+                                                          ticket.updatingTicketReminder = false">
+                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                            <span class="sr-only">Save</span>
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-default"
+                                                ng-click="$event.stopPropagation();
+                                                          ticket.tmpReminder = ticket.reminder;
+                                                          ticket.updatingTicketReminder = false;">
+                                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                            <span class="sr-only">Cancel</span>
+                                        </button>
+                                    </span>
+                                </span>
+                            </span>
                         </td>
 
                         <!-- Info and close buttons -->
@@ -279,9 +289,9 @@
                                 <button type="button"
                                         class="btn btn-xs btn-success"
                                         ng-hide="ticket.status === 'closed'"
-                                        ng-click="ticket.close()">
+                                        ng-click="ticket.change({'status': 'closed'})">
                                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                                    <span class="sr-only">Remove ticket</span>
+                                    <span class="sr-only">Close ticket</span>
                                 </button>
                                 <button type="button"
                                         class="btn btn-xs btn-info"

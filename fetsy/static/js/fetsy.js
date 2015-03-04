@@ -40,11 +40,16 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         });
 
     // Setup Ticket constructor.
+    // Add REST API data to ticket and update properties.
     var Ticket = function ( data ) {
         var ticket = this;
-
-        // Add REST API data to ticket.
         angular.extend(ticket, data);
+        ticket.updateProperties();
+    };
+
+    // Helper function to update some calculated properties.
+    Ticket.prototype.updateProperties = function () {
+        var ticket = this;
 
         // Caluclate reminder time delta.
         var created = new Date(ticket.created);
@@ -54,7 +59,8 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         // Add tmpContent and tmpTags properties. These are only used for the
         // change form and updated via AngularJS's magic.
         ticket.tmpContent = ticket.content;
-        ticket.tmpTags = ticket.tags
+        ticket.tmpTags = ticket.tags;
+        ticket.tmpReminder = ticket.reminder;
     };
 
     // Limit of length of content in the table. If the content is longer, some
@@ -74,16 +80,11 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
             .success(function ( data, status, headers, config ) {
                 angular.extend(ticket, data);
+                ticket.updateProperties()
             })
             .error(function ( data, status, headers, config ) {
                 alert('There was an error. Please reload the page.');
             });
-    };
-
-    // Add close function.
-    Ticket.prototype.close = function () {
-        var ticket = this;
-        ticket.change({'status': 'closed'});
     };
 
     // Add popover button function for info on tickets.
@@ -141,7 +142,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         { 'key': 'content', 'verboseName': 'Content' },
         { 'key': 'status', 'verboseName': 'Status' },
         { 'key': 'assignee', 'verboseName': 'Assignee' },
-        { 'key': 'timeToEnd', 'verboseName': 'Minutes' }
+        { 'key': 'timeToEnd', 'verboseName': 'Reminder' }
     ];
 
     // Setup table filtering using the checkboxes and the search filter.
