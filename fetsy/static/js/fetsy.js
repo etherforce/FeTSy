@@ -11,7 +11,7 @@
 var app = angular.module( 'FeTSy', [ 'ngCookies', 'ui.bootstrap', 'btorfs.multiselect' ] );
 
 
-// Add CSRF token from csrftoken cookie to relevant HTTP headers as X-CSRFToken.
+// Add CSRF token from cookie 'csrftoken' as HTTP header 'X-CSRFToken' for relevant methods.
 app.run([ '$http', '$cookies', function ( $http, $cookies ) {
     var methods = [ 'post', 'put', 'patch', 'delete' ];
     for ( var i = 0; i < methods.length; ++i ) {
@@ -165,12 +165,12 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal 
 
     // Setup table headers.
     ticketCtrl.headers = [
-        { 'key': 'id', 'verboseName': 'Id', 'cssIconClass': 'glyphicon-tag' },
+        { 'key': 'id' },
         { 'key': 'content', 'verboseName': 'Content', 'cssIconClass': 'glyphicon-cog' },
-        { 'key': 'status', 'verboseName': 'Status', 'cssIconClass': 'glyphicon-record' },
+        { 'key': 'status', 'verboseName': 'Status', 'cssIconClass': 'glyphicon-star' },
         { 'key': 'priority', 'verboseName': 'Priority', 'cssIconClass': 'glyphicon-fire' },
         { 'key': 'assignee.name', 'verboseName': 'Assignee', 'cssIconClass': 'glyphicon-user' },
-        { 'key': 'timeToEnd', 'verboseName': 'Deadline', 'cssIconClass': 'glyphicon-time' }
+        { 'key': 'timeToEnd', 'verboseName': 'Remaining time', 'cssIconClass': 'glyphicon-hourglass' }
     ];
 
     // Setup table filtering using the checkboxes and the search filter.
@@ -196,12 +196,9 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal 
             templateUrl: 'newTicketForm.html',
             controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl'
         });
-        modalInstance.result.then(function ( content ) {
-            var dataToSend = {
-                'content': content,
-                'status': ticketCtrl.options.actions.POST.status.choices[0].value,
-                'tags': []
-            }
+        modalInstance.result.then(function ( dataToSend ) {
+            dataToSend.status = ticketCtrl.options.actions.POST.status.choices[0].value;
+            dataToSend.tags = [];
             $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), dataToSend )
                 .success(function ( data, status, headers, config ) {
                     var ticket = new Ticket(data);
@@ -217,9 +214,11 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal 
 
 // Setup controler for form for a new ticket (NewTicketFormModalCtrl).
 app.controller( 'NewTicketFormModalCtrl', function ( $modalInstance ) {
+    // Default deadline is 120 minutes.
+    this.deadline = 120;
     this.save = function () {
         if ( this.content ) {
-            $modalInstance.close(this.content);
+            $modalInstance.close({ 'content': this.content, 'deadline': this.deadline });
         } else {
             $modalInstance.dismiss('cancel');
         }

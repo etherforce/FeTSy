@@ -63,7 +63,7 @@
                     <li><a href="{% url 'api-root' %}">REST API</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
                 </ul>
-            </div><!-- /.nav-collapse -->
+            </div>
         </div>
     </nav>
 
@@ -71,6 +71,7 @@
 
     <!-- Main container -->
     <div class="container">
+
         <div style="padding: 40px 15px;" ng-controller="TicketListCtrl as ticketCtrl">
 
             <!-- newTicketForm button and modal -->
@@ -81,12 +82,36 @@
                 </button>
                 <script type="text/ng-template" id="newTicketForm.html">
                     <div class="modal-header">
-                        <h3 class="modal-title">New ticket</h3>
+                        <h3 class="modal-title">
+                            New ticket
+                        </h3>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="newTicketContent" class="sr-only">Content</label>
+                            <label for="newTicketDeadline" class="sr-only">
+                                Deadline (in minutes). Default: 120 minutes.
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <span id="newTicketDeadlineIcon"
+                                          title="Deadline (in minutes)"
+                                          class="glyphicon glyphicon-time"
+                                          aria-hidden="true">
+                                    </span>
+                                </div>
+                                <input id="newTicketDeadline"
+                                       type="number"
+                                       class="form-control"
+                                       aria-describedby="newTicketDeadlineIcon"
+                                       ng-model="newTicketFormModalCtrl.deadline">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="newTicketContent" class="sr-only">
+                                Content
+                            </label>
                             <textarea id="newTicketContent"
+                                      placeholder="Content"
                                       class="form-control"
                                       rows="3"
                                       required
@@ -95,17 +120,23 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">Save</button>
-                        <button class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">Cancel</button>
+                        <button type="button" class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">
+                            Cancel
+                        </button>
                     </div>
                 </script>
-            </div>
+            </div><!-- / newTicketForm button and modal -->
 
             <!-- Search bar for filtering the table -->
             <div class="pull-right" style="padding-bottom:1em;">
-                <div class="form-inline">
+                <form role="form" class="form-inline">
                     <div class="form-group">
-                        <label for="search" class="sr-only">Search</label>
+                        <label for="search" class="sr-only">
+                            Search
+                        </label>
                         <div class="input-group">
                             <div class="input-group-addon">
                                 <span id="searchIcon" class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -119,6 +150,7 @@
                                    ng-model="ticketCtrl.search">
                             <div class="input-group-btn">
                                 <span type="button"
+                                      title="Reset search field"
                                       class="btn btn-default"
                                       ng-click="ticketCtrl.search = ''">
                                     <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -127,17 +159,18 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </form>
+            </div><!-- / Search bar for filtering the table -->
 
             <!-- Show closed tickets checkbox -->
             <div class="pull-right" style="padding-right:1em;" >
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox" ng-model="ticketCtrl.showClosed"> Show closed tickets
+                        <input type="checkbox" ng-model="ticketCtrl.showClosed">
+                        Show closed tickets
                     </label>
                 </div>
-            </div>
+            </div><!-- / Show closed tickets checkbox -->
 
             <!-- Main table -->
             <table class="table table-striped table-bordered">
@@ -146,8 +179,11 @@
                 <thead>
                     <tr>
                         <th ng-repeat="header in ticketCtrl.headers" ng-click="ticketCtrl.toggleSort($index)">
-                            <a>
-                                <span class="glyphicon {{ header.cssIconClass }}" title="{{ header.verboseName }}" aria-hidden="true">
+                            <a role="button" ng-show="$first">#</a>
+                            <a role="button" ng-hide="$first">
+                                <span title="{{ header.verboseName }}"
+                                      class="glyphicon {{ header.cssIconClass }}"
+                                      aria-hidden="true">
                                 </span>
                             </a>
                             <span class="dropup pull-right"
@@ -161,10 +197,11 @@
                         </th>
                         <th></th>
                     </tr>
-                </thead>
+                </thead><!-- / Table head with clickable sorting -->
 
                 <!-- Table body -->
                 <tbody>
+
                     <tr ng-repeat="ticket in ticketCtrl.tickets |
                                    filter : ticketCtrl.search |
                                    filter : ticketCtrl.filtering |
@@ -173,11 +210,18 @@
                         <!-- Ticket ID -->
                         <td>
                             <span ng-show="ticket.status === 'closed'">
-                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                                <span class="sr-only">Ticket is closed</span>
+                                <span title="Ticket is closed"
+                                      class="glyphicon glyphicon-ok"
+                                      aria-hidden="true">
+                                </span>
+                                <span class="sr-only">
+                                    Ticket is closed
+                                </span>
                             </span>
-                            <span class="pull-right">{{ ticket.id }}</span>
-                        </td>
+                            <span class="pull-right">
+                                {{ ticket.id }}
+                            </span>
+                        </td><!-- / Ticket ID -->
 
                         <!-- Ticket content, truncated, with tags and form to update the content -->
                         <td ng-click="ticket.updatingTicketContentAndTags = true">
@@ -191,10 +235,11 @@
                                       style="margin-right:0.3em;">
                                       {{ tag.name }}
                                 </span>
-                            </span>
+                            </span><!-- / Ticket content and tags -->
 
                             <!-- Ticket content update form-->
-                            <form ng-show="ticket.updatingTicketContentAndTags"
+                            <form role="form"
+                                  ng-show="ticket.updatingTicketContentAndTags"
                                   ng-submit="$event.stopPropagation();
                                              ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags});
                                              ticket.updatingTicketContentAndTags = false">
@@ -228,55 +273,70 @@
                                                   ticket.updatingTicketContentAndTags = false">
                                     Cancel
                                 </button>
-                            </form>
+                            </form><!-- / Ticket content update form-->
 
-                        </td>
+                        </td><!-- / Ticket content, truncated, with tags and form to update the content -->
 
                         <!-- Ticket status with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.status }}
                             <ul class="dropdown-menu">
                                 <li ng-repeat="choice in ticketCtrl.options.actions.POST.status.choices">
-                                    <a ng-click="ticket.change({'status': choice.value})">{{ choice.value }}</a>
+                                    <a role="button" ng-click="ticket.change({'status': choice.value})">
+                                        {{ choice.value }}
+                                    </a>
                                 </li>
                             </ul>
-                        </td>
+                        </td><!-- / Ticket status with dropdown to change it -->
 
                         <!-- Ticket priority with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.priority }}
                             <ul class="dropdown-menu">
                                 <li ng-repeat="choice in ticketCtrl.options.actions.POST.priority.choices">
-                                    <a ng-click="ticket.change({'priority': choice.value})">{{ choice.value }}</a>
+                                    <a role="button" ng-click="ticket.change({'priority': choice.value})">
+                                        {{ choice.value }}
+                                    </a>
                                 </li>
                             </ul>
-                        </td>
+                        </td><!-- / Ticket priority with dropdown to change it -->
 
                         <!-- Ticket assignee with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.assignee.name }}
                             <ul class="dropdown-menu">
                                 <li ng-repeat="user in ticketCtrl.allUsers">
-                                    <a ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">{{ user.name }}</a>
+                                    <a role="button" ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">
+                                        {{ user.name }}
+                                    </a>
                                 </li>
                             </ul>
-                        </td>
+                        </td><!-- / Ticket assignee with dropdown to change it -->
 
-                        <!-- Ticket deadline -->
+                        <!-- Ticket deadline with input field to change it-->
                         <td ng-click="ticket.updatingTicketDeadline = true">
                             <span ng-hide="ticket.updatingTicketDeadline" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
                                 {{ ticket.timeToEnd }} min.
                             </span>
-                            <span ng-show="ticket.updatingTicketDeadline">
+                            <form role="form" ng-show="ticket.updatingTicketDeadline">
                                 <label class="sr-only" for="updateTicketDeadline">Deadline (in minutes)</label>
-                                <span  class="input-group input-group-sm">
+                                <div  class="input-group input-group-sm">
+                                    <div class="input-group-addon">
+                                        <span id="updateTicketDeadlineIcon"
+                                              title="Deadline (in minutes)"
+                                              class="glyphicon glyphicon-time"
+                                              aria-hidden="true">
+                                        </span>
+                                    </div>
                                     <input id="updateTicketDeadline"
                                            type="text"
                                            class="form-control"
                                            placeholder="Minutes"
+                                           aria-describedby="updateTicketDeadlineIcon"
                                            ng-model="ticket.tmpDeadline">
-                                    <span class="input-group-btn">
+                                    <div class="input-group-btn">
                                         <button type="button"
+                                                title="Save"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
                                                           ticket.change({'deadline': ticket.tmpDeadline});
@@ -285,6 +345,7 @@
                                             <span class="sr-only">Save</span>
                                         </button>
                                         <button type="button"
+                                                title="Cancel"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
                                                           ticket.tmpDeadline = ticket.deadline;
@@ -292,15 +353,16 @@
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             <span class="sr-only">Cancel</span>
                                         </button>
-                                    </span>
-                                </span>
-                            </span>
-                        </td>
+                                    </div>
+                                </div>
+                            </form>
+                        </td><!-- / Ticket deadline with input field to change it-->
 
                         <!-- Info and close buttons -->
                         <td>
                             <span class="pull-right">
                                 <button type="button"
+                                        title="Close ticket"
                                         class="btn btn-xs btn-success"
                                         ng-hide="ticket.status === 'closed'"
                                         ng-click="ticket.change({'status': 'closed'})">
@@ -314,11 +376,11 @@
                                     <span class="sr-only">Get more info</span>
                                 </button>
                             </span>
-                        </td>
+                        </td><!-- / Info and close buttons -->
 
                     </tr>
 
-                </tbody>
+                </tbody><!-- / Table body -->
 
             </table><!-- / Main table -->
 
