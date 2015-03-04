@@ -103,23 +103,30 @@
 
             <!-- Search bar for filtering the table -->
             <div class="pull-right" style="padding-bottom:1em;">
-                <label for="search" class="sr-only">Search</label>
-                <div class="input-group">
-                    <span id="searchIcon"
-                          class="input-group-addon glyphicon glyphicon-search"
-                          aria-hidden="true"></span>
-                    <input id="search"
-                           type="text"
-                           class="form-control"
-                           placeholder="Search"
-                           aria-describedby="searchIcon"
-                           ng-model="ticketCtrl.search">
-                    <span type="button"
-                          class="input-group-addon btn"
-                          ng-click="ticketCtrl.search = ''">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                        <span class="sr-only">Reset search field</span>
-                    </span>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="search" class="sr-only">Search</label>
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <span id="searchIcon" class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                <span class="sr-only">Search</span>
+                            </div>
+                            <input id="search"
+                                   type="text"
+                                   class="form-control"
+                                   placeholder="Search"
+                                   aria-describedby="searchIcon"
+                                   ng-model="ticketCtrl.search">
+                            <div class="input-group-btn">
+                                <span type="button"
+                                      class="btn btn-default"
+                                      ng-click="ticketCtrl.search = ''">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    <span class="sr-only">Reset search field</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

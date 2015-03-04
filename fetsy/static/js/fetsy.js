@@ -26,7 +26,7 @@ app.run([ '$http', '$cookies', function ( $http, $cookies ) {
 
 
 // Setup TicketListCtrl, the main controller for this project.
-app.controller( 'TicketListCtrl', function ( $http, $modal ) {
+app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal ) {
     var ticketCtrl = this;
 
     // Service that fetches all users data from the REST API.
@@ -107,8 +107,46 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
         });
     };
 
-    // Service that fetches all ticket data from the REST API.
+    // Services that fetches all ticket data from the REST API.
     // First it fetches Options from the REST API and save them into ticketCtrl.options.
+    // Uses a timeout to check whether the user is idle and fetches data from server again.
+
+    // Timeout and watching.
+    ticketCtrl.startWatch = function () {
+        var timer = $timeout(function () {}, 5000);
+        timer.then(
+            function () {
+                ticketCtrl.fetch();
+            },
+            function () {
+                ticketCtrl.startWatch();
+            }
+        );
+        var events = 'mousemove keydown DOMMouseScroll mousewheel mousedown touchstart touchmove scroll';
+        $document.find('body').on(events, function() {
+            $document.find('body').off(events);
+            $timeout.cancel(timer);
+        });
+    };
+
+    // Fetching all ticket data.
+    ticketCtrl.fetch = function () {
+        $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
+            .success(function ( data, status, headers, config ) {
+                // Construct tickets and push them to scope.
+                ticketCtrl.tickets = [];
+                for (var index in data) {
+                    var ticket = new Ticket(data[index]);
+                    ticketCtrl.tickets.push(ticket);
+                }
+                ticketCtrl.startWatch();
+            })
+            .error(function ( data, status, headers, config ) {
+                alert('There was an error. Please reload the page.');
+            });
+    };
+
+    // Single options fetch.
     $http({ 'method': 'OPTIONS', 'url': [ baseRestUrl, 'tickets', '' ].join('/') })
         .success(function ( data, status, headers, config ) {
             // Save option data.
@@ -119,18 +157,7 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
                 ticketCtrl.allTags.push({ 'name': value.value.match(/'name': '([\w]*)'/)[1] });
             });
             // Now fetch all other data.
-            $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
-                .success(function ( data, status, headers, config ) {
-                    // Construct tickets and push them to scope.
-                    ticketCtrl.tickets = [];
-                    for (var index in data) {
-                        var ticket = new Ticket(data[index]);
-                        ticketCtrl.tickets.push(ticket);
-                    }
-                })
-                .error(function ( data, status, headers, config ) {
-                    alert('There was an error. Please reload the page.');
-                });
+            ticketCtrl.fetch();
         })
         .error(function ( data, status, headers, config ) {
             alert('There was an error. Please reload the page.');
