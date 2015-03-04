@@ -170,7 +170,7 @@
                         </td>
 
                         <!-- Ticket content, truncated, with tags and form to update the content -->
-                        <td>
+                        <td ng-click="ticket.updatingTicketContentAndTags = true">
 
                             <!-- Ticket content and tags -->
                             <span ng-hide="ticket.updatingTicketContentAndTags">
@@ -181,19 +181,12 @@
                                       style="margin-right:0.3em;">
                                       {{ tag.name }}
                                 </span>
-                                <span class="pull-right">
-                                    <button type="button"
-                                            class="btn btn-xs btn-default"
-                                            ng-click="ticket.updatingTicketContentAndTags = true">
-                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                                        <span class="sr-only">Edit content</span>
-                                    </button>
-                                </span>
                             </span>
 
                             <!-- Ticket content update form-->
                             <form ng-show="ticket.updatingTicketContentAndTags"
-                                  ng-submit="ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags});
+                                  ng-submit="$event.stopPropagation();
+                                             ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags});
                                              ticket.updatingTicketContentAndTags = false">
                                 <div class="form-group">
                                     <label for="updateTicketTags" class="sr-only">Tags</label>
@@ -219,7 +212,8 @@
                                 </button>
                                 <button type="button"
                                         class="btn btn-default"
-                                        ng-click="ticket.tmpTags = ticket.tags;
+                                        ng-click="$event.stopPropagation();
+                                                  ticket.tmpTags = ticket.tags;
                                                   ticket.tmpContent = ticket.content;
                                                   ticket.updatingTicketContentAndTags = false">
                                     Cancel
