@@ -99,8 +99,9 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'content',
-            'status',
             'tags',
+            'status',
+            'priority',
             'assignee',
             'created',
-            'reminder', )
+            'deadline', )

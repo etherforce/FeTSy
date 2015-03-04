@@ -139,7 +139,10 @@
                 <thead>
                     <tr>
                         <th ng-repeat="header in ticketCtrl.headers" ng-click="ticketCtrl.toggleSort($index)">
-                            <a>{{ header.verboseName }}</a>
+                            <a>
+                                <span class="glyphicon {{ header.cssIconClass }}" title="{{ header.verboseName }}" aria-hidden="true">
+                                </span>
+                            </a>
                             <span class="dropup pull-right"
                                   ng-show="ticketCtrl.sortColumn === header.key && !ticketCtrl.reverse">
                                 <span class="caret"></span>
@@ -232,6 +235,16 @@
                             </ul>
                         </td>
 
+                        <!-- Ticket priority with dropdown to change it -->
+                        <td class="dropdown" dropdown dropdown-toggle>
+                            {{ ticket.priority }}
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="choice in ticketCtrl.options.actions.POST.priority.choices">
+                                    <a ng-click="ticket.change({'priority': choice.value})">{{ choice.value }}</a>
+                                </li>
+                            </ul>
+                        </td>
+
                         <!-- Ticket assignee with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.assignee.name }}
@@ -242,33 +255,33 @@
                             </ul>
                         </td>
 
-                        <!-- Ticket reminder -->
-                        <td ng-click="ticket.updatingTicketReminder = true">
-                            <span ng-hide="ticket.updatingTicketReminder" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
+                        <!-- Ticket deadline -->
+                        <td ng-click="ticket.updatingTicketDeadline = true">
+                            <span ng-hide="ticket.updatingTicketDeadline" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
                                 {{ ticket.timeToEnd }} min.
                             </span>
-                            <span ng-show="ticket.updatingTicketReminder">
-                                <label class="sr-only" for="updateTicketReminder">Remind me in ... minutes</label>
+                            <span ng-show="ticket.updatingTicketDeadline">
+                                <label class="sr-only" for="updateTicketDeadline">Deadline (in minutes)</label>
                                 <span  class="input-group input-group-sm">
-                                    <input id="updateTicketReminder"
+                                    <input id="updateTicketDeadline"
                                            type="text"
                                            class="form-control"
                                            placeholder="Minutes"
-                                           ng-model="ticket.tmpReminder">
+                                           ng-model="ticket.tmpDeadline">
                                     <span class="input-group-btn">
                                         <button type="button"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
-                                                          ticket.change({'reminder': ticket.tmpReminder});
-                                                          ticket.updatingTicketReminder = false">
+                                                          ticket.change({'deadline': ticket.tmpDeadline});
+                                                          ticket.updatingTicketDeadline = false">
                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                             <span class="sr-only">Save</span>
                                         </button>
                                         <button type="button"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
-                                                          ticket.tmpReminder = ticket.reminder;
-                                                          ticket.updatingTicketReminder = false;">
+                                                          ticket.tmpDeadline = ticket.deadline;
+                                                          ticket.updatingTicketDeadline = false;">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             <span class="sr-only">Cancel</span>
                                         </button>

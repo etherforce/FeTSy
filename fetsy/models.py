@@ -56,15 +56,26 @@ class Ticket(models.Model):
     """
     Model for tickets.
     """
+    PRIORITY_CHOICES = (
+        (1, ugettext_lazy('Very low')),
+        (2, ugettext_lazy('Low')),
+        (3, ugettext_lazy('Medium')),
+        (4, ugettext_lazy('High')),
+        (5, ugettext_lazy('Very high')), )
+
     content = models.TextField(ugettext_lazy('Content'))
-    status = models.ForeignKey(
-        Status,
-        verbose_name=ugettext_lazy('Status'))
     tags = models.ManyToManyField(
         Tag,
         verbose_name=ugettext_lazy('Tags'),
         null=True,
         blank=True)
+    status = models.ForeignKey(
+        Status,
+        verbose_name=ugettext_lazy('Status'))
+    priority = models.PositiveIntegerField(
+        ugettext_lazy('Priority'),
+        choices=PRIORITY_CHOICES,
+        default=3)
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name=ugettext_lazy('Assignee'),
@@ -73,8 +84,8 @@ class Ticket(models.Model):
     created = models.DateTimeField(
         ugettext_lazy('Created'),
         auto_now_add=True)
-    reminder = models.PositiveIntegerField(
-        ugettext_lazy('Remind me in ... minutes'),
+    deadline = models.PositiveIntegerField(
+        ugettext_lazy('Deadline (in minutes)'),
         default=120)
 
     def __str__(self):

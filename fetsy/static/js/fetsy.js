@@ -51,21 +51,21 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
     Ticket.prototype.updateProperties = function () {
         var ticket = this;
 
-        // Caluclate reminder time delta.
+        // Caluclate deadline time delta.
         var created = new Date(ticket.created);
-        var timeToEnd = (created.getTime() + ticket.reminder * 60 * 1000 - Date.now()) / 1000 / 60;
+        var timeToEnd = (created.getTime() + ticket.deadline * 60 * 1000 - Date.now()) / 1000 / 60;
         ticket.timeToEnd = Math.trunc(timeToEnd);
 
-        // Add tmpContent and tmpTags properties. These are only used for the
-        // change form and updated via AngularJS's magic.
+        // Add tmpContent, tmpTags and tmpDeadline properties. These are only
+        // used for the change form and updated via AngularJS's magic.
         ticket.tmpContent = ticket.content;
         ticket.tmpTags = ticket.tags;
-        ticket.tmpReminder = ticket.reminder;
+        ticket.tmpDeadline = ticket.deadline;
     };
 
     // Limit of length of content in the table. If the content is longer, some
     // dots are added.
-    ticketCtrl.limit = 50;
+    ticketCtrl.limit = 30;
 
     // Add isLong function to determine whether to print dots in content cell.
     Ticket.prototype.isLong = function () {
@@ -138,11 +138,12 @@ app.controller( 'TicketListCtrl', function ( $http, $modal ) {
 
     // Setup table headers.
     ticketCtrl.headers = [
-        { 'key': 'id', 'verboseName': '#' },
-        { 'key': 'content', 'verboseName': 'Content' },
-        { 'key': 'status', 'verboseName': 'Status' },
-        { 'key': 'assignee', 'verboseName': 'Assignee' },
-        { 'key': 'timeToEnd', 'verboseName': 'Reminder' }
+        { 'key': 'id', 'verboseName': 'Id', 'cssIconClass': 'glyphicon-tag' },
+        { 'key': 'content', 'verboseName': 'Content', 'cssIconClass': 'glyphicon-cog' },
+        { 'key': 'status', 'verboseName': 'Status', 'cssIconClass': 'glyphicon-record' },
+        { 'key': 'priority', 'verboseName': 'Priority', 'cssIconClass': 'glyphicon-fire' },
+        { 'key': 'assignee.name', 'verboseName': 'Assignee', 'cssIconClass': 'glyphicon-user' },
+        { 'key': 'timeToEnd', 'verboseName': 'Deadline', 'cssIconClass': 'glyphicon-time' }
     ];
 
     // Setup table filtering using the checkboxes and the search filter.
