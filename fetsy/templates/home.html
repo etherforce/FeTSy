@@ -72,105 +72,110 @@
     <!-- Main container -->
     <div class="container">
 
-        <div style="padding: 40px 15px;" ng-controller="TicketListCtrl as ticketCtrl">
+        <div style="padding: 2.9em 1.1em;" ng-controller="TicketListCtrl as ticketCtrl">
 
-            <!-- newTicketForm button and modal -->
-            <div class="pull-left">
-                <button type="button" class="btn btn-primary" ng-click="ticketCtrl.newTicketForm()">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    New Ticket
-                </button>
-                <script type="text/ng-template" id="newTicketForm.html">
-                    <div class="modal-header">
-                        <h3 class="modal-title">
-                            New ticket
-                        </h3>
+            <!-- Top functionality row -->
+            <div class="row" style="padding-bottom:0.5em;">
+
+                <!-- newTicketForm button and modal -->
+                <div class="col-sm-3">
+                    <button type="button" class="btn btn-primary" ng-click="ticketCtrl.newTicketForm()">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        New Ticket
+                    </button>
+                    <script type="text/ng-template" id="newTicketForm.html">
+                        <div class="modal-header">
+                            <h3 class="modal-title">
+                                New ticket
+                            </h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="newTicketDeadline" class="sr-only">
+                                    Deadline (in minutes). Default: 120 minutes.
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <span id="newTicketDeadlineIcon"
+                                              title="Deadline (in minutes)"
+                                              class="glyphicon glyphicon-time"
+                                              aria-hidden="true">
+                                        </span>
+                                    </div>
+                                    <input id="newTicketDeadline"
+                                           type="number"
+                                           class="form-control"
+                                           aria-describedby="newTicketDeadlineIcon"
+                                           ng-model="newTicketFormModalCtrl.deadline">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="newTicketContent" class="sr-only">
+                                    Content
+                                </label>
+                                <textarea id="newTicketContent"
+                                          placeholder="Content"
+                                          class="form-control"
+                                          rows="3"
+                                          required
+                                          ng-model="newTicketFormModalCtrl.content">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">
+                                Cancel
+                            </button>
+                        </div>
+                    </script>
+                </div><!-- / .col-sm-3 newTicketForm button and modal -->
+
+                <!-- Show closed tickets checkbox -->
+                <div class="col-sm-3 col-sm-offset-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="ticketCtrl.showClosed">
+                            Show closed tickets
+                        </label>
                     </div>
-                    <div class="modal-body">
+                </div><!-- / .col-sm-3 .col-sm-offset-3 Show closed tickets checkbox -->
+
+                <!-- Search bar for filtering the table -->
+                <div class="col-sm-3">
+                    <form role="form" class="form-inline">
                         <div class="form-group">
-                            <label for="newTicketDeadline" class="sr-only">
-                                Deadline (in minutes). Default: 120 minutes.
+                            <label for="search" class="sr-only">
+                                Search
                             </label>
                             <div class="input-group">
                                 <div class="input-group-addon">
-                                    <span id="newTicketDeadlineIcon"
-                                          title="Deadline (in minutes)"
-                                          class="glyphicon glyphicon-time"
-                                          aria-hidden="true">
+                                    <span id="searchIcon" class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                    <span class="sr-only">Search</span>
+                                </div>
+                                <input id="search"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Search"
+                                       aria-describedby="searchIcon"
+                                       ng-model="ticketCtrl.search">
+                                <div class="input-group-btn">
+                                    <span type="button"
+                                          title="Reset search field"
+                                          class="btn btn-default"
+                                          ng-click="ticketCtrl.search = ''">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                        <span class="sr-only">Reset search field</span>
                                     </span>
                                 </div>
-                                <input id="newTicketDeadline"
-                                       type="number"
-                                       class="form-control"
-                                       aria-describedby="newTicketDeadlineIcon"
-                                       ng-model="newTicketFormModalCtrl.deadline">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="newTicketContent" class="sr-only">
-                                Content
-                            </label>
-                            <textarea id="newTicketContent"
-                                      placeholder="Content"
-                                      class="form-control"
-                                      rows="3"
-                                      required
-                                      ng-model="newTicketFormModalCtrl.content">
-                            </textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">
-                            Save
-                        </button>
-                        <button type="button" class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">
-                            Cancel
-                        </button>
-                    </div>
-                </script>
-            </div><!-- / newTicketForm button and modal -->
+                    </form>
+                </div><!-- / .col-sm-3 Search bar for filtering the table -->
 
-            <!-- Search bar for filtering the table -->
-            <div class="pull-right" style="padding-bottom:1em;">
-                <form role="form" class="form-inline">
-                    <div class="form-group">
-                        <label for="search" class="sr-only">
-                            Search
-                        </label>
-                        <div class="input-group">
-                            <div class="input-group-addon">
-                                <span id="searchIcon" class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                                <span class="sr-only">Search</span>
-                            </div>
-                            <input id="search"
-                                   type="text"
-                                   class="form-control"
-                                   placeholder="Search"
-                                   aria-describedby="searchIcon"
-                                   ng-model="ticketCtrl.search">
-                            <div class="input-group-btn">
-                                <span type="button"
-                                      title="Reset search field"
-                                      class="btn btn-default"
-                                      ng-click="ticketCtrl.search = ''">
-                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                                    <span class="sr-only">Reset search field</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div><!-- / Search bar for filtering the table -->
-
-            <!-- Show closed tickets checkbox -->
-            <div class="pull-right" style="padding-right:1em;" >
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="ticketCtrl.showClosed">
-                        Show closed tickets
-                    </label>
-                </div>
-            </div><!-- / Show closed tickets checkbox -->
+            </div><!-- / .row Top functionality row -->
 
             <!-- Main table -->
             <table class="table table-striped table-bordered">
