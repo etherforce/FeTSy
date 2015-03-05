@@ -3,7 +3,9 @@ var concat = require('gulp-concat'),
     gulpFilter = require('gulp-filter'),
     jshint = require('gulp-jshint'),
     mainBowerFiles = require('main-bower-files'),
-    path = require('path');
+    minifyCSS = require('gulp-minify-css'),
+    path = require('path'),
+    uglify = require('gulp-uglify');
 
 
 // Directory where the results go
@@ -26,6 +28,7 @@ var specialJSFilter = function ( exclude ) {
 gulp.task( 'js', function () {
     return gulp.src(mainBowerFiles({ filter: specialJSFilter(true) }))
         .pipe(concat('fetsy-libs.js'))
+        .pipe(uglify())
         .pipe(gulp.dest(path.join( output_directory, 'js' )));
 });
 
@@ -44,6 +47,7 @@ gulp.task( 'css', function () {
             filter: /\.css$/
         }))
         .pipe(concat('fetsy-libs.css'))
+        .pipe(minifyCSS())
         .pipe(gulp.dest(path.join( output_directory, 'css' )));
 });
 

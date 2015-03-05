@@ -88,7 +88,7 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $q, $mo
         $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
             .success(function ( data, status, headers, config ) {
                 angular.extend(ticket, data);
-                ticket.updateProperties()
+                ticket.updateProperties();
             })
             .error(function ( data, status, headers, config ) {
                 alert('There was an error. Please reload the page.');
