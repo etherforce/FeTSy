@@ -26,8 +26,16 @@ app.run([ '$http', '$cookies', function ( $http, $cookies ) {
 
 
 // Setup TicketListCtrl, the main controller for this project.
-app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal ) {
+app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $q, $modal ) {
     var ticketCtrl = this;
+
+    // Setup ticket manage permission for the current user. Get the permission
+    // info from the rendered template.
+    ticketCtrl.userAddPerm = userPerms['fetsy.add_ticket'];
+    ticketCtrl.userChangePerm = userPerms['fetsy.change_ticket'];
+
+    // Setup empty tag array. It is filld later during an OPTIONS request.
+    ticketCtrl.allTags = [];
 
     // Service that fetches all users data from the REST API.
     $http.get([ baseRestUrl, 'users', '' ].join('/'))
@@ -146,22 +154,36 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal 
             });
     };
 
-    // Single options fetch.
-    $http({ 'method': 'OPTIONS', 'url': [ baseRestUrl, 'tickets', '' ].join('/') })
-        .success(function ( data, status, headers, config ) {
-            // Save option data.
-            ticketCtrl.options = data;
-            // Save special rendered tag options to ticketCtrl.allTags.
-            ticketCtrl.allTags = [];
-            angular.forEach(ticketCtrl.options.actions.POST.tags.choices, function ( value ) {
-                ticketCtrl.allTags.push({ 'name': value.value.match(/'name': '([\w]*)'/)[1] });
+    // Fetching options for list URL.
+    ticketCtrl.optionsFetch = function ( isRetrieveOptionsFetch ) {
+        var methodKey = isRetrieveOptionsFetch ? 'PUT' : 'POST';
+        var url = [ baseRestUrl, 'tickets', '' ].join('/');
+        if ( isRetrieveOptionsFetch ) {
+            url +=  '1/';
+        }
+        return $http({ 'method': 'OPTIONS', 'url': url })
+            .success(function ( data, status, headers, config ) {
+                // Save option data. Copy data for te key POST or PUT to the key METHOD.
+                ticketCtrl.options = data;
+                ticketCtrl.options.actions.METHOD = ticketCtrl.options.actions[methodKey];
+                // Save special rendered tag options to ticketCtrl.allTags.
+                angular.forEach(ticketCtrl.options.actions.METHOD.tags.choices, function ( value ) {
+                    ticketCtrl.allTags.push({ 'name': value.value.match(/'name': '([\w]*)'/)[1] });
+                });
+            })
+            .error(function ( data, status, headers, config ) {
+                alert('There was an error. Please reload the page.');
             });
-            // Now fetch all other data.
-            ticketCtrl.fetch();
-        })
-        .error(function ( data, status, headers, config ) {
-            alert('There was an error. Please reload the page.');
-        });
+    };
+
+    // Now go: Make single options fetch and then ticket fetch and start timeout.
+    var promisses = [];
+    if ( ticketCtrl.userAddPerm ) {
+        promisses.push(ticketCtrl.optionsFetch(false));
+    } else if ( ticketCtrl.userChangePerm ) {
+        promisses.push(ticketCtrl.optionsFetch(true));
+    }
+    $q.all(promisses).then(ticketCtrl.fetch);
 
     // Setup table headers.
     ticketCtrl.headers = [
@@ -197,7 +219,7 @@ app.controller( 'TicketListCtrl', function ( $http, $timeout, $document, $modal 
             controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl'
         });
         modalInstance.result.then(function ( dataToSend ) {
-            dataToSend.status = ticketCtrl.options.actions.POST.status.choices[0].value;
+            dataToSend.status = ticketCtrl.options.actions.METHOD.status.choices[0].value;
             dataToSend.tags = [];
             $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), dataToSend )
                 .success(function ( data, status, headers, config ) {

@@ -31,6 +31,10 @@
     <!-- Custom JS -->
     <script>
         var baseRestUrl = "{% url 'api-root' %}".replace(/\/$/,'');
+        var userPerms = {
+            'fetsy.add_ticket': {% if perms.fetsy.add_ticket %}true{% else %}false{% endif %},
+            'fetsy.change_ticket': {% if perms.fetsy.change_ticket %}true{% else %}false{% endif %},
+        }
     </script>
     <script src="{% static 'js/fetsy.js' %}"></script>
 
@@ -81,7 +85,10 @@
 
                 <!-- newTicketForm button and modal -->
                 <div class="col-sm-3">
-                    <button type="button" class="btn btn-primary" ng-click="ticketCtrl.newTicketForm()">
+                    <button type="button"
+                            class="btn btn-primary"
+                            ng-show="ticketCtrl.userAddPerm"
+                            ng-click="ticketCtrl.newTicketForm()">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                         New Ticket
                     </button>
@@ -231,7 +238,7 @@
                         </td><!-- / Ticket ID -->
 
                         <!-- Ticket content, truncated, with tags and form to update the content -->
-                        <td ng-click="ticket.updatingTicketContentAndTags = true">
+                        <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketContentAndTags = true : null">
 
                             <!-- Ticket content and tags -->
                             <span ng-hide="ticket.updatingTicketContentAndTags">
@@ -287,8 +294,8 @@
                         <!-- Ticket status with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.status }}
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="choice in ticketCtrl.options.actions.POST.status.choices">
+                            <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
+                                <li ng-repeat="choice in ticketCtrl.options.actions.METHOD.status.choices">
                                     <a role="button" ng-click="ticket.change({'status': choice.value})">
                                         {{ choice.value }}
                                     </a>
@@ -299,8 +306,8 @@
                         <!-- Ticket priority with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.priority }}
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="choice in ticketCtrl.options.actions.POST.priority.choices">
+                            <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
+                                <li ng-repeat="choice in ticketCtrl.options.actions.METHOD.priority.choices">
                                     <a role="button" ng-click="ticket.change({'priority': choice.value})">
                                         {{ choice.value }}
                                     </a>
@@ -311,7 +318,7 @@
                         <!-- Ticket assignee with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.assignee.name }}
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
                                 <li ng-repeat="user in ticketCtrl.allUsers">
                                     <a role="button" ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">
                                         {{ user.name }}
@@ -321,7 +328,7 @@
                         </td><!-- / Ticket assignee with dropdown to change it -->
 
                         <!-- Ticket deadline with input field to change it-->
-                        <td ng-click="ticket.updatingTicketDeadline = true">
+                        <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketDeadline = true : null">
                             <span ng-hide="ticket.updatingTicketDeadline" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
                                 {{ ticket.timeToEnd }} min.
                             </span>
@@ -371,7 +378,7 @@
                                 <button type="button"
                                         title="Close ticket"
                                         class="btn btn-xs btn-success"
-                                        ng-hide="ticket.status === 'closed'"
+                                        ng-show="ticket.status !== 'closed' && ticketCtrl.userChangePerm"
                                         ng-click="ticket.change({'status': 'closed'})">
                                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                     <span class="sr-only">Close ticket</span>
