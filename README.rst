@@ -8,7 +8,6 @@ Run::
     $ source .virtualenv/bin/activate
     $ pip install --requirement requirements.txt
     $ npm install
-    $ node_modules/.bin/bower install
     $ python manage.py migrate
     $ python manage.py createsuperuser
     $ sed -i 's/DEBUG = False/DEBUG = True/' fetsy_deployment/settings.py

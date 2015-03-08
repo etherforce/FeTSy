@@ -218,12 +218,12 @@
 
                     <tr ng-repeat="ticket in ticketCtrl.tickets |
                                    filter : ticketCtrl.search |
-                                   filter : ticketCtrl.filtering |
+                                   filter : ticketCtrl.closedFilter |
                                    orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
 
                         <!-- Ticket ID -->
                         <td>
-                            <span ng-show="ticket.status === 'closed'">
+                            <span ng-show="ticket.status === 'Closed'">
                                 <span title="Ticket is closed"
                                       class="glyphicon glyphicon-ok"
                                       aria-hidden="true">
@@ -378,8 +378,8 @@
                                 <button type="button"
                                         title="Close ticket"
                                         class="btn btn-xs btn-success"
-                                        ng-show="ticket.status !== 'closed' && ticketCtrl.userChangePerm"
-                                        ng-click="ticket.change({'status': 'closed'})">
+                                        ng-show="ticket.status !== 'Closed' && ticketCtrl.userChangePerm"
+                                        ng-click="ticket.change({'status': 'Closed'})">
                                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                     <span class="sr-only">Close ticket</span>
                                 </button>
