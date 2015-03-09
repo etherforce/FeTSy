@@ -11,11 +11,11 @@ angular.module( 'FeTSyTicketTableHead', [] )
         // Define table headers.
         ticketCtrl.headers = [
             { 'key': 'id' },
-            { 'key': 'content', 'verboseName': 'Content', 'cssIconClass': 'glyphicon-cog' },
-            { 'key': 'status', 'verboseName': 'Status', 'cssIconClass': 'glyphicon-star' },
-            { 'key': 'priority', 'verboseName': 'Priority', 'cssIconClass': 'glyphicon-fire' },
-            { 'key': 'assignee.name', 'verboseName': 'Assignee', 'cssIconClass': 'glyphicon-user' },
-            { 'key': 'timeToEnd', 'verboseName': 'Remaining time', 'cssIconClass': 'glyphicon-hourglass' }
+            { 'key': 'content', 'verboseName': 'Content', 'iconCSSClass': 'glyphicon-cog' },
+            { 'key': 'status', 'verboseName': 'Status', 'iconCSSClass': 'glyphicon-star' },
+            { 'key': 'priority', 'verboseName': 'Priority', 'iconCSSClass': 'glyphicon-fire' },
+            { 'key': 'assignee.name', 'verboseName': 'Assignee', 'iconCSSClass': 'glyphicon-user' },
+            { 'key': 'timeToEnd', 'verboseName': 'Remaining time', 'iconCSSClass': 'glyphicon-hourglass' }
         ];
 
         // Setup table filtering using the checkboxes and the search filter.

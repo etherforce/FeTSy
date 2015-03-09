@@ -196,19 +196,17 @@
                             <a role="button" ng-show="$first">#</a>
                             <a role="button" ng-hide="$first">
                                 <span title="{{ header.verboseName }}"
-                                      class="glyphicon {{ header.cssIconClass }}"
+                                      class="glyphicon {{ header.iconCSSClass }}"
                                       aria-hidden="true">
                                 </span>
                             </a>
-                            <span class="dropup pull-right"
-                                  ng-show="ticketCtrl.sortColumn === header.key && !ticketCtrl.reverse">
-                                <span class="caret"></span>
-                            </span>
                             <span class="pull-right"
-                                  ng-show="ticketCtrl.sortColumn === header.key && ticketCtrl.reverse">
+                                  ng-class="ticketCtrl.reverse ? null : 'dropup'"
+                                  ng-show="ticketCtrl.sortColumn === header.key">
                                 <span class="caret"></span>
                             </span>
                         </th>
+                        <!-- Here is an empty header cell for the column with close and info button. -->
                         <th></th>
                     </tr>
                 </thead><!-- / Table head with clickable sorting -->
