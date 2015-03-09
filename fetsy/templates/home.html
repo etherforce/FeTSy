@@ -383,7 +383,9 @@
                                 </button>
                                 <button type="button"
                                         class="btn btn-xs btn-info"
-                                        ng-click="ticket.popOver($event)" >
+                                        popover-title="{{ ticket.title }}"
+                                        popover="{{ ticket.content }}"
+                                        popover-placement="left">
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
                                     <span class="sr-only">Get more info</span>
                                 </button>

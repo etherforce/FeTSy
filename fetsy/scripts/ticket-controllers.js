@@ -37,9 +37,12 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         // Helper function to update some calculated properties.
         Ticket.prototype.updateProperties = function () {
             var ticket = this;
+            var created = new Date(ticket.created);
+
+            // Set title for info popover.
+            ticket.title = 'Ticket #' + ticket.id + ' | ' + created.toLocaleString();
 
             // Caluclate deadline time delta.
-            var created = new Date(ticket.created);
             var timeToEnd = (created.getTime() + ticket.deadline * 60 * 1000 - Date.now()) / 1000 / 60;
             ticket.timeToEnd = Math.trunc(timeToEnd);
 
@@ -72,26 +75,6 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
                 });
-        };
-
-        // Add popover button function for info on tickets.
-        //
-        // TODO use angular ui bootstrap.
-        //
-        Ticket.prototype.popOver = function ( $event ) {
-            var ticket = this;
-            var button = $($event.target);
-            var created = new Date(ticket.created);
-            button.popover('destroy');
-            button.popover({
-                'title': 'Ticket #' + ticket.id + ' | ' + created.toLocaleString(),
-                'content': ticket.content,
-                'placement': 'left'
-            }).popover('show');
-            button.next().click(function ( event ) {
-                button.popover('destroy');
-                event.preventDefault();
-            });
         };
 
         // TODO: Move this to an extra service.
