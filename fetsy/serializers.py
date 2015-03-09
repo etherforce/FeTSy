@@ -81,6 +81,21 @@ class UserRelatedField(serializers.RelatedField):
                 'Invalid data. User with id %d does not exist.' % data['id'])
         return user
 
+    # TODO: Think whether to change server output so that OPTIONS contains
+    #       valid JSON in choices field or keep the fix in client's
+    #       JavaScript.
+    #       See: rest_framework.relations.RelatedField.choices
+    #
+    # @property
+    # def choices(self):
+    #    return OrderedDict([
+    #        (
+    #            json.dumps(self.to_representation(item)),
+    #            str(item)
+    #        )
+    #        for item in self.queryset.all()
+    #    ])
+
 
 class TicketSerializer(serializers.ModelSerializer):
     """

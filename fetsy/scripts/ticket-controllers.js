@@ -20,8 +20,10 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         ticketCtrl.userAddPerm = userPerms['fetsy.add_ticket'];
         ticketCtrl.userChangePerm = userPerms['fetsy.change_ticket'];
 
-        // Setup empty tag array. It is filled later during an OPTIONS request.
+        // Setup empty tag and user array. They are filled later during an
+        // OPTIONS request.
         ticketCtrl.allTags = [];
+        ticketCtrl.allUsers = [];
 
         // Run setupTableSearchAndSort factory.
         setupTableSearchAndSort(ticketCtrl);
@@ -124,6 +126,8 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             var methodKey = isRetrieveOptionsFetch ? 'PUT' : 'POST';
             var url = [ baseRestUrl, 'tickets', '' ].join('/');
             if ( isRetrieveOptionsFetch ) {
+                // TODO: Do not assume ticket #1 existing but take only one
+                //       possbible ticket.
                 url +=  '1/';
             }
             return $http({ 'method': 'OPTIONS', 'url': url })
@@ -131,9 +135,14 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                     // Save option data. Copy data for te key POST or PUT to the key METHOD.
                     ticketCtrl.options = data;
                     ticketCtrl.options.actions.METHOD = ticketCtrl.options.actions[methodKey];
-                    // Save special rendered tag options to ticketCtrl.allTags.
+
+                    // Save special rendered tag and usersoptions to ticketCtrl.allTags and ticketCtrl.allUsers.
+                    // TODO: Do not use eval but think about fixings this pseudo JSON.
                     angular.forEach(ticketCtrl.options.actions.METHOD.tags.choices, function ( value ) {
-                        ticketCtrl.allTags.push({ 'name': value.value.match(/'name': '([\w]*)'/)[1] });
+                        ticketCtrl.allTags.push(eval('(' + value.value + ')'));
+                    });
+                    angular.forEach(ticketCtrl.options.actions.METHOD.assignee.choices, function ( value ) {
+                        ticketCtrl.allUsers.push(eval('(' + value.value + ')'));
                     });
                 })
                 .error(function ( data, status, headers, config ) {
@@ -170,18 +179,6 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             });
         };
 
-        // Fetch all users data from the REST API.
-        //
-        // TODO: Remove this code and get users from options choices.
-        //
-        $http.get([ baseRestUrl, 'users', '' ].join('/'))
-            .success(function ( data, status, headers, config ) {
-                ticketCtrl.allUsers = data;
-            })
-
-            .error(function ( data, status, headers, config ) {
-                alert('There was an error. Please reload the page.');
-            });
     }
 ])
 
