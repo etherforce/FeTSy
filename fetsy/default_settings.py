@@ -107,3 +107,28 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions',
     )
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'custom': {
+            'format': '[%(asctime)s] %(message)s',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(os.path.dirname(__file__), 'changes.log'),
+            'formatter': 'custom',
+        },
+    },
+    'loggers': {
+        'fetsy.signals': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
