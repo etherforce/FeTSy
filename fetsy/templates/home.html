@@ -240,13 +240,13 @@
 
                             <!-- Ticket content and tags -->
                             <span ng-hide="ticket.updatingTicketContentAndTags">
-                                {{ ticket.content | limitTo : ticketCtrl.limit }}
-                                <span ng-show="ticket.isLong()">…</span>
                                 <span ng-repeat="tag in ticket.tags"
                                       class="label label-{{ tag.color_css_class }}"
                                       style="margin-right:0.3em;">
                                       {{ tag.name }}
                                 </span>
+                                {{ ticket.content | limitTo : ticketCtrl.limit }}
+                                <span ng-show="ticket.isLong()">…</span>
                             </span><!-- / Ticket content and tags -->
 
                             <!-- Ticket content update form-->
