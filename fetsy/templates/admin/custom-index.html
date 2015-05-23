@@ -1,0 +1,23 @@
+{% extends 'admin/index.html' %}
+
+{% load i18n %}
+
+{% block nav-global %}
+    <style>
+        #link-back-to-home {
+            float: left;
+        }
+        #link-back-to-home h1 {
+            padding: 0 10px;
+            font-size: 18px;
+            margin: 8px 0;
+            font-weight: normal;
+        }
+        #link-back-to-home a:hover {
+            text-decoration: none;
+        }
+    </style>
+    <div id="link-back-to-home">
+        <h1><a href="{% url 'home' %}">{% trans 'Back to FeTSy' %}</a></h1>
+    </div>
+{% endblock %}
