@@ -119,6 +119,17 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="newTicketTags" class="sr-only">
+                                    Tags
+                                </label>
+                                <multiselect id="newTicketTags"
+                                             options="newTicketFormModalCtrl.allTags"
+                                             id-prop="name"
+                                             display-prop="name"
+                                             ng-model="newTicketFormModalCtrl.tags">
+                                </multiselect>
+                            </div>
+                            <div class="form-group">
                                 <label for="newTicketContent" class="sr-only">
                                     Content
                                 </label>

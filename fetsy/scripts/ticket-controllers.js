@@ -163,11 +163,15 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         ticketCtrl.newTicketForm = function () {
             var modalInstance = $modal.open({
                 templateUrl: 'newTicketForm.html',
-                controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl'
+                controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl',
+                resolve: {
+                    allTags: function () {
+                        return ticketCtrl.allTags;
+                    }
+                }
             });
             modalInstance.result.then(function ( dataToSend ) {
                 dataToSend.status = ticketCtrl.options.actions.METHOD.status.choices[0].value;
-                dataToSend.tags = [];
                 $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), dataToSend )
                     .success(function ( data, status, headers, config ) {
                         var ticket = new Ticket(data);
@@ -185,12 +189,15 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
 // Setup controler for form for a new ticket (NewTicketFormModalCtrl).
 .controller( 'NewTicketFormModalCtrl', [
     '$modalInstance',
-    function ( $modalInstance ) {
+    'allTags',
+    function ( $modalInstance, allTags ) {
         // Default deadline is 120 minutes.
         this.deadline = 120;
+        this.tags = [];
+        this.allTags = allTags;
         this.save = function () {
             if ( this.content ) {
-                $modalInstance.close({ 'content': this.content, 'deadline': this.deadline });
+                $modalInstance.close({ 'content': this.content, 'deadline': this.deadline, 'tags': this.tags });
             } else {
                 $modalInstance.dismiss('cancel');
             }
