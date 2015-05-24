@@ -153,15 +153,25 @@
                     </script>
                 </div><!-- / .col-sm-3 newTicketForm button and modal -->
 
+                <!-- Show remaining time in minutes checkbox -->
+                <div class="col-sm-3">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="ticketCtrl.showRemainingTimeInMinutes">
+                            Show remaining time in minutes
+                        </label>
+                    </div>
+                </div><!-- / .col-sm-3 Show remaining time in minutes checkbox-->
+
                 <!-- Show closed tickets checkbox -->
-                <div class="col-sm-3 col-sm-offset-3">
+                <div class="col-sm-3">
                     <div class="checkbox">
                         <label>
                             <input type="checkbox" ng-model="ticketCtrl.showClosed">
                             Show closed tickets
                         </label>
                     </div>
-                </div><!-- / .col-sm-3 .col-sm-offset-3 Show closed tickets checkbox -->
+                </div><!-- / .col-sm-3 Show closed tickets checkbox -->
 
                 <!-- Search bar for filtering the table -->
                 <div class="col-sm-3">
@@ -206,14 +216,14 @@
                         <th ng-repeat="header in ticketCtrl.headers" ng-click="ticketCtrl.toggleSort($index)">
                             <a role="button" ng-show="$first">#</a>
                             <a role="button" ng-hide="$first">
-                                <span title="{{ header.verboseName }}"
-                                      class="glyphicon {{ header.iconCSSClass }}"
+                                <span title="{{ header.getVerboseName() }}"
+                                      class="glyphicon {{ header.getIconCSSClass() }}"
                                       aria-hidden="true">
                                 </span>
                             </a>
                             <span class="pull-right"
                                   ng-class="ticketCtrl.reverse ? null : 'dropup'"
-                                  ng-show="ticketCtrl.sortColumn === header.key">
+                                  ng-show="ticketCtrl.sortColumn === header.sortKey">
                                 <span class="caret"></span>
                             </span>
                         </th>
@@ -338,8 +348,11 @@
 
                         <!-- Ticket deadline with input field to change it-->
                         <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketDeadline = true : null">
-                            <span ng-hide="ticket.updatingTicketDeadline" ng-style="ticket.timeToEnd < 0 && {'color': 'red'};">
-                                {{ ticket.timeToEnd }} min.
+                            <span ng-hide="ticket.updatingTicketDeadline || !ticketCtrl.showRemainingTimeInMinutes" ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
+                                {{ ticket.deadlineTimeDeltaMinutes }} min.
+                            </span>
+                            <span ng-hide="ticket.updatingTicketDeadline || ticketCtrl.showRemainingTimeInMinutes" ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
+                                {{ ticket.deadlineTimeString }}
                             </span>
                             <form role="form" ng-show="ticket.updatingTicketDeadline">
                                 <label class="sr-only" for="updateTicketDeadline">Deadline (in minutes)</label>

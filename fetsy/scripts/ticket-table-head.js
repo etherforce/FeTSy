@@ -8,14 +8,49 @@ angular.module( 'FeTSyTicketTableHead', [] )
 // search bar and checkbox.
 .factory( 'setupTableSearchAndSort' , function () {
     return function ( ticketCtrl ) {
-        // Define table headers.
+        // Setup show remaining time in minutes checkbox default value.
+        ticketCtrl.showRemainingTimeInMinutes = true;
+
+        // Use a constructor for table headers.
+        var Header = function ( sortKey, verboseName, iconCSSClass ) {
+            this.sortKey = sortKey;
+            this.verboseName = verboseName;
+            this.iconCSSClass = iconCSSClass;
+        };
+        Header.prototype.getVerboseName = function () {
+            var header = this;
+            return header.verboseName;
+        };
+        Header.prototype.getIconCSSClass = function () {
+            var header = this;
+            return header.iconCSSClass;
+        };
+
+        // Special header object for timeToEnd column.
+        var timeToEndHeader = new Header('timeToEnd');
+        timeToEndHeader.getVerboseName = function () {
+            if ( ticketCtrl.showRemainingTimeInMinutes ) {
+                return 'Remaining time';
+            } else {
+                return 'Deadline';
+            }
+        };
+        timeToEndHeader.getIconCSSClass = function () {
+            if ( ticketCtrl.showRemainingTimeInMinutes ) {
+                return 'glyphicon-hourglass';
+            } else {
+                return 'glyphicon-time';
+            }
+        };
+
+        // Define all other table headers and put them together.
         ticketCtrl.headers = [
-            { 'key': 'id' },
-            { 'key': 'content', 'verboseName': 'Content', 'iconCSSClass': 'glyphicon-cog' },
-            { 'key': 'status', 'verboseName': 'Status', 'iconCSSClass': 'glyphicon-star' },
-            { 'key': 'priority', 'verboseName': 'Priority', 'iconCSSClass': 'glyphicon-fire' },
-            { 'key': 'assignee.name', 'verboseName': 'Assignee', 'iconCSSClass': 'glyphicon-user' },
-            { 'key': 'timeToEnd', 'verboseName': 'Remaining time', 'iconCSSClass': 'glyphicon-hourglass' }
+            new Header('id'),
+            new Header('content', 'Content', 'glyphicon-cog' ),
+            new Header('status', 'Status', 'glyphicon-star'),
+            new Header('priority', 'Priority', 'glyphicon-fire'),
+            new Header('assignee.name', 'Assignee', 'glyphicon-user'),
+            timeToEndHeader
         ];
 
         // Setup table filtering using the checkboxes and the search filter.
@@ -26,13 +61,13 @@ angular.module( 'FeTSyTicketTableHead', [] )
         };
 
         // Setup table sorting
-        ticketCtrl.sortColumn = ticketCtrl.headers[0].key;
+        ticketCtrl.sortColumn = ticketCtrl.headers[0].sortKey;
         ticketCtrl.reverse = true;
         ticketCtrl.toggleSort = function ( index ) {
-            if ( ticketCtrl.sortColumn === ticketCtrl.headers[index].key ) {
+            if ( ticketCtrl.sortColumn === ticketCtrl.headers[index].sortKey ) {
                 ticketCtrl.reverse = !ticketCtrl.reverse;
             }
-            ticketCtrl.sortColumn = ticketCtrl.headers[index].key;
+            ticketCtrl.sortColumn = ticketCtrl.headers[index].sortKey;
         };
     };
 });

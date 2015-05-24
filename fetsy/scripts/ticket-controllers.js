@@ -44,9 +44,17 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             // Set title for info popover.
             ticket.title = 'Ticket #' + ticket.id + ' | ' + created.toLocaleString();
 
-            // Caluclate deadline time delta.
-            var timeToEnd = (created.getTime() + ticket.deadline * 60 * 1000 - Date.now()) / 1000 / 60;
-            ticket.timeToEnd = Math.trunc(timeToEnd);
+            // Caluclate deadline time delta and deadline time.
+            ticket.timeToEnd = created.getTime() + ticket.deadline * 60 * 1000;
+            ticket.deadlineTimeDeltaMinutes = Math.trunc((ticket.timeToEnd - Date.now()) / 1000 / 60);
+            var deadlineTime = new Date(ticket.timeToEnd);
+            if ( new Date().getDate() == deadlineTime.getDate() ) {
+                ticket.deadlineTimeString = 'Today' + ' ' + deadlineTime.toLocaleTimeString().slice(0,-3);
+            } else if ( new Date().getDate() + 1 == deadlineTime.getDate() ) {
+                ticket.deadlineTimeString = 'Tomorrow' + ' ' + deadlineTime.toLocaleTimeString().slice(0,-3);
+            } else {
+                ticket.deadlineTimeString = deadlineTime.toLocaleString().slice(0,-3);
+            }
 
             // Add tmpContent, tmpTags and tmpDeadline properties. These are
             // only used for the change form and updated via AngularJS's magic.
