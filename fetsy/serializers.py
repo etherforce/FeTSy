@@ -119,4 +119,4 @@ class TicketSerializer(serializers.ModelSerializer):
             'priority',
             'assignee',
             'created',
-            'deadline', )
+            'period', )

@@ -84,8 +84,8 @@ class Ticket(models.Model):
     created = models.DateTimeField(
         ugettext_lazy('Created'),
         auto_now_add=True)
-    deadline = models.PositiveIntegerField(
-        ugettext_lazy('Deadline (in minutes)'),
+    period = models.PositiveIntegerField(
+        ugettext_lazy('Period (in minutes)'),
         default=120)
 
     def __str__(self):

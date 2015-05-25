@@ -25,7 +25,8 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         ticketCtrl.allTags = [];
         ticketCtrl.allUsers = [];
 
-        // Run setupTableSearchAndSort factory.
+        // Run setupTableSearchAndSort factory. This sets among other things
+        // ticketCtrl.showRemainingTimeInMinutes and ticketCtrl.showClosed.
         setupTableSearchAndSort(ticketCtrl);
 
         // Setup Ticket constructor.
@@ -44,23 +45,25 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             // Set title for info popover.
             ticket.title = 'Ticket #' + ticket.id + ' | ' + created.toLocaleString();
 
-            // Caluclate deadline time delta and deadline time.
-            ticket.timeToEnd = created.getTime() + ticket.deadline * 60 * 1000;
-            ticket.deadlineTimeDeltaMinutes = Math.trunc((ticket.timeToEnd - Date.now()) / 1000 / 60);
-            var deadlineTime = new Date(ticket.timeToEnd);
-            if ( new Date().getDate() == deadlineTime.getDate() ) {
-                ticket.deadlineTimeString = 'Today' + ' ' + deadlineTime.toLocaleTimeString().slice(0,-3);
-            } else if ( new Date().getDate() + 1 == deadlineTime.getDate() ) {
-                ticket.deadlineTimeString = 'Tomorrow' + ' ' + deadlineTime.toLocaleTimeString().slice(0,-3);
+            // Caluclate deadline and the properties deadlineTimeDeltaMinutes
+            // and deadlineDateString.
+            ticket.deadline = created.getTime() + ticket.period * 60 * 1000;
+            ticket.deadlineTimeDeltaMinutes = Math.trunc((ticket.deadline - Date.now()) / 1000 / 60);
+
+            var deadlineDate = new Date(ticket.deadline);
+            if ( new Date().getDate() == deadlineDate.getDate() ) {
+                ticket.deadlineDateString = 'Today' + ' ' + deadlineDate.toLocaleTimeString().slice(0,-3);
+            } else if ( new Date().getDate() + 1 == deadlineDate.getDate() ) {
+                ticket.deadlineDateString = 'Tomorrow' + ' ' + deadlineDate.toLocaleTimeString().slice(0,-3);
             } else {
-                ticket.deadlineTimeString = deadlineTime.toLocaleString().slice(0,-3);
+                ticket.deadlineDateString = deadlineDate.toLocaleString().slice(0,-3);
             }
 
-            // Add tmpContent, tmpTags and tmpDeadline properties. These are
+            // Add tmpContent, tmpTags and tmpPeriod properties. These are
             // only used for the change form and updated via AngularJS's magic.
             ticket.tmpContent = ticket.content;
             ticket.tmpTags = ticket.tags;
-            ticket.tmpDeadline = ticket.deadline;
+            ticket.tmpPeriod = ticket.period;
         };
 
         // Limit of length of content in the table. If the content is longer, some
@@ -203,22 +206,37 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
     'allTags',
     'showRemainingTimeInMinutes',
     function ( $modalInstance, allTags, showRemainingTimeInMinutes ) {
-        // Default deadline is 120 minutes.
-        var defaultDeadline = 120;
-        this.deadlineField = showRemainingTimeInMinutes ? defaultDeadline : new Date(Date.now() + defaultDeadline * 60 * 1000).toLocaleTimeString().slice(0,-3);
+        // Default period is 120 minutes.
+        var defaultPeriod = 120;
+        this.showRemainingTimeInMinutes = showRemainingTimeInMinutes;
+        this.periodDeadlineField = this.showRemainingTimeInMinutes ? String(defaultPeriod) : new Date(Date.now() + defaultPeriod * 60 * 1000).toLocaleTimeString().slice(0,-3);
         this.tags = [];
         this.allTags = allTags;
         this.save = function () {
-            var deadline;
-            if ( showRemainingTimeInMinutes ) {
-                deadline = this.deadlineField;
-            } else {
-                // Validate: Zahlenmatch this.deadlineField.match('^[0-2][0-9]:[0-5][0-9]$'), dann split und check Stunden < 24
-                // Danach: Stunden * 60 + Minuten - Now() = Deadline. Falls negativ + 24*60 Minuten rechnen, um zu nächsten Tag zu kommen.
-                deadline = 1;  // TODO: Validate time string (hh:mm) and calculate minutes from it.
+            // Validate period or deadline input field depending on
+            // showRemainingTimeInMinutes flag.
+            var regex = this.showRemainingTimeInMinutes ? /^[0-9]+$/ : /^[0-2][0-9]:[0-5][0-9]$/;
+            var periodDeadlineFieldMatch = this.periodDeadlineField.match(regex);
+            if ( !this.showRemainingTimeInMinutes && periodDeadlineFieldMatch && this.periodDeadlineField.split(':')[0] > 23 ) {
+                periodDeadlineFieldMatch = null;
             }
-            if ( this.content ) {
-                $modalInstance.close({ 'content': this.content, 'deadline': deadline, 'tags': this.tags });
+            // Save ticket if the period or deadline field is valid and there
+            // is some content.
+            if ( periodDeadlineFieldMatch && this.content ) {
+                var period;
+                if ( showRemainingTimeInMinutes ) {
+                    // Just take the given value as period.
+                    period = this.periodDeadlineField;
+                } else {
+                    // Caluclate time delta between now and given time.
+                    var now = new Date();
+                    period = (this.periodDeadlineField.split(':')[0] - now.getHours()) * 60 + (this.periodDeadlineField.split(':')[1] - now.getMinutes());
+                    if ( period <= 0 ) {
+                        // If negative assume the next day so add 24 * 60 = 1440 minutes.
+                        period += 1440;
+                    }
+                }
+                $modalInstance.close({ 'content': this.content, 'period': period, 'tags': this.tags });
             } else {
                 $modalInstance.dismiss('cancel');
             }

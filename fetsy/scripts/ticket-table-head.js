@@ -26,16 +26,16 @@ angular.module( 'FeTSyTicketTableHead', [] )
             return header.iconCSSClass;
         };
 
-        // Special header object for timeToEnd column.
-        var timeToEndHeader = new Header('timeToEnd');
-        timeToEndHeader.getVerboseName = function () {
+        // Special header object for periodDeadline column.
+        var periodDeadlineHeader = new Header('period');
+        periodDeadlineHeader.getVerboseName = function () {
             if ( ticketCtrl.showRemainingTimeInMinutes ) {
                 return 'Remaining time';
             } else {
                 return 'Deadline';
             }
         };
-        timeToEndHeader.getIconCSSClass = function () {
+        periodDeadlineHeader.getIconCSSClass = function () {
             if ( ticketCtrl.showRemainingTimeInMinutes ) {
                 return 'glyphicon-hourglass';
             } else {
@@ -50,7 +50,7 @@ angular.module( 'FeTSyTicketTableHead', [] )
             new Header('status', 'Status', 'glyphicon-star'),
             new Header('priority', 'Priority', 'glyphicon-fire'),
             new Header('assignee.name', 'Assignee', 'glyphicon-user'),
-            timeToEndHeader
+            periodDeadlineHeader
         ];
 
         // Setup table filtering using the checkboxes and the search filter.

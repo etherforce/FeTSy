@@ -100,27 +100,31 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="newTicketDeadline" class="sr-only">
-                                    Deadline. Default: 120 minutes.
+                                <label for="newTicketPeriodDeadline" class="sr-only">
+                                    <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes">Period. Default: 120 minutes.</span>
+                                    <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes">Deadline. Default: Time in 120 minutes.</span>
                                 </label>
                                 <div class="input-group">
                                     <div class="input-group-addon">
-                                        <span id="newTicketDeadlineIcon"
-                                              title="Remaining time (in minutes)"
+                                        <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes"
+                                              id="newTicketPeriodDeadlineIcon"
+                                              title="Period (in minutes)"
                                               class="glyphicon glyphicon-hourglass"
                                               aria-hidden="true">
                                         </span>
-                                        <span id="newTicketDeadlineIcon"
+                                        <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes"
+                                              id="newTicketPeriodDeadlineIcon"
                                               title="Deadline"
                                               class="glyphicon glyphicon-time"
                                               aria-hidden="true">
                                         </span>
                                     </div>
-                                    <input id="newTicketDeadline"
+                                    <input id="newTicketPeriodDeadline"
                                            type="text"
                                            class="form-control"
-                                           aria-describedby="newTicketDeadlineIcon"
-                                           ng-model="newTicketFormModalCtrl.deadlineField">
+                                           aria-describedby="newTicketPeriodDeadlineIcon"
+                                           required
+                                           ng-model="newTicketFormModalCtrl.periodDeadlineField">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -351,37 +355,41 @@
                             </ul>
                         </td><!-- / Ticket assignee with dropdown to change it -->
 
-                        <!-- Ticket deadline with input field to change it-->
-                        <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketDeadline = true : null">
-                            <span ng-hide="ticket.updatingTicketDeadline || !ticketCtrl.showRemainingTimeInMinutes" ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
+                        <!-- Ticket period or deadline with input field to change it-->
+                        <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketPeriodDeadline = true : null">
+                            <span ng-hide="ticket.updatingTicketPeriodDeadline || !ticketCtrl.showRemainingTimeInMinutes"
+                                  ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
                                 {{ ticket.deadlineTimeDeltaMinutes }} min.
                             </span>
-                            <span ng-hide="ticket.updatingTicketDeadline || ticketCtrl.showRemainingTimeInMinutes" ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
-                                {{ ticket.deadlineTimeString }}
+                            <span ng-hide="ticket.updatingTicketPeriodDeadline || ticketCtrl.showRemainingTimeInMinutes"
+                                  ng-style="ticket.deadlineTimeDeltaMinutes < 0 && {'color': 'red'};">
+                                {{ ticket.deadlineDateString }}
                             </span>
-                            <form role="form" ng-show="ticket.updatingTicketDeadline">
-                                <label class="sr-only" for="updateTicketDeadline">Deadline (in minutes)</label>
+                            <form role="form" ng-show="ticket.updatingTicketPeriodDeadline">
+                                <label class="sr-only" for="updateTicketPeriodDeadline">
+                                    Period (in minutes)
+                                </label>
                                 <div  class="input-group input-group-sm">
                                     <div class="input-group-addon">
-                                        <span id="updateTicketDeadlineIcon"
-                                              title="Deadline (in minutes)"
-                                              class="glyphicon glyphicon-time"
+                                        <span id="updateTicketPeriodDeadlineIcon"
+                                              title="Period (in minutes)"
+                                              class="glyphicon glyphicon-hourglass"
                                               aria-hidden="true">
                                         </span>
                                     </div>
-                                    <input id="updateTicketDeadline"
-                                           type="text"
+                                    <input id="updateTicketPeriodDeadline"
+                                           type="number"
                                            class="form-control"
                                            placeholder="Minutes"
-                                           aria-describedby="updateTicketDeadlineIcon"
-                                           ng-model="ticket.tmpDeadline">
+                                           aria-describedby="updateTicketPeriodDeadlineIcon"
+                                           ng-model="ticket.tmpPeriod">
                                     <div class="input-group-btn">
                                         <button type="button"
                                                 title="Save"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
-                                                          ticket.change({'deadline': ticket.tmpDeadline});
-                                                          ticket.updatingTicketDeadline = false">
+                                                          ticket.change({'period': ticket.tmpPeriod});
+                                                          ticket.updatingTicketPeriodDeadline = false">
                                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                             <span class="sr-only">Save</span>
                                         </button>
@@ -389,15 +397,15 @@
                                                 title="Cancel"
                                                 class="btn btn-sm btn-default"
                                                 ng-click="$event.stopPropagation();
-                                                          ticket.tmpDeadline = ticket.deadline;
-                                                          ticket.updatingTicketDeadline = false;">
+                                                          ticket.tmpPeriod = ticket.period;
+                                                          ticket.updatingTicketPeriodDeadline = false;">
                                             <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                             <span class="sr-only">Cancel</span>
                                         </button>
                                     </div>
                                 </div>
                             </form>
-                        </td><!-- / Ticket deadline with input field to change it-->
+                        </td><!-- / Ticket period or deadline with input field to change it-->
 
                         <!-- Info and close buttons -->
                         <td>
