@@ -8,8 +8,8 @@ def add_default_status(apps, schema_editor):
     Status = apps.get_model('fetsy', 'Status')
     status = []
     for name in (
-        ugettext_noop('Created'),
-        ugettext_noop('Assigned'),
+        ugettext_noop('New'),
+        ugettext_noop('Work in progress'),
         ugettext_noop('Closed')):
         status.append(Status(name=name))
     Status.objects.bulk_create(status)
