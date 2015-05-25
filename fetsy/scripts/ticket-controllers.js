@@ -76,11 +76,11 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             return ticket.content.length > ticketCtrl.limit;
         };
 
-        // Add change function. The argument changedData is required. These data are
-        // sent to the REST API.
+        // Add change function. The argument changedData is required. These
+        // data are sent to the REST API. Returns the HttpPromise.
         Ticket.prototype.change = function ( changedData ) {
             var ticket = this;
-            $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
+            return $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
                 .success(function ( data, status, headers, config ) {
                     angular.extend(ticket, data);
                     ticket.updateProperties();
@@ -102,7 +102,18 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             var timer = $timeout(function () {}, 5000);
             timer.then(
                 function () {
-                    ticketCtrl.fetch();
+                    // Check for open ticket content update forms and submit
+                    // the form content. Catch all returned HttpPromises.
+                    var promises = [];
+                    angular.forEach(ticketCtrl.tickets, function ( ticket ) {
+                        if ( ticket.updatingTicketContentAndTags ) {
+                            // Update ticket and add returned HttpPromise to
+                            // promises array.
+                            promises.push(ticket.change({'content': ticket.tmpContent, 'tags': ticket.tmpTags}));
+                        }
+                    });
+                    // Wait for finishing all promises and then fetch all tickets.
+                    $q.all(promises).then(ticketCtrl.fetch);
                 },
                 function () {
                     ticketCtrl.startWatch();
@@ -138,7 +149,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             var url = [ baseRestUrl, 'tickets', '' ].join('/');
             if ( isRetrieveOptionsFetch ) {
                 // TODO: Do not assume ticket #1 existing but take only one
-                //       possbible ticket.
+                //       possible ticket.
                 url +=  '1/';
             }
             return $http({ 'method': 'OPTIONS', 'url': url })
@@ -162,13 +173,13 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         };
 
         // Now go: Make single options fetch and then ticket fetch and start timeout.
-        var promisses = [];
+        var promises = [];
         if ( ticketCtrl.userAddPerm ) {
-            promisses.push(ticketCtrl.optionsFetch(false));
+            promises.push(ticketCtrl.optionsFetch(false));
         } else if ( ticketCtrl.userChangePerm ) {
-            promisses.push(ticketCtrl.optionsFetch(true));
+            promises.push(ticketCtrl.optionsFetch(true));
         }
-        $q.all(promisses).then(ticketCtrl.fetch);
+        $q.all(promises).then(ticketCtrl.fetch);
 
         // Setup form for a new ticket via angular ui bootstrap modal.
         ticketCtrl.newTicketForm = function () {
@@ -232,7 +243,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                     var now = new Date();
                     period = (this.periodDeadlineField.split(':')[0] - now.getHours()) * 60 + (this.periodDeadlineField.split(':')[1] - now.getMinutes());
                     if ( period <= 0 ) {
-                        // If negative assume the next day so add 24 * 60 = 1440 minutes.
+                        // If negative, assume the next day so add 24 * 60 = 1440 minutes.
                         period += 1440;
                     }
                 }
