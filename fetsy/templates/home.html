@@ -101,21 +101,26 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="newTicketDeadline" class="sr-only">
-                                    Deadline (in minutes). Default: 120 minutes.
+                                    Deadline. Default: 120 minutes.
                                 </label>
                                 <div class="input-group">
                                     <div class="input-group-addon">
                                         <span id="newTicketDeadlineIcon"
-                                              title="Deadline (in minutes)"
+                                              title="Remaining time (in minutes)"
+                                              class="glyphicon glyphicon-hourglass"
+                                              aria-hidden="true">
+                                        </span>
+                                        <span id="newTicketDeadlineIcon"
+                                              title="Deadline"
                                               class="glyphicon glyphicon-time"
                                               aria-hidden="true">
                                         </span>
                                     </div>
                                     <input id="newTicketDeadline"
-                                           type="number"
+                                           type="text"
                                            class="form-control"
                                            aria-describedby="newTicketDeadlineIcon"
-                                           ng-model="newTicketFormModalCtrl.deadline">
+                                           ng-model="newTicketFormModalCtrl.deadlineField">
                                 </div>
                             </div>
                             <div class="form-group">

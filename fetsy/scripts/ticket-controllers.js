@@ -175,6 +175,9 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 resolve: {
                     allTags: function () {
                         return ticketCtrl.allTags;
+                    },
+                    showRemainingTimeInMinutes: function () {
+                        return ticketCtrl.showRemainingTimeInMinutes;
                     }
                 }
             });
@@ -198,14 +201,24 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
 .controller( 'NewTicketFormModalCtrl', [
     '$modalInstance',
     'allTags',
-    function ( $modalInstance, allTags ) {
+    'showRemainingTimeInMinutes',
+    function ( $modalInstance, allTags, showRemainingTimeInMinutes ) {
         // Default deadline is 120 minutes.
-        this.deadline = 120;
+        var defaultDeadline = 120;
+        this.deadlineField = showRemainingTimeInMinutes ? defaultDeadline : new Date(Date.now() + defaultDeadline * 60 * 1000).toLocaleTimeString().slice(0,-3);
         this.tags = [];
         this.allTags = allTags;
         this.save = function () {
+            var deadline;
+            if ( showRemainingTimeInMinutes ) {
+                deadline = this.deadlineField;
+            } else {
+                // Validate: Zahlenmatch this.deadlineField.match('^[0-2][0-9]:[0-5][0-9]$'), dann split und check Stunden < 24
+                // Danach: Stunden * 60 + Minuten - Now() = Deadline. Falls negativ + 24*60 Minuten rechnen, um zu nächsten Tag zu kommen.
+                deadline = 1;  // TODO: Validate time string (hh:mm) and calculate minutes from it.
+            }
             if ( this.content ) {
-                $modalInstance.close({ 'content': this.content, 'deadline': this.deadline, 'tags': this.tags });
+                $modalInstance.close({ 'content': this.content, 'deadline': deadline, 'tags': this.tags });
             } else {
                 $modalInstance.dismiss('cancel');
             }
