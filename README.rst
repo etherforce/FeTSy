@@ -36,6 +36,7 @@ Server and PostgreSQL.
 Install webserver, database and some requirements::
 
     $ sudo apt-get install python3-dev python-virtualenv
+    $ sudo apt-get install npm nodejs-legacy
     $ sudo apt-get install apache2 libapache2-mod-wsgi-py3
     $ sudo apt-get install postgresql postgresql-server-dev-all
     $ sudo apt-get install git
@@ -90,7 +91,7 @@ Thereafter run::
     $ python manage.py migrate
     $ python manage.py createsuperuser
 
-Create a virtual host configuration file
+Create as root a virtual host configuration file
 /etc/apache2/sites-available/fetsy.conf with the following content::
 
     <VirtualHost *:80>
