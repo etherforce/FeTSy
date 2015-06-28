@@ -31,7 +31,7 @@ gulp.task( 'js', function () {
     return gulp.src(path.join( 'fetsy', 'scripts', '*.js' ))
         .pipe(gulpFilter([ '*', '!ie10-viewport-bug-workaround.js' ]))
         .pipe(concat('fetsy.js'))
-        //.pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest(path.join( output_directory, 'js' )));
 });
 
@@ -76,7 +76,7 @@ gulp.task( 'css-libs', function () {
 // Catches all font files from all bower components.
 gulp.task( 'fonts-libs', function () {
     return gulp.src(mainBowerFiles({
-            filter: /\.(eot)|(svg)|(ttf)|(woff)$/
+            filter: /\.(eot)|(svg)|(ttf)|(woff)|(woff2)$/
         }))
         .pipe(gulp.dest(path.join( output_directory, 'fonts' )));
 });

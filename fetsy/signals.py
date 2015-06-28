@@ -4,7 +4,7 @@ import logging
 from django.contrib.auth.models import User
 
 from .models import Ticket
-from .serializers import TicketSerializer, UserSerializer
+from .serializers import TicketSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +15,6 @@ def model_change_logging(sender, instance, created=None, **kwargs):
     """
     if sender == Ticket:
         serializer = TicketSerializer
-    elif sender == User:
-        serializer = UserSerializer
     else:
         serializer = None
 

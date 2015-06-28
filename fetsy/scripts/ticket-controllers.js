@@ -20,11 +20,6 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         ticketCtrl.userAddPerm = userPerms['fetsy.add_ticket'];
         ticketCtrl.userChangePerm = userPerms['fetsy.change_ticket'];
 
-        // Setup empty tag and user array. They are filled later during an
-        // OPTIONS request.
-        ticketCtrl.allTags = [];
-        ticketCtrl.allUsers = [];
-
         // Run setupTableSearchAndSort factory. This sets among other things
         // ticketCtrl.showRemainingTimeInMinutes and ticketCtrl.showClosed.
         setupTableSearchAndSort(ticketCtrl);
@@ -59,11 +54,14 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 ticket.deadlineDateString = deadlineDate.toLocaleString().slice(0,-3);
             }
 
-            // Add tmpContent, tmpTags and tmpPeriod properties. These are
+            // Add tmpContent and tmpPeriod properties. These are
             // only used for the change form and updated via AngularJS's magic.
             ticket.tmpContent = ticket.content;
-            ticket.tmpTags = ticket.tags;
             ticket.tmpPeriod = ticket.period;
+            ticket.tmpTags = [];
+            angular.forEach(ticketCtrl.choices.tags, function ( tag ) {
+                ticket.tmpTags.push(ticket.tags.indexOf(tag.display_name) != -1);
+            });
         };
 
         // Limit of length of content in the table. If the content is longer, some
@@ -76,10 +74,36 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             return ticket.content.length > ticketCtrl.limit;
         };
 
+        // Add get_color_css_class function to determine the color of a specific tag.
+        // Defaults to 'default'.
+        Ticket.prototype.getColorCssClass = function ( tag ) {
+            var ticket = this;
+            for (var i = 0; i < ticketCtrl.choices.tags.length; i++) {
+                if (ticketCtrl.choices.tags[i].display_name == tag) {
+                    return ticketCtrl.choices.tags[i].color_css_class;
+                }
+            }
+            return 'default';
+        };
+
+        Ticket.prototype.getStatusDisplay = function () {
+            var ticket = this;
+            return ticketCtrl.choices.status[ticket.status - 1].display_name;
+        };
+
         // Add change function. The argument changedData is required. These
         // data are sent to the REST API. Returns the HttpPromise.
         Ticket.prototype.change = function ( changedData ) {
             var ticket = this;
+            if (changedData.tags !== undefined) {
+                var tagList = changedData.tags;
+                changedData.tags = [];
+                for (var i = 0; i < tagList.length; i++) {
+                    if (tagList[i]) {
+                        changedData.tags.push(ticketCtrl.choices.tags[i].display_name);
+                    }
+                };
+            }
             return $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
                 .success(function ( data, status, headers, config ) {
                     angular.extend(ticket, data);
@@ -156,18 +180,8 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
             }
             return $http({ 'method': 'OPTIONS', 'url': url })
                 .success(function ( data, status, headers, config ) {
-                    // Save option data. Copy data for te key POST or PUT to the key METHOD.
-                    ticketCtrl.options = data;
-                    ticketCtrl.options.actions.METHOD = ticketCtrl.options.actions[methodKey];
-
-                    // Save special rendered tag and usersoptions to ticketCtrl.allTags and ticketCtrl.allUsers.
-                    // TODO: Do not use eval but think about fixings this pseudo JSON.
-                    angular.forEach(ticketCtrl.options.actions.METHOD.tags.choices, function ( value ) {
-                        ticketCtrl.allTags.push(eval('(' + value.value + ')'));
-                    });
-                    angular.forEach(ticketCtrl.options.actions.METHOD.assignee.choices, function ( value ) {
-                        ticketCtrl.allUsers.push(eval('(' + value.value + ')'));
-                    });
+                    // Save choices data.
+                    ticketCtrl.choices = data.ticket_choices;
                 })
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
@@ -189,16 +203,13 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 templateUrl: 'newTicketForm.html',
                 controller: 'NewTicketFormModalCtrl as newTicketFormModalCtrl',
                 resolve: {
-                    allTags: function () {
-                        return ticketCtrl.allTags;
-                    },
                     showRemainingTimeInMinutes: function () {
                         return ticketCtrl.showRemainingTimeInMinutes;
                     }
                 }
             });
             modalInstance.result.then(function ( dataToSend ) {
-                dataToSend.status = ticketCtrl.options.actions.METHOD.status.choices[0].value;
+                dataToSend.status = 1;
                 $http.post( [ baseRestUrl, 'tickets', '' ].join('/'), dataToSend )
                     .success(function ( data, status, headers, config ) {
                         var ticket = new Ticket(data);
@@ -216,15 +227,12 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
 // Setup controler for form for a new ticket (NewTicketFormModalCtrl).
 .controller( 'NewTicketFormModalCtrl', [
     '$modalInstance',
-    'allTags',
     'showRemainingTimeInMinutes',
-    function ( $modalInstance, allTags, showRemainingTimeInMinutes ) {
+    function ( $modalInstance, showRemainingTimeInMinutes ) {
         // Default period is 120 minutes.
         var defaultPeriod = 120;
         this.showRemainingTimeInMinutes = showRemainingTimeInMinutes;
         this.periodDeadlineField = this.showRemainingTimeInMinutes ? String(defaultPeriod) : new Date(Date.now() + defaultPeriod * 60 * 1000).toLocaleTimeString().slice(0,-3);
-        this.tags = [];
-        this.allTags = allTags;
         this.save = function () {
             // Validate period or deadline input field depending on
             // showRemainingTimeInMinutes flag.
@@ -249,7 +257,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                         period += 1440;
                     }
                 }
-                $modalInstance.close({ 'content': this.content, 'period': period, 'tags': this.tags });
+                $modalInstance.close({ 'content': this.content, 'period': period, 'tags': [] });
             } else {
                 $modalInstance.dismiss('cancel');
             }

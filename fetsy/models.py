@@ -51,3 +51,41 @@ class Ticket(models.Model):
 
     def __str__(self):
         return str(self.pk)
+
+
+class Tag(models.Model):
+    """
+    Model for tags. A ticket can have multiple tags.
+
+    This model is not referenced via database relation for unknown
+    performance reasons.
+    """
+    COLORS = (
+        ('default', ugettext_lazy('Grey')),
+        ('primary', ugettext_lazy('Dark blue')),
+        ('success', ugettext_lazy('Green')),
+        ('info', ugettext_lazy('Light blue')),
+        ('warning', ugettext_lazy('Yellow')),
+        ('danger', ugettext_lazy('Red')), )
+
+    name = models.CharField(
+        ugettext_lazy('Name'),
+        max_length=255)
+    color_css_class = models.CharField(
+        ugettext_lazy('Color'),
+        choices=COLORS,
+        default='default',
+        max_length=255)
+    weight = models.IntegerField(
+        ugettext_lazy('Weight (for ordering'),
+        help_text=ugettext_lazy(
+            'Tags with a higher weight appear behind other tags.'),
+        default=0)
+
+    class Meta:
+        ordering = ('weight', )
+        verbose_name = ugettext_lazy('Tag')
+        verbose_name_plural = ugettext_lazy('Tags')
+
+    def __str__(self):
+        return '%s (%s)' % (self.name, self.get_color_css_class_display())
