@@ -3,8 +3,8 @@ import logging
 
 from django.contrib.auth.models import User
 
-from .models import Tag, Ticket
-from .serializers import TagSerializer, TicketSerializer, UserSerializer
+from .models import Ticket
+from .serializers import TicketSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +13,7 @@ def model_change_logging(sender, instance, created=None, **kwargs):
     """
     Logs every change of Tags, Tickets and Users.
     """
-    if sender == Tag:
-        serializer = TagSerializer
-    elif sender == Ticket:
+    if sender == Ticket:
         serializer = TicketSerializer
     elif sender == User:
         serializer = UserSerializer

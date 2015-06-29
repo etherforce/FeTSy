@@ -1,10 +1,17 @@
-from django.contrib.admin import site
+from django.contrib.admin import ModelAdmin, site
 from django.utils.translation import ugettext_lazy
 
-from .models import Tag, Ticket
+from .models import Ticket
 
 site.site_title = site.site_header = ugettext_lazy('FeTSy site admin')
 site.index_template = 'admin/custom-index.html'
 
-site.register(Tag)
-site.register(Ticket)
+
+class TicketAdmin(ModelAdmin):
+    """
+    Model admin class for tickets.
+    """
+    list_per_page = 1000
+
+
+site.register(Ticket, TicketAdmin)

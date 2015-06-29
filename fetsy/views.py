@@ -9,7 +9,7 @@ class TicketViewSet(viewsets.ModelViewSet):
     """
     ViewSet to list, retrieve, create, update and destroy tickets.
     """
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.all().select_related('assignee')
     serializer_class = TicketSerializer
 
 

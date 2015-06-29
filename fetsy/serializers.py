@@ -1,44 +1,19 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Tag, Ticket
+from .models import Ticket
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagListField(serializers.ListField):
     """
-    Serializer for all possible tags of a ticket.
+    Field serializing tags. It transforms string (with newlines) to list
+    and reverse.
     """
-    class Meta:
-        model = Tag
-        fields = ('name', 'color_css_class', )
-
-
-class TagRelatedField(serializers.RelatedField):
-    """
-    Field for serializing tags in tickets.
-    """
-    def to_representation(self, value):
-        """
-        Returns serialized data using TagSerializer.
-        """
-        return TagSerializer(value).data
+    def to_representation(self, data):
+        return [item for item in data.splitlines()]
 
     def to_internal_value(self, data):
-        """
-        Validates data and returns the respective Tag object. Data should be
-        a dictionary with a 'name' element.
-        """
-        if type(data) != dict or data.get('name') is None:
-            raise serializers.ValidationError(
-                "Invalid data. You must provide a dictionary with a 'name' "
-                "element.")
-        try:
-            tag = self.get_queryset().get(name=data['name'])
-        except Tag.DoesNotExist:
-            raise serializers.ValidationError(
-                "Invalid data. Tag with name '%s' does not "
-                "exist." % data['name'])
-        return tag
+        return '\n'.join(super().to_internal_value(data))
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -101,13 +76,10 @@ class TicketSerializer(serializers.ModelSerializer):
     """
     Serializer for tickets.
     """
-    tags = TagRelatedField(
-        many=True,
-        queryset=Tag.objects.all(),
-        required=False)
     assignee = UserRelatedField(
         queryset=get_user_model().objects.all(),
         required=False)
+    tags = TagListField()
 
     class Meta:
         model = Ticket
