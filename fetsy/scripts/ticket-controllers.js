@@ -99,7 +99,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
 
         // Timeout and watching.
         ticketCtrl.startWatch = function () {
-            var timer = $timeout(function () {}, 5000);
+            var timer = $timeout(function () {}, 10000);
             timer.then(
                 function () {
                     // Check for open ticket content update forms and submit
@@ -128,6 +128,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
 
         // Fetching all ticket data.
         ticketCtrl.fetch = function () {
+            ticketCtrl.fetchingData = true;
             $http.get([ baseRestUrl, 'tickets', '' ].join('/'))
                 .success(function ( data, status, headers, config ) {
                     // Construct tickets and push them to scope.
@@ -136,6 +137,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                         var ticket = new Ticket(data[index]);
                         ticketCtrl.tickets.push(ticket);
                     }
+                    ticketCtrl.fetchingData = false;
                     ticketCtrl.startWatch();
                 })
                 .error(function ( data, status, headers, config ) {

@@ -80,6 +80,14 @@
 
         <div style="padding: 2.9em 1.1em;" ng-controller="TicketListCtrl as ticketCtrl">
 
+            <!-- Fetching data message -->
+            <div class="row">
+                <div class="col-sm-offset-3 col-sm-6">
+                    <alert type="success" ng-hide="ticketCtrl.fetchingData">All data sync. Have a nice day.</alert>
+                    <alert type="warning" ng-show="ticketCtrl.fetchingData">Please wait. Fetching data from server.</alert>
+                </div>
+            </div>
+
             <!-- Top functionality row -->
             <div class="row" style="padding-bottom:0.5em;">
 
@@ -247,7 +255,8 @@
                     <tr ng-repeat="ticket in ticketCtrl.tickets |
                                    filter : ticketCtrl.search |
                                    filter : ticketCtrl.closedFilter |
-                                   orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
+                                   orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse |
+                                   limitTo : 50">
 
                         <!-- Ticket ID -->
                         <td>
@@ -287,12 +296,7 @@
                                              ticket.updatingTicketContentAndTags = false">
                                 <div class="form-group">
                                     <label for="updateTicketTags" class="sr-only">Tags</label>
-                                    <multiselect id="updateTicketTags"
-                                                 ng-model="ticket.tmpTags"
-                                                 options="ticketCtrl.allTags"
-                                                 id-prop="name"
-                                                 display-prop="name">
-                                    </multiselect>
+                                    <!-- TODO: Insert update for tags -->
                                 </div>
                                 <div class="form-group">
                                     <label for="updateTicketContent" class="sr-only">Content</label>
