@@ -1,58 +1,19 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Tag, Ticket
+from .models import Ticket
 
 
-class TagSerializer(serializers.ModelSerializer):
+class TagListField(serializers.ListField):
     """
-    Serializer for all possible tags of a ticket.
+    Field serializing tags. It transforms string (with newlines) to list
+    and reverse.
     """
-    class Meta:
-        model = Tag
-        fields = ('name', 'color_css_class', )
-
-
-class TagRelatedField(serializers.RelatedField):
-    """
-    Field for serializing tags in tickets.
-    """
-    def to_representation(self, value):
-        """
-        Returns serialized data using TagSerializer.
-        """
-        return TagSerializer(value).data
+    def to_representation(self, data):
+        return [item for item in data.splitlines()]
 
     def to_internal_value(self, data):
-        """
-        Validates data and returns the respective Tag object. Data should be
-        a dictionary with a 'name' element.
-        """
-        if type(data) != dict or data.get('name') is None:
-            raise serializers.ValidationError(
-                "Invalid data. You must provide a dictionary with a 'name' "
-                "element.")
-        try:
-            tag = self.get_queryset().get(name=data['name'])
-        except Tag.DoesNotExist:
-            raise serializers.ValidationError(
-                "Invalid data. Tag with name '%s' does not "
-                "exist." % data['name'])
-        return tag
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for users.
-    """
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = get_user_model()
-        fields = ('id', 'name', )
-
-    def get_name(self, value):
-        return value.get_full_name() or value.username
+        return '\n'.join(super().to_internal_value(data))
 
 
 class UserRelatedField(serializers.RelatedField):
@@ -63,51 +24,32 @@ class UserRelatedField(serializers.RelatedField):
         """
         Returns serialized data using UserSerializer.
         """
-        return UserSerializer(value).data
+        return value.get_full_name() or value.username
 
     def to_internal_value(self, data):
         """
         Validates data and returns the respective User object. Data should be
-        a dictionary with an 'id' element.
+        an integer.
         """
-        if type(data) != dict or data.get('id') is None:
+        if not isinstance(data, int):
             raise serializers.ValidationError(
-                "Invalid data. You must provide a dictionary with an 'id' "
-                "element.")
+                "Invalid data. You must provide an integer.")
         try:
-            user = self.get_queryset().get(pk=data['id'])
+            user = self.get_queryset().get(pk=data)
         except get_user_model().DoesNotExist:
             raise serializers.ValidationError(
-                'Invalid data. User with id %d does not exist.' % data['id'])
+                'Invalid data. User with id %d does not exist.' % data)
         return user
-
-    # TODO: Think whether to change server output so that OPTIONS contains
-    #       valid JSON in choices field or keep the fix in client's
-    #       JavaScript.
-    #       See: rest_framework.relations.RelatedField.choices
-    #
-    # @property
-    # def choices(self):
-    #    return OrderedDict([
-    #        (
-    #            json.dumps(self.to_representation(item)),
-    #            str(item)
-    #        )
-    #        for item in self.queryset.all()
-    #    ])
 
 
 class TicketSerializer(serializers.ModelSerializer):
     """
     Serializer for tickets.
     """
-    tags = TagRelatedField(
-        many=True,
-        queryset=Tag.objects.all(),
-        required=False)
     assignee = UserRelatedField(
         queryset=get_user_model().objects.all(),
         required=False)
+    tags = TagListField()
 
     class Meta:
         model = Ticket

@@ -5,11 +5,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import TemplateView
 from rest_framework import routers
 
-from .views import TicketViewSet, UserViewSet
+from .views import TicketViewSet
 
 router = routers.DefaultRouter()
 router.register(r'tickets', TicketViewSet)
-router.register(r'users', UserViewSet)
 
 urlpatterns = patterns(
     '',

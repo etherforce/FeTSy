@@ -3,22 +3,62 @@ from django.db import models
 from django.utils.translation import ugettext_lazy
 
 
-class Status(models.Model):
+class Ticket(models.Model):
     """
-    Model for status a ticket can have.
+    Model for tickets.
     """
-    name = models.CharField(
-        ugettext_lazy('Name'),
-        primary_key=True,
-        max_length=255)
+    STATUS_CHOICES = (
+        (1, ugettext_lazy('New')),
+        (2, ugettext_lazy('Work in progress')),
+        (3, ugettext_lazy('Closed')), )
+
+    PRIORITY_CHOICES = (
+        (1, ugettext_lazy('Very low')),
+        (2, ugettext_lazy('Low')),
+        (3, ugettext_lazy('Medium')),
+        (4, ugettext_lazy('High')),
+        (5, ugettext_lazy('Very high')), )
+
+    content = models.TextField(
+        ugettext_lazy('Content'))
+    tags = models.TextField(
+        ugettext_lazy('Tags'),
+        help_text=ugettext_lazy('Separate tags with newline.'),
+        blank=True)
+    status = models.PositiveIntegerField(
+        ugettext_lazy('Status'),
+        choices=STATUS_CHOICES,
+        default=1)
+    priority = models.PositiveIntegerField(
+        ugettext_lazy('Priority'),
+        choices=PRIORITY_CHOICES,
+        default=3)
+    assignee = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name=ugettext_lazy('Assignee'),
+        null=True,
+        blank=True)
+    created = models.DateTimeField(
+        ugettext_lazy('Created'),
+        auto_now_add=True)
+    period = models.PositiveIntegerField(
+        ugettext_lazy('Period (in minutes)'),
+        default=120)
+
+    class Meta:
+        verbose_name = ugettext_lazy('Ticket')
+        verbose_name_plural = ugettext_lazy('Tickets')
 
     def __str__(self):
-        return self.pk
+        return str(self.pk)
 
 
 class Tag(models.Model):
     """
     Model for tags. A ticket can have multiple tags.
+
+    This model is not referenced via database relation for unknown
+    performance reasons.
     """
     COLORS = (
         ('default', ugettext_lazy('Grey')),
@@ -30,7 +70,6 @@ class Tag(models.Model):
 
     name = models.CharField(
         ugettext_lazy('Name'),
-        primary_key=True,
         max_length=255)
     color_css_class = models.CharField(
         ugettext_lazy('Color'),
@@ -49,44 +88,4 @@ class Tag(models.Model):
         verbose_name_plural = ugettext_lazy('Tags')
 
     def __str__(self):
-        return self.pk
-
-
-class Ticket(models.Model):
-    """
-    Model for tickets.
-    """
-    PRIORITY_CHOICES = (
-        (1, ugettext_lazy('Very low')),
-        (2, ugettext_lazy('Low')),
-        (3, ugettext_lazy('Medium')),
-        (4, ugettext_lazy('High')),
-        (5, ugettext_lazy('Very high')), )
-
-    content = models.TextField(ugettext_lazy('Content'))
-    tags = models.ManyToManyField(
-        Tag,
-        verbose_name=ugettext_lazy('Tags'),
-        null=True,
-        blank=True)
-    status = models.ForeignKey(
-        Status,
-        verbose_name=ugettext_lazy('Status'))
-    priority = models.PositiveIntegerField(
-        ugettext_lazy('Priority'),
-        choices=PRIORITY_CHOICES,
-        default=3)
-    assignee = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        verbose_name=ugettext_lazy('Assignee'),
-        null=True,
-        blank=True)
-    created = models.DateTimeField(
-        ugettext_lazy('Created'),
-        auto_now_add=True)
-    period = models.PositiveIntegerField(
-        ugettext_lazy('Period (in minutes)'),
-        default=120)
-
-    def __str__(self):
-        return str(self.pk)
+        return '%s (%s)' % (self.name, self.get_color_css_class_display())

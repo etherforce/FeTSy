@@ -8,7 +8,7 @@
 
 'use strict';
 
-angular.module( 'FeTSy', [ 'btorfs.multiselect', 'FeTSyTicketControllers' ] )
+angular.module( 'FeTSy', [ 'FeTSyTicketControllers' ] )
 
 // Set cookie and header name for CSRF Token (XSRF Token) to values expected
 // by Django.

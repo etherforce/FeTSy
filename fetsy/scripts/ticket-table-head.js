@@ -49,7 +49,7 @@ angular.module( 'FeTSyTicketTableHead', [] )
             new Header('content', 'Content', 'glyphicon-cog' ),
             new Header('status', 'Status', 'glyphicon-star'),
             new Header('priority', 'Priority', 'glyphicon-fire'),
-            new Header('assignee.name', 'Assignee', 'glyphicon-user'),
+            new Header('assignee', 'Assignee', 'glyphicon-user'),
             periodDeadlineHeader
         ];
 
@@ -57,7 +57,7 @@ angular.module( 'FeTSyTicketTableHead', [] )
         ticketCtrl.search = undefined;
         ticketCtrl.showClosed = false;
         ticketCtrl.closedFilter = function ( value, index ) {
-            return ticketCtrl.showClosed || value.status !== 'Closed';
+            return ticketCtrl.showClosed || value.status !== 3;
         };
 
         // Setup table sorting
@@ -69,6 +69,11 @@ angular.module( 'FeTSyTicketTableHead', [] )
             }
             ticketCtrl.sortColumn = ticketCtrl.headers[index].sortKey;
         };
+
+        // Setup pagination.
+        ticketCtrl.itemsPerPage = 30;
+        ticketCtrl.paginationPage = 1;
+        ticketCtrl.paginationBegin = 0;
     };
 });
 

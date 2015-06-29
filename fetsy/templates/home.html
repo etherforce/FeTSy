@@ -80,10 +80,32 @@
 
         <div style="padding: 2.9em 1.1em;" ng-controller="TicketListCtrl as ticketCtrl">
 
+            <!-- Fetching data message -->
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <alert type="success" ng-hide="ticketCtrl.fetchingData">All data sync. Have a nice day.</alert>
+                    <alert type="warning" ng-show="ticketCtrl.fetchingData">Please wait. Fetching data from server.</alert>
+                </div>
+            </div><!-- / .row Fetching data message -->
+
+            <!-- Pagination bar -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <pagination total-items="ticketCtrl.tickets.length"
+                                items-per-page="ticketCtrl.itemsPerPage"
+                                max_size="7"
+                                ng-model="ticketCtrl.paginationPage"
+                                ng-change="ticketCtrl.paginationBegin = (ticketCtrl.paginationPage - 1) * ticketCtrl.itemsPerPage"
+                                class="pagination-sm"
+                                boundary-links="true">
+                    </pagination>
+                </div>
+            </div><!-- / .row Pagination bar -->
+
             <!-- Top functionality row -->
             <div class="row" style="padding-bottom:0.5em;">
 
-                <!-- newTicketForm button and modal -->
+                <!-- newTicketForm button -->
                 <div class="col-sm-3">
                     <button type="button"
                             class="btn btn-primary"
@@ -92,75 +114,7 @@
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                         New Ticket
                     </button>
-                    <script type="text/ng-template" id="newTicketForm.html">
-                        <div class="modal-header">
-                            <h3 class="modal-title">
-                                New ticket
-                            </h3>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="newTicketPeriodDeadline" class="sr-only">
-                                    <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes">Period. Default: 120 minutes.</span>
-                                    <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes">Deadline. Default: Time in 120 minutes.</span>
-                                </label>
-                                <div class="input-group">
-                                    <div class="input-group-addon">
-                                        <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes"
-                                              id="newTicketPeriodDeadlineIcon"
-                                              title="Period (in minutes)"
-                                              class="glyphicon glyphicon-hourglass"
-                                              aria-hidden="true">
-                                        </span>
-                                        <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes"
-                                              id="newTicketPeriodDeadlineIcon"
-                                              title="Deadline"
-                                              class="glyphicon glyphicon-time"
-                                              aria-hidden="true">
-                                        </span>
-                                    </div>
-                                    <input id="newTicketPeriodDeadline"
-                                           type="text"
-                                           class="form-control"
-                                           aria-describedby="newTicketPeriodDeadlineIcon"
-                                           required
-                                           ng-model="newTicketFormModalCtrl.periodDeadlineField">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="newTicketTags" class="sr-only">
-                                    Tags
-                                </label>
-                                <multiselect id="newTicketTags"
-                                             options="newTicketFormModalCtrl.allTags"
-                                             id-prop="name"
-                                             display-prop="name"
-                                             ng-model="newTicketFormModalCtrl.tags">
-                                </multiselect>
-                            </div>
-                            <div class="form-group">
-                                <label for="newTicketContent" class="sr-only">
-                                    Content
-                                </label>
-                                <textarea id="newTicketContent"
-                                          placeholder="Content"
-                                          class="form-control"
-                                          rows="3"
-                                          required
-                                          ng-model="newTicketFormModalCtrl.content">
-                                </textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">
-                                Save
-                            </button>
-                            <button type="button" class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">
-                                Cancel
-                            </button>
-                        </div>
-                    </script>
-                </div><!-- / .col-sm-3 newTicketForm button and modal -->
+                </div><!-- / .col-sm-3 newTicketForm button -->
 
                 <!-- Show remaining time in minutes checkbox -->
                 <div class="col-sm-3">
@@ -247,11 +201,12 @@
                     <tr ng-repeat="ticket in ticketCtrl.tickets |
                                    filter : ticketCtrl.search |
                                    filter : ticketCtrl.closedFilter |
-                                   orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse">
+                                   orderBy : ticketCtrl.sortColumn : ticketCtrl.reverse |
+                                   limitTo : ticketCtrl.itemsPerPage : ticketCtrl.paginationBegin">
 
                         <!-- Ticket ID -->
                         <td>
-                            <span ng-show="ticket.status === 'Closed'">
+                            <span ng-show="ticket.status === 3">
                                 <span title="Ticket is closed"
                                       class="glyphicon glyphicon-ok"
                                       aria-hidden="true">
@@ -265,21 +220,21 @@
                             </span>
                         </td><!-- / Ticket ID -->
 
-                        <!-- Ticket content, truncated, with tags and form to update the content -->
+                        <!-- Ticket content and tags, truncated, with tags and form to update the content -->
                         <td ng-click="ticketCtrl.userChangePerm ? ticket.updatingTicketContentAndTags = true : null">
 
                             <!-- Ticket content and tags -->
                             <span ng-hide="ticket.updatingTicketContentAndTags">
                                 <span ng-repeat="tag in ticket.tags"
-                                      class="label label-{{ tag.color_css_class }}"
+                                      class="label label-{{ ticket.getColorCssClass(tag) }}"
                                       style="margin-right:0.3em;">
-                                      {{ tag.name }}
+                                      {{ tag }}
                                 </span>
                                 {{ ticket.content | limitTo : ticketCtrl.limit }}
                                 <span ng-show="ticket.isLong()">…</span>
                             </span><!-- / Ticket content and tags -->
 
-                            <!-- Ticket content update form-->
+                            <!-- Ticket content and tags update form-->
                             <form role="form"
                                   ng-show="ticket.updatingTicketContentAndTags"
                                   ng-submit="$event.stopPropagation();
@@ -287,12 +242,15 @@
                                              ticket.updatingTicketContentAndTags = false">
                                 <div class="form-group">
                                     <label for="updateTicketTags" class="sr-only">Tags</label>
-                                    <multiselect id="updateTicketTags"
-                                                 ng-model="ticket.tmpTags"
-                                                 options="ticketCtrl.allTags"
-                                                 id-prop="name"
-                                                 display-prop="name">
-                                    </multiselect>
+                                    <div id="updateTicketTags">
+                                        <div ng-repeat="tag in ticketCtrl.choices.tags" class="checkbox">
+                                            <label>
+                                                <input type="checkbox"
+                                                       ng-model="ticket.tmpTags[$index]">
+                                                {{ tag.display_name }}
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="updateTicketContent" class="sr-only">Content</label>
@@ -310,22 +268,21 @@
                                 <button type="button"
                                         class="btn btn-default"
                                         ng-click="$event.stopPropagation();
-                                                  ticket.tmpTags = ticket.tags;
                                                   ticket.tmpContent = ticket.content;
                                                   ticket.updatingTicketContentAndTags = false">
                                     Cancel
                                 </button>
-                            </form><!-- / Ticket content update form-->
+                            </form><!-- / Ticket content and tags update form-->
 
-                        </td><!-- / Ticket content, truncated, with tags and form to update the content -->
+                        </td><!-- / Ticket content and tags, truncated, with tags and form to update the content -->
 
                         <!-- Ticket status with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
-                            {{ ticket.status }}
+                            {{ ticket.getStatusDisplay() }}
                             <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
-                                <li ng-repeat="choice in ticketCtrl.options.actions.METHOD.status.choices">
+                                <li ng-repeat="choice in ticketCtrl.choices.status">
                                     <a role="button" ng-click="ticket.change({'status': choice.value})">
-                                        {{ choice.value }}
+                                        {{ choice.display_name }}
                                     </a>
                                 </li>
                             </ul>
@@ -335,7 +292,7 @@
                         <td class="dropdown" dropdown dropdown-toggle>
                             {{ ticket.priority }}
                             <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
-                                <li ng-repeat="choice in ticketCtrl.options.actions.METHOD.priority.choices">
+                                <li ng-repeat="choice in ticketCtrl.choices.priority">
                                     <a role="button" ng-click="ticket.change({'priority': choice.value})">
                                         {{ choice.value }}
                                     </a>
@@ -345,11 +302,11 @@
 
                         <!-- Ticket assignee with dropdown to change it -->
                         <td class="dropdown" dropdown dropdown-toggle>
-                            {{ ticket.assignee.name }}
+                            {{ ticket.assignee }}
                             <ul class="dropdown-menu" ng-show="ticketCtrl.userChangePerm">
-                                <li ng-repeat="user in ticketCtrl.allUsers">
-                                    <a role="button" ng-click="ticket.change({'assignee': {'id': user.id, 'name': user.name}})">
-                                        {{ user.name }}
+                                <li ng-repeat="choice in ticketCtrl.choices.assignee">
+                                    <a role="button" ng-click="ticket.change({'assignee': choice.value})">
+                                        {{ choice.display_name }}
                                     </a>
                                 </li>
                             </ul>
@@ -413,8 +370,8 @@
                                 <button type="button"
                                         title="Close ticket"
                                         class="btn btn-xs btn-success"
-                                        ng-show="ticket.status !== 'Closed' && ticketCtrl.userChangePerm"
-                                        ng-click="ticket.change({'status': 'Closed'})">
+                                        ng-show="ticket.status !== 3 && ticketCtrl.userChangePerm"
+                                        ng-click="ticket.change({'status': 3})">
                                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                     <span class="sr-only">Close ticket</span>
                                 </button>
@@ -444,6 +401,65 @@
         </footer>
 
     </div><!-- / Main container -->
+
+    <!-- newTicketForm modal -->
+    <script type="text/ng-template" id="newTicketForm.html">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                New ticket
+            </h3>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="newTicketPeriodDeadline" class="sr-only">
+                    <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes">Period. Default: 120 minutes.</span>
+                    <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes">Deadline. Default: Time in 120 minutes.</span>
+                </label>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <span ng-show="newTicketFormModalCtrl.showRemainingTimeInMinutes"
+                              id="newTicketPeriodDeadlineIcon"
+                              title="Period (in minutes)"
+                              class="glyphicon glyphicon-hourglass"
+                              aria-hidden="true">
+                        </span>
+                        <span ng-hide="newTicketFormModalCtrl.showRemainingTimeInMinutes"
+                              id="newTicketPeriodDeadlineIcon"
+                              title="Deadline"
+                              class="glyphicon glyphicon-time"
+                              aria-hidden="true">
+                        </span>
+                    </div>
+                    <input id="newTicketPeriodDeadline"
+                           type="text"
+                           class="form-control"
+                           aria-describedby="newTicketPeriodDeadlineIcon"
+                           required
+                           ng-model="newTicketFormModalCtrl.periodDeadlineField">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="newTicketContent" class="sr-only">
+                    Content
+                </label>
+                <textarea id="newTicketContent"
+                          placeholder="Content"
+                          class="form-control"
+                          rows="3"
+                          required
+                          ng-model="newTicketFormModalCtrl.content">
+                </textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="newTicketFormModalCtrl.save()">
+                Save
+            </button>
+            <button type="button" class="btn btn-default" ng-click="newTicketFormModalCtrl.cancel()">
+                Cancel
+            </button>
+        </div>
+    </script><!-- / newTicketForm modal -->
 
 {% endverbatim %}
 
