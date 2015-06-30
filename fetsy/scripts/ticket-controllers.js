@@ -11,8 +11,9 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
     '$modal',
     '$q',
     '$timeout',
+    '$window',
     'setupTableSearchAndSort',
-    function ( $document, $http, $modal, $q, $timeout, setupTableSearchAndSort ) {
+    function ( $document, $http, $modal, $q, $timeout, $window, setupTableSearchAndSort ) {
         var ticketCtrl = this;
 
         // Setup ticket manage permission for the current user. Get the
@@ -102,7 +103,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                     if (tagList[i]) {
                         changedData.tags.push(ticketCtrl.choices.tags[i].display_name);
                     }
-                };
+                }
             }
             return $http.patch( [ baseRestUrl, 'tickets', ticket.id, '' ].join('/'), changedData )
                 .success(function ( data, status, headers, config ) {
@@ -111,6 +112,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 })
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
+                    $window.location.reload();
                 });
         };
 
@@ -166,36 +168,25 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                 })
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
+                    $window.location.reload();
                 });
         };
 
-        // Fetching options for list URL.
-        ticketCtrl.optionsFetch = function ( isRetrieveOptionsFetch ) {
-            var methodKey = isRetrieveOptionsFetch ? 'PUT' : 'POST';
-            var url = [ baseRestUrl, 'tickets', '' ].join('/');
-            if ( isRetrieveOptionsFetch ) {
-                // TODO: Do not assume ticket #1 existing but take only one
-                //       possible ticket.
-                url +=  '1/';
-            }
-            return $http({ 'method': 'OPTIONS', 'url': url })
+        // Fetching options.
+        ticketCtrl.optionsFetch = function ( ) {
+            return $http({ 'method': 'OPTIONS', 'url': [ baseRestUrl, 'tickets', '' ].join('/') })
                 .success(function ( data, status, headers, config ) {
                     // Save choices data.
                     ticketCtrl.choices = data.ticket_choices;
                 })
                 .error(function ( data, status, headers, config ) {
                     alert('There was an error. Please reload the page.');
+                    $window.location.reload();
                 });
         };
 
         // Now go: Make single options fetch and then ticket fetch and start timeout.
-        var promises = [];
-        if ( ticketCtrl.userAddPerm ) {
-            promises.push(ticketCtrl.optionsFetch(false));
-        } else if ( ticketCtrl.userChangePerm ) {
-            promises.push(ticketCtrl.optionsFetch(true));
-        }
-        $q.all(promises).then(ticketCtrl.fetch);
+        ticketCtrl.optionsFetch().then(ticketCtrl.fetch);
 
         // Setup form for a new ticket via angular ui bootstrap modal.
         ticketCtrl.newTicketForm = function () {
@@ -217,6 +208,7 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
                     })
                     .error(function ( data, status, headers, config ) {
                         alert('There was an error. Please reload the page.');
+                        $window.location.reload();
                     });
             });
         };
