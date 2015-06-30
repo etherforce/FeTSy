@@ -1,8 +1,6 @@
 import json
 import logging
 
-from django.contrib.auth.models import User
-
 from .models import Ticket
 from .serializers import TicketSerializer
 
