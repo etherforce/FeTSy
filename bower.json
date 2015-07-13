@@ -6,11 +6,12 @@
     "angular-bootstrap": "~0.13.0",
     "bootstrap": "~3.3.5",
     "html5shiv": "~3.7.2",
-    "respond": "~1.4.2"
+    "respond": "~1.4.2",
+    "moment": "~2.10.3"
   },
-  "overrides":{
+  "overrides": {
     "bootstrap": {
-      "main":[
+      "main": [
         "dist/js/bootstrap.js",
         "dist/css/bootstrap.css",
         "dist/fonts/glyphicons-halflings-regular.eot",

@@ -42,6 +42,7 @@ angular.module( 'FeTSyTicketTableHead', [] )
                 return 'glyphicon-time';
             }
         };
+        periodDeadlineHeader.sortingDisabled = true;
 
         // Define all other table headers and put them together.
         ticketCtrl.headers = [
@@ -64,10 +65,12 @@ angular.module( 'FeTSyTicketTableHead', [] )
         ticketCtrl.sortColumn = ticketCtrl.headers[0].sortKey;
         ticketCtrl.reverse = true;
         ticketCtrl.toggleSort = function ( index ) {
-            if ( ticketCtrl.sortColumn === ticketCtrl.headers[index].sortKey ) {
-                ticketCtrl.reverse = !ticketCtrl.reverse;
+            if ( !ticketCtrl.headers[index].sortingDisabled ) {
+                if ( ticketCtrl.sortColumn === ticketCtrl.headers[index].sortKey ) {
+                    ticketCtrl.reverse = !ticketCtrl.reverse;
+                }
+                ticketCtrl.sortColumn = ticketCtrl.headers[index].sortKey;
             }
-            ticketCtrl.sortColumn = ticketCtrl.headers[index].sortKey;
         };
 
         // Setup pagination.

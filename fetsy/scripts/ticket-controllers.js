@@ -224,31 +224,25 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         // Default period is 120 minutes.
         var defaultPeriod = 120;
         this.showRemainingTimeInMinutes = showRemainingTimeInMinutes;
-        this.periodDeadlineField = this.showRemainingTimeInMinutes ? String(defaultPeriod) : new Date(Date.now() + defaultPeriod * 60 * 1000).toLocaleTimeString().slice(0,-3);
+        this.periodDeadlineField = this.showRemainingTimeInMinutes ? String(defaultPeriod) : moment().add(defaultPeriod, 'minutes').format('YYYY-MM-DD HH:mm');
         this.save = function () {
             // Validate period or deadline input field depending on
             // showRemainingTimeInMinutes flag.
-            var regex = this.showRemainingTimeInMinutes ? /^[0-9]+$/ : /^[0-2][0-9]:[0-5][0-9]$/;
-            var periodDeadlineFieldMatch = this.periodDeadlineField.match(regex);
-            if ( !this.showRemainingTimeInMinutes && periodDeadlineFieldMatch && this.periodDeadlineField.split(':')[0] > 23 ) {
-                periodDeadlineFieldMatch = null;
+            var period;
+            if ( this.showRemainingTimeInMinutes ) {
+                if ( this.periodDeadlineField.match(/^[0-9]+$/) ) {
+                    period = this.periodDeadlineField;
+                }
+            } else {
+                var parsedDate = moment(this.periodDeadlineField);
+                if ( parsedDate.isValid() ) {
+                    // Hint: We add one minute here to get real 120 minutes because the seconds are be stripped off above.
+                    period = parsedDate.diff(moment(), 'minutes') + 1;
+                }
             }
             // Save ticket if the period or deadline field is valid and there
             // is some content.
-            if ( periodDeadlineFieldMatch && this.content ) {
-                var period;
-                if ( showRemainingTimeInMinutes ) {
-                    // Just take the given value as period.
-                    period = this.periodDeadlineField;
-                } else {
-                    // Caluclate time delta between now and given time.
-                    var now = new Date();
-                    period = (this.periodDeadlineField.split(':')[0] - now.getHours()) * 60 + (this.periodDeadlineField.split(':')[1] - now.getMinutes());
-                    if ( period <= 0 ) {
-                        // If negative, assume the next day so add 24 * 60 = 1440 minutes.
-                        period += 1440;
-                    }
-                }
+            if ( period && this.content ) {
                 $modalInstance.close({ 'content': this.content, 'period': period, 'tags': [] });
             } else {
                 $modalInstance.dismiss('cancel');
