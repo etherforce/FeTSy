@@ -36,23 +36,22 @@ angular.module( 'FeTSyTicketControllers', [ 'ui.bootstrap', 'FeTSyTicketTableHea
         // Helper function to update some calculated properties.
         Ticket.prototype.updateProperties = function () {
             var ticket = this;
-            var created = new Date(ticket.created);
+            var created = moment(ticket.created);
 
             // Set title for info popover.
-            ticket.title = 'Ticket #' + ticket.id + ' | ' + created.toLocaleString();
+            ticket.title = 'Ticket #' + ticket.id + ' | ' + created.format('YYYY-MM-DD HH:mm');
 
             // Caluclate deadline and the properties deadlineTimeDeltaMinutes
             // and deadlineDateString.
-            ticket.deadline = created.getTime() + ticket.period * 60 * 1000;
-            ticket.deadlineTimeDeltaMinutes = Math.trunc((ticket.deadline - Date.now()) / 1000 / 60);
+            var deadline = created.add(ticket.period, 'minutes');
+            ticket.deadlineTimeDeltaMinutes = deadline.diff(moment(), 'minutes');
 
-            var deadlineDate = new Date(ticket.deadline);
-            if ( new Date().getDate() == deadlineDate.getDate() ) {
-                ticket.deadlineDateString = 'Today' + ' ' + deadlineDate.toLocaleTimeString().slice(0,-3);
-            } else if ( new Date().getDate() + 1 == deadlineDate.getDate() ) {
-                ticket.deadlineDateString = 'Tomorrow' + ' ' + deadlineDate.toLocaleTimeString().slice(0,-3);
+            if ( deadline.isSame(moment(), 'day') ) {
+                ticket.deadlineDateString = 'Today' + ' ' + deadline.format('HH:mm');
+            } else if ( deadline.isSame(moment().add(1, 'day'), 'day') ) {
+                ticket.deadlineDateString = 'Tomorrow' + ' ' + deadline.format('HH:mm');
             } else {
-                ticket.deadlineDateString = deadlineDate.toLocaleString().slice(0,-3);
+                ticket.deadlineDateString = deadline.format('YYYY-MM-DD HH:mm');
             }
 
             // Add tmpContent and tmpPeriod properties. These are
