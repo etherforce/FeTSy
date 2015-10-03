@@ -2,7 +2,8 @@
  * Initial variables.
  */
 
-var concat = require('gulp-concat'),
+var coffee = require('gulp-coffee'),
+    concat = require('gulp-concat'),
     gulp = require('gulp'),
     gulpFilter = require('gulp-filter'),
     jshint = require('gulp-jshint'),
@@ -53,7 +54,7 @@ gulp.task('js-all', ['js', 'js-special', 'js-libs', 'js-libs-special'], function
 // file js/fetsy.js. The file ie10-viewport-bug-workaround.js is excluded.
 gulp.task('js', function () {
     return gulp.src(path.join('fetsy', 'scripts', '*.js'))
-        .pipe(gulpFilter([ '*', '!ie10-viewport-bug-workaround.js' ]))
+        .pipe(gulpFilter(['*', '!ie10-viewport-bug-workaround.js']))
         .pipe(concat('fetsy.js'))
         .pipe(uglify())
         .pipe(gulp.dest(path.join(output_directory, 'js')));
@@ -133,6 +134,16 @@ gulp.task('jshint', function () {
     return gulp.src(['gulpfile.js', path.join('fetsy', 'scripts', '*.js')])
         .pipe(jshint())
         .pipe(jshint.reporter('default'));
+});
+
+// Compiles Literate CoffeeScript to JavaScript.
+
+gulp.task('coffee', function () {
+    return gulp.src(path.join('fetsy', 'scripts', '*.md'))
+        .pipe(coffee({
+            literate: true
+        }))
+        .pipe(gulp.dest(path.join(output_directory, 'js')));
 });
 
 // Watches changes on project's HTML, JavaScript and CSS.
