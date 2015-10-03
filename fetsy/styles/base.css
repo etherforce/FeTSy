@@ -1,0 +1,16 @@
+body {
+    padding-top: 3.5em;
+}
+.ticket-row {
+    padding: 1em;
+    border-top: 1px solid #DDD;
+}
+.ticket-row-last {
+    border-bottom: 1px solid #DDD;
+}
+.ticket-list-header {
+    font-weight: bold;
+}
+.ticket-row-odd {
+    background-color: #F9F9F9;
+}

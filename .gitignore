@@ -4,5 +4,8 @@
 bower_components/
 node_modules/
 
+# Files processed by gulp
+dist/
+
 # Private development data
 private/
