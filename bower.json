@@ -2,7 +2,7 @@
   "name": "FeTSy",
   "private": true,
   "dependencies": {
-    "angularjs": "~1.4.7",
+    "angular": "~1.4.7",
     "angular-bootstrap": "~0.13.4",
     "bootstrap": "~3.3.5",
     "html5shiv": "~3.7.2",

@@ -3,9 +3,9 @@
  */
 
 var coffee = require('gulp-coffee'),
+    coffeelint = require('gulp-coffeelint'),
     concat = require('gulp-concat'),
     gulp = require('gulp'),
-    gulpFilter = require('gulp-filter'),
     jshint = require('gulp-jshint'),
     mainBowerFiles = require('main-bower-files'),
     minifyCSS = require('gulp-minify-css'),
@@ -48,13 +48,13 @@ gulp.task('html', function () {
  * JavaScript files.
  */
 
-gulp.task('js-all', ['js', 'js-special', 'js-libs', 'js-libs-special'], function () {});
+gulp.task('js-all', ['coffee', 'js-special', 'js-libs', 'js-libs-special'], function () {});
 
-// Catches all JavaScript files for this project and concats them to one
-// file js/fetsy.js. The file ie10-viewport-bug-workaround.js is excluded.
-gulp.task('js', function () {
-    return gulp.src(path.join('fetsy', 'scripts', '*.js'))
-        .pipe(gulpFilter(['*', '!ie10-viewport-bug-workaround.js']))
+// Catches all JavaScript files for this project, compiles Literate
+// CoffeeScript to JavaScript and concats the file to one file js/fetsy.js.
+gulp.task('coffee', function () {
+    return gulp.src(path.join('fetsy', 'scripts', '*.coffee.md'))
+        .pipe(coffee({ literate: true }))
         .pipe(concat('fetsy.js'))
         .pipe(uglify())
         .pipe(gulp.dest(path.join(output_directory, 'js')));
@@ -122,7 +122,7 @@ gulp.task('fonts-libs', function () {
  * Gulp default task.
  */
 
-gulp.task('default', ['html', 'js-all', 'css-all'], function() {});
+gulp.task('default', ['html', 'js-all', 'css-all'], function () {});
 
 
 /**
@@ -136,19 +136,19 @@ gulp.task('jshint', function () {
         .pipe(jshint.reporter('default'));
 });
 
-// Compiles Literate CoffeeScript to JavaScript.
-
-gulp.task('coffee', function () {
-    return gulp.src(path.join('fetsy', 'scripts', '*.md'))
-        .pipe(coffee({
-            literate: true
-        }))
-        .pipe(gulp.dest(path.join(output_directory, 'js')));
+// Checks CoffeeScript using CoffeeLint.
+gulp.task('coffeelint', function () {
+    return gulp.src(path.join('fetsy', 'scripts', '*.coffee.md'))
+        .pipe(coffeelint({ indentation: { value: 4 } }))
+        .pipe(coffeelint.reporter('default'));
 });
+
+// Checks JavaScript and CoffeeScript.
+gulp.task('hint', ['jshint', 'coffeelint'], function () {});
 
 // Watches changes on project's HTML, JavaScript and CSS.
 gulp.task('watch', function () {
   gulp.watch(path.join('fetsy', 'fetsy.html'), ['html']);
-  gulp.watch(path.join('fetsy', 'scripts', '*.js'), ['js']);
+  gulp.watch(path.join('fetsy', 'scripts', '*.coffee.md'), ['coffee']);
   gulp.watch(path.join('fetsy', 'styles', '*.css'), ['css']);
 });
