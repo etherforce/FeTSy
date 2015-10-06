@@ -212,7 +212,8 @@
                                 orderBy : tickets.sortColumn : tickets.reverse |
                                 limitTo : tickets.itemsPerPage : tickets.getPaginationBegin() |
                                 filter : tickets.getSearch() |
-                                filter: tickets.closedFilter"
+                                filter: tickets.closedFilter
+                                as filteredTickets"
                      ng-class-odd="'ticket-row-odd'"
                      ng-class="$last ? 'ticket-row-last' : null">
                     <div ng-repeat="header in tickets.headers"
@@ -227,6 +228,14 @@
                     </div>
                     <div class="col-sm-1">Buttons</div>
                 </div><!-- / .row Ticket list body -->
+
+                <!-- Ticket list body empty -->
+                <div class="row ticket-row ticket-row-odd ticket-row-last"
+                     ng-show="filteredTickets.length == 0">
+                     <div class="col-sm-6 col-sm-offset-3">
+                        No tickets found. Try to move back in the pagination bar or reset the search field.
+                     </div>
+                </div><!-- / .row Ticket list body empty -->
 
             </div><!-- / Ticket list -->
 
