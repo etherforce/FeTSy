@@ -101,9 +101,7 @@ gulp.task('css', function () {
 // Catches all CSS files from all bower components and concats them to one
 // file css/fetsy-libs.css.
 gulp.task('css-libs', function () {
-    return gulp.src(mainBowerFiles({
-            filter: /\.css$/
-        }))
+    return gulp.src(mainBowerFiles({ filter: /\.css$/ }))
         .pipe(concat('fetsy-libs.css'))
         .pipe(minifyCSS())
         .pipe(gulp.dest(path.join(output_directory, 'css')));
@@ -148,7 +146,7 @@ gulp.task('hint', ['jshint', 'coffeelint'], function () {});
 
 // Watches changes on project's HTML, JavaScript and CSS.
 gulp.task('watch', function () {
-  gulp.watch(path.join('fetsy', 'fetsy.html'), ['html']);
-  gulp.watch(path.join('fetsy', 'scripts', '*.coffee.md'), ['coffee']);
-  gulp.watch(path.join('fetsy', 'styles', '*.css'), ['css']);
+    gulp.watch(path.join('fetsy', 'fetsy.html'), ['html']);
+    gulp.watch(path.join('fetsy', 'scripts', '*.coffee.md'), ['coffee']);
+    gulp.watch(path.join('fetsy', 'styles', '*.css'), ['css']);
 });
