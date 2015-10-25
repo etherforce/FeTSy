@@ -9,6 +9,7 @@ var coffee = require('gulp-coffee'),
     jshint = require('gulp-jshint'),
     mainBowerFiles = require('main-bower-files'),
     minifyCSS = require('gulp-minify-css'),
+    rename = require('gulp-rename');
     path = require('path'),
     uglify = require('gulp-uglify');
 
@@ -40,6 +41,7 @@ var specialJSFilter = function (exclude) {
 // Catches fetsy.html and copies it to the output directory.
 gulp.task('html', function () {
     return gulp.src(path.join('fetsy','fetsy.html'))
+        .pipe(rename('index.html'))
         .pipe(gulp.dest(path.join(output_directory)));
 });
 
