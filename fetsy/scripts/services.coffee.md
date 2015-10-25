@@ -60,7 +60,8 @@ Append a factory recipe with a Header constructor.
 Append a factory recipe to return all tickets loaded from the backend. TODO
 
     .factory 'ticketListBodyFactory', [
-        ->
+        'Ticket'
+        (Ticket) ->
             tickets: [
                     id: 1
                     content: 'Hallo'
@@ -91,5 +92,5 @@ Append a factory recipe to return all tickets loaded from the backend. TODO
                     periodOrDeadline: -11
             ]
 
-
+            tickets: Ticket.getAll()
     ]
