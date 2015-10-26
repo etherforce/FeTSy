@@ -210,9 +210,9 @@
                 <div class="row ticket-row"
                      ng-repeat="ticket in tickets.all |
                                 orderBy : tickets.sortColumn : tickets.reverse |
-                                limitTo : tickets.itemsPerPage : tickets.getPaginationBegin() |
                                 filter : tickets.getSearch() |
-                                filter: tickets.closedFilter
+                                filter: tickets.closedFilter |
+                                limitTo : tickets.itemsPerPage : tickets.getPaginationBegin()
                                 as filteredTickets"
                      ng-class-odd="'ticket-row-odd'"
                      ng-class="$last ? 'ticket-row-last' : null">
@@ -232,8 +232,8 @@
                 <!-- Ticket list body empty -->
                 <div class="row ticket-row ticket-row-odd ticket-row-last"
                      ng-show="filteredTickets.length == 0">
-                     <div class="col-sm-6 col-sm-offset-3">
-                        No tickets found. Try to move back in the pagination bar or reset the search field.
+                     <div class="col-sm-8 col-sm-offset-2">
+                        No tickets found. Try to move back in the pagination bar or reset the checkboxes or search field.
                      </div>
                 </div><!-- / .row Ticket list body empty -->
 
