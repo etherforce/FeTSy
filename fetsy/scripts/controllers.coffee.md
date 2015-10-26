@@ -46,14 +46,14 @@ Append a controller for the pagination bar.
 
     .controller 'PaginationCtrl', [
         'ticketFilterValues'
-        'ticketListBodyFactory'
-        (ticketFilterValues, ticketListBodyFactory) ->
+        'Ticket'
+        (ticketFilterValues, Ticket) ->
 
 The pagination directive from Angular UI Bootstrap is used. Here we get the
 settings out of our `ticketFilterValues` store and the hook for the change
 event.
 
-            @totalItems = ticketListBodyFactory.tickets.length
+            @totalItems = Ticket.getAll().length
             @itemsPerPage = ticketFilterValues.itemsPerPage
             @change = =>
                 ticketFilterValues.paginationBegin =
@@ -113,8 +113,10 @@ Append a controller for the ticket list/ticket table.
     .controller 'TicketListCtrl', [
         'ticketFilterValues'
         'ticketListHeaderFactory'
-        'ticketListBodyFactory'
-        (ticketFilterValues, ticketListHeaderFactory, ticketListBodyFactory) ->
+        'DS'
+        '$scope'
+        'Ticket'
+        (ticketFilterValues, ticketListHeaderFactory, DS, $scope, Ticket) ->
 
 Setup values as given by the pagination bar and top functionality row to
 control the filters used in the ngRepeat directive.
@@ -127,7 +129,7 @@ control the filters used in the ngRepeat directive.
             @closedFilter = (value, index) ->
                 not ticketFilterValues.closed or value.status isnt 'Closed'
 
-Setup the headers of the ticket listTtables. Use some fix initial values.
+Setup the headers of the ticket list/table. Use some fix initial values.
 Setup the default sorting: first column with reversed sorting.
 TODO: Change hourglass icon to time in some circumstances.
 
@@ -155,7 +157,6 @@ TODO: Change hourglass icon to time in some circumstances.
                     col: '1'
                     icon: 'fire'
 
-
                 new ticketListHeaderFactory.Header
                     sortKey: 'assignee'
                     displayName: 'Assignee'
@@ -166,7 +167,7 @@ TODO: Change hourglass icon to time in some circumstances.
                     sortKey: 'periodOrDeadline'
                     displayName: 'Period or deadline'
                     col: '2'
-                    icon: 'hourglass'
+                    icon: 'hourglass'  # 'time'
             ]
             @sortColumn = 'id'
             @reverse = true
@@ -183,7 +184,25 @@ sorted column or the direction.
 
 Append all tickets to the body.
 
-            @all = ticketListBodyFactory.tickets
+            $scope.$watch (
+                ->
+                    DS.lastModified('Ticket')
+                    return
+                =>
+                    @all = DS.getAll 'Ticket'
+                    return
+            )
+
+
+
+            setTimeout(
+                ->
+                    Ticket.inject
+                        id: 123
+                        content: 'asdasdasd'
+                    return
+                2000
+            )
 
             return
     ]

@@ -42,6 +42,14 @@
                }
             }
          ]
+      },
+      {
+         "type": "guest",
+         "executable": "python",
+         "arguments": ["hello.py"],
+         "options": {
+            "workdir": ".."
+         }
       }
    ]
 }
