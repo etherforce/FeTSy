@@ -69,22 +69,26 @@
             <!-- Connection open message -->
             <div class="row" ng-controller="ConnectionMessageCtrl as connectionMessage">
                 <div class="col-sm-offset-2 col-sm-8">
-                    <alert type="success" ng-show="connectionMessage.connectionOpen">Connection established. Have a nice day.</alert>
-                    <alert type="warning" ng-hide="connectionMessage.connectionOpen">Connection failed. Please reload the page or call the server administrator.</alert>
+                    <uib-alert type="success" ng-show="connectionMessage.connectionOpen">
+                        Connection established. Have a nice day.
+                    </uib-alert>
+                    <uib-alert type="warning" ng-hide="connectionMessage.connectionOpen">
+                        Connection failed. Please reload the page or call the server administrator.
+                    </uib-alert>
                 </div>
             </div><!-- / .row Connection open message -->
 
             <!-- Pagination bar -->
             <div class="row" ng-controller="PaginationCtrl as pagination">
                 <div class="col-sm-12">
-                    <pagination total-items="pagination.totalItems"
+                    <uib-pagination total-items="pagination.totalItems"
                                 items-per-page="pagination.itemsPerPage"
                                 max_size="7"
                                 ng-model="pagination.paginationPage"
                                 ng-change="pagination.change()"
-                                class="pagination-sm"
-                                boundary-links="true">
-                    </pagination>
+                                boundary-links="true"
+                                class="pagination-sm">
+                    </uib-pagination>
                 </div>
             </div><!-- / .row Pagination bar -->
 
@@ -168,7 +172,10 @@
                          class="col-xs-2 visible-xs-inline"
                          ng-click="tickets.toggleSort(header.sortKey)">
                         <a role="button">
-                            <span ng-show="$first">#</span>
+                            <span ng-show="$first"
+                                  title="{{ header.displayName }}">
+                                #
+                            </span>
                             <span ng-hide="$first"
                                   title="{{ header.displayName }}"
                                   class="glyphicon"
@@ -189,7 +196,10 @@
                          ng-class="header.col"
                          ng-click="tickets.toggleSort(header.sortKey)">
                         <a role="button">
-                            <span ng-show="$first">#</span>
+                            <span ng-show="$first"
+                                  title="{{ header.displayName }}">
+                                #
+                            </span>
                             <span ng-hide="$first"
                                   title="{{ header.displayName }}"
                                   class="glyphicon"
@@ -214,8 +224,8 @@
                                 filter: tickets.closedFilter |
                                 limitTo : tickets.itemsPerPage : tickets.getPaginationBegin()
                                 as filteredTickets"
-                     ng-class-odd="'ticket-row-odd'"
-                     ng-class="$last ? 'ticket-row-last' : null">
+                     ng-class-odd="'ticket-row-odd'">
+
                     <div ng-repeat="header in tickets.headers"
                          ng-class="header.col">
                         <span ng-hide="$first"
@@ -227,15 +237,43 @@
                         {{ ticket[header.sortKey] }}
                     </div>
                     <div class="col-sm-1">Buttons</div>
+
                 </div><!-- / .row Ticket list body -->
 
                 <!-- Ticket list body empty -->
-                <div class="row ticket-row ticket-row-odd ticket-row-last"
+                <div class="row ticket-row ticket-row-odd"
                      ng-show="filteredTickets.length == 0">
+
                      <div class="col-sm-8 col-sm-offset-2">
                         No tickets found. Try to move back in the pagination bar or reset the checkboxes or search field.
                      </div>
+
                 </div><!-- / .row Ticket list body empty -->
+
+                <!-- Second ticket list header -->
+                <div class="row ticket-row ticket-row-last ticket-list-header"
+                     ng-class="filteredTickets.length === 0 || filteredTickets.length % 2 !== 0 ? '' : 'ticket-row-odd'">
+
+                    <!-- Second header for extra small devices -->
+                    <!-- None -->
+
+                    <!-- Second header for small devices and greater -->
+                    <div ng-repeat="header in tickets.headers"
+                         class="hidden-xs"
+                         ng-class="header.col">
+                        <span ng-show="$first"
+                              title="{{ header.displayName }}">
+                            #
+                        </span>
+                        <span ng-hide="$first"
+                              title="{{ header.displayName }}"
+                              class="glyphicon"
+                              ng-class="header.iconCSSClass"
+                              aria-hidden="true">
+                        </span>
+                    </div>
+
+                </div><!-- / .row Second ticket list header -->
 
             </div><!-- / Ticket list -->
 

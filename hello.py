@@ -38,11 +38,18 @@ def returnlistOfTickets(*args, **kwargs):
         }
     ]
 
+
+def newTicket(*args, **kwargs):
+    print('New Ticket')
+    print(args)
+    print(kwargs)
+
+
 class MyComponent(ApplicationSession):
     @coroutine
     def onJoin(self, details):
         yield from self.register(returnlistOfTickets, 'org.fetsy.listTickets')
-        # yield from self.subscribe(...)
+        yield from self.subscribe(newTicket, 'org.fetsy.newTicket')
         # yield from self.register(...)
 
 

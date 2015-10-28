@@ -9,7 +9,7 @@ Now setup some services (factory recipes, value recipes) we use.
 
 ## User's Permission factory
 
-Append a factory recipe to the app which keeps the user's permissions.
+Append a factory recipe to the app which keeps the user's permissions. TODO
 
     .factory 'userHasPermissionFactory', [
         ->
@@ -29,13 +29,13 @@ behavior of the ticket list.
 These values control the pagination. The value itemsPerPage is a constant.
 TODO itemsPerPage
 
-        paginationBegin: 0,
+        paginationBegin: 0
         itemsPerPage: 3
 
 These are the initial values for the checkboxes and the search/filter input
 field. TODO Set closed to true.
 
-        remainingTime: false,
+        remainingTime: false
         closed: false
         search: ''
 

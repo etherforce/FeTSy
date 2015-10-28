@@ -11,14 +11,11 @@ angular-bootstrap) as dependency.
 
 ## Controller for navigation bar at the top of the page
 
-Append a controller for the top navigation bar with Login and Logut button.
+Append a controller for the top navigation bar with login and logout button.
 
     .controller 'NavbarCtrl', [
         'userHasPermissionFactory'
         (userHasPermissionFactory) ->
-
-Only let every user to be stuff at the moment.
-
             @userIsStaff = userHasPermissionFactory.isStaff
             return
     ]
@@ -30,12 +27,13 @@ Append a controller for the message about the established connection short
 after the top navigation bar.
 
     .controller 'ConnectionMessageCtrl', [
-        ->
+        '$wamp'
+        ($wamp) ->
 
-Just show that the connection is open at the moment. The alert directive
-from Angular UI Bootstrap is used.
+Just show that the connection is open at the moment. The uib-alert directive
+from Angular UI Bootstrap is used for this. TODO
 
-            @connectionOpen = true
+            @connectionOpen = $wamp.connection.isConnected
             return
     ]
 
@@ -45,20 +43,32 @@ from Angular UI Bootstrap is used.
 Append a controller for the pagination bar.
 
     .controller 'PaginationCtrl', [
+        '$scope'
+        'DS'
         'ticketFilterValues'
-        'Ticket'
-        (ticketFilterValues, Ticket) ->
+        ($scope, DS, ticketFilterValues) ->
 
-The pagination directive from Angular UI Bootstrap is used. Here we get the
+The uib-pagination directive from Angular UI Bootstrap is used. Here we get the
 settings out of our `ticketFilterValues` store and the hook for the change
 event.
 
-            @totalItems = Ticket.getAll().length
             @itemsPerPage = ticketFilterValues.itemsPerPage
             @change = =>
                 ticketFilterValues.paginationBegin =
                     (@.paginationPage - 1) * @.itemsPerPage
                 return
+
+Here we add a watcher to get the number of all tickets.
+
+            $scope.$watch (
+                ->
+                    DS.lastModified('Ticket')
+                    return
+                =>
+                    @totalItems = DS.getAll 'Ticket'
+                        .length
+                    return
+            )
             return
     ]
 
@@ -69,16 +79,35 @@ Append a controller for the row with the new button, the checkboxes and
 the search bar.
 
     .controller 'TopRowCtrl', [
+        '$uibModal'
+        '$wamp'
         'userHasPermissionFactory'
         'ticketFilterValues'
-        (userHasPermissionFactory, ticketFilterValues) ->
+        ($uibModal, $wamp, userHasPermissionFactory, ticketFilterValues) ->
 
 Hook for the button to create a new ticket. Does nothing at the moment.
 Should open a form later.
 
             @newTicketForm =
                 if userHasPermissionFactory.canAddTicket
-                    ->
+                    #->
+                        # $wamp.publish 'org.fetsy.newTicket', [],
+                        #     foo: 'bar'
+                        # return
+
+                    #modalInstance = $uibModal.open
+                    #    animation: true
+                    #    templateUrl: 'myModalContent.html'
+                    #    controller: 'NewTicketFormCtrl'
+
+                    #modalInstance.result.then (
+                    #    (result) ->
+                    #        console.log foo
+                    #        return
+                    #    (reason) ->
+                    #        console.log reason
+                    #        return
+                    #)
                 else
                     null
 
@@ -111,12 +140,11 @@ Value and change event hook for the search/filter input field/bar.
 Append a controller for the ticket list/ticket table.
 
     .controller 'TicketListCtrl', [
+        '$scope'
+        'DS'
         'ticketFilterValues'
         'ticketListHeaderFactory'
-        'DS'
-        '$scope'
-        'Ticket'
-        (ticketFilterValues, ticketListHeaderFactory, DS, $scope, Ticket) ->
+        ($scope, DS, ticketFilterValues, ticketListHeaderFactory) ->
 
 Setup values as given by the pagination bar and top functionality row to
 control the filters used in the ngRepeat directive.
@@ -194,11 +222,24 @@ Append all tickets to the body.
             )
 
 
+TODO: Remove these lines.
 
             setTimeout(
                 ->
-                    Ticket.inject
+                    DS.inject 'Ticket',
                         id: 123
+                        content: 'asdasdasd'
+                    DS.inject 'Ticket',
+                        id: 124
+                        content: 'asdasdasd'
+                    DS.inject 'Ticket',
+                        id: 125
+                        content: 'asdasdasd'
+                    DS.inject 'Ticket',
+                        id: 126
+                        content: 'asdasdasd'
+                    DS.inject 'Ticket',
+                        id: 127
                         content: 'asdasdasd'
                     return
                 2000
