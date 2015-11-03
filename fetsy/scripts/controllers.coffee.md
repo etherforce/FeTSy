@@ -27,13 +27,19 @@ Append a controller for the message about the established connection short
 after the top navigation bar.
 
     .controller 'ConnectionMessageCtrl', [
+        '$scope'
         '$wamp'
-        ($wamp) ->
+        ($scope, $wamp) ->
 
 Just show that the connection is open at the moment. The uib-alert directive
 from Angular UI Bootstrap is used for this. TODO
 
-            @connectionOpen = $wamp.connection.isConnected
+            watchExpression = -> $wamp.connection.isConnected
+            listener = =>
+                @connectionOpen = $wamp.connection.isConnected
+                return
+            $scope.$watch watchExpression, listener
+
             return
     ]
 
@@ -60,15 +66,13 @@ event.
 
 Here we add a watcher to get the number of all tickets.
 
-            $scope.$watch (
-                ->
-                    DS.lastModified('Ticket')
-                    return
-                =>
-                    @totalItems = DS.getAll 'Ticket'
-                        .length
-                    return
-            )
+            watchExpression = -> DS.lastModified('Ticket')
+            listener = =>
+                @totalItems = DS.getAll 'Ticket'
+                    .length
+                return
+            $scope.$watch watchExpression, listener
+
             return
     ]
 
@@ -212,15 +216,11 @@ sorted column or the direction.
 
 Append all tickets to the body.
 
-            $scope.$watch (
-                ->
-                    DS.lastModified('Ticket')
-                    return
-                =>
-                    @all = DS.getAll 'Ticket'
-                    return
-            )
-
+            watchExpression = -> DS.lastModified('Ticket')
+            listener = =>
+                @all = DS.getAll 'Ticket'
+                return
+            $scope.$watch watchExpression, listener
 
 TODO: Remove these lines.
 
