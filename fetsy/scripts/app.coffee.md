@@ -1,7 +1,8 @@
 # Base file for FeTSy AngularJS app
 
 Initiate new angular module with the name 'FeTSy'. Load external libraries
-(AngularWAMP and JSData). Load our services and controllers as dependencies.
+(AngularWAMP and JSData) as dependencies. Load internal services and
+controllers as dependencies.
 
     angular.module 'FeTSy', [
         'js-data'
@@ -13,7 +14,7 @@ Initiate new angular module with the name 'FeTSy'. Load external libraries
 
 ## Setup and open WAMP connection using AngularWAMP (vxWamp)
 
-Configurate the connection. Use 'realm1' als realm.
+Configurate the WAMP connection. Use 'realm1' als realm.
 
     .config [
         '$wampProvider'
@@ -24,7 +25,7 @@ Configurate the connection. Use 'realm1' als realm.
             return
     ]
 
-Open connection during app loading.
+Open WAMP connection during app loading.
 
     .run [
         '$wamp'
@@ -36,7 +37,7 @@ Open connection during app loading.
 
 ## Configurate JSData (js-data).
 
-This does nothing at the moment.
+This does nothing at the moment. TODO: Remove this stuff.
 
     .config [
         'DSProvider'
@@ -65,6 +66,7 @@ to fetch all tickets from server.
         'Ticket'
         ($rootScope, $wamp, Ticket) ->
             $rootScope.$on '$wamp.open', (event, info) ->
+                #TODO: Think about 'fill and merge': info.session.subscribe 'org.fetsy.changedTicket'
                 info.session.call 'org.fetsy.listTickets'
                 .then (result) ->
                     Ticket.ejectAll()

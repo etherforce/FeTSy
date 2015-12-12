@@ -32,7 +32,7 @@ after the top navigation bar.
         ($scope, $wamp) ->
 
 Just show that the connection is open at the moment. The uib-alert directive
-from Angular UI Bootstrap is used for this. TODO
+from Angular UI Bootstrap is used for this.
 
             watchExpression = -> $wamp.connection.isConnected
             listener = =>
@@ -54,9 +54,9 @@ Append a controller for the pagination bar.
         'ticketFilterValues'
         ($scope, DS, ticketFilterValues) ->
 
-The uib-pagination directive from Angular UI Bootstrap is used. Here we get the
-settings out of our `ticketFilterValues` store and the hook for the change
-event.
+The uib-pagination directive from Angular UI Bootstrap is used. Here we get
+the settings out of our `ticketFilterValues` store and the hook for the
+change event.
 
             @itemsPerPage = ticketFilterValues.itemsPerPage
             @change = =>
@@ -90,7 +90,7 @@ the search bar.
         ($uibModal, $wamp, userHasPermissionFactory, ticketFilterValues) ->
 
 Hook for the button to create a new ticket. Does nothing at the moment.
-Should open a form later.
+Should open a form later. TODO: Add form
 
             @newTicketForm =
                 if userHasPermissionFactory.canAddTicket
