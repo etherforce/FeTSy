@@ -94,10 +94,10 @@ Should open a form later. TODO: Add form
 
             @newTicketForm =
                 if userHasPermissionFactory.canAddTicket
-                    #->
-                        # $wamp.publish 'org.fetsy.newTicket', [],
-                        #     foo: 'bar'
-                        # return
+                    ->
+                        $wamp.call 'org.fetsy.newTicket', [],
+                            foo: 'bar'
+                        return
 
                     #modalInstance = $uibModal.open
                     #    animation: true
@@ -221,29 +221,6 @@ Append all tickets to the body.
                 @all = DS.getAll 'Ticket'
                 return
             $scope.$watch watchExpression, listener
-
-TODO: Remove these lines.
-
-            setTimeout(
-                ->
-                    DS.inject 'Ticket',
-                        id: 123
-                        content: 'asdasdasd'
-                    DS.inject 'Ticket',
-                        id: 124
-                        content: 'asdasdasd'
-                    DS.inject 'Ticket',
-                        id: 125
-                        content: 'asdasdasd'
-                    DS.inject 'Ticket',
-                        id: 126
-                        content: 'asdasdasd'
-                    DS.inject 'Ticket',
-                        id: 127
-                        content: 'asdasdasd'
-                    return
-                2000
-            )
 
             return
     ]

@@ -66,12 +66,31 @@ to fetch all tickets from server.
         'Ticket'
         ($rootScope, $wamp, Ticket) ->
             $rootScope.$on '$wamp.open', (event, info) ->
-                #TODO: Think about 'fill and merge': info.session.subscribe 'org.fetsy.changedTicket'
-                info.session.call 'org.fetsy.listTickets'
-                .then (result) ->
-                    Ticket.ejectAll()
-                    Ticket.inject ticket for ticket in result
+                info.session.subscribe 'org.fetsy.changedTicket', (args, kwargs, details) ->
+                    if kwargs.ticket.id?
+                        Ticket.inject kwargs.ticket
+                    else
+                        console.error 'Received invalid data. ID is missing. Received', kwargs.ticket
                     return
+
+                # TODO: Remove timeout and reestablish inner function. It was only for testing.
+                setTimeout(
+                    ->
+                        info.session.call 'org.fetsy.listTickets'
+                        .then (result) ->
+                            for item in result
+                                if item.id?
+                                    ticket = Ticket.get item.id
+                                    if ticket?
+                                        angular.extend item, ticket
+                                    Ticket.inject item
+                                else
+                                    console.error 'Received invalid data. ID is missing. Received', item.ticket
+                            return
+                    5000
+                )
+
+
                 return
             return
     ]

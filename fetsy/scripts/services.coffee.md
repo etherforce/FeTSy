@@ -30,7 +30,7 @@ These values control the pagination. The value itemsPerPage is a constant.
 TODO itemsPerPage
 
         paginationBegin: 0
-        itemsPerPage: 3
+        itemsPerPage: 10
 
 These are the initial values for the checkboxes and the search/filter input
 field. TODO Set closed to true.
