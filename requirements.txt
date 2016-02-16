@@ -1,1 +1,1 @@
-crossbar==0.11.1
+crossbar==0.12.1

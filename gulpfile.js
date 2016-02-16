@@ -2,13 +2,17 @@
  * Initial variables.
  */
 
+// TODO: Remove the next line when support for Node 0.10.x is dropped.
+// See https://github.com/postcss/postcss#nodejs-010-and-the-promise-api
+require('es6-promise').polyfill();
+
 var coffee = require('gulp-coffee'),
     coffeelint = require('gulp-coffeelint'),
     concat = require('gulp-concat'),
     gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     mainBowerFiles = require('main-bower-files'),
-    minifyCSS = require('gulp-minify-css'),
+    cssnano = require('gulp-cssnano'),
     rename = require('gulp-rename');
     path = require('path'),
     uglify = require('gulp-uglify');
@@ -96,7 +100,7 @@ gulp.task('css-all', ['css', 'css-libs', 'fonts-libs'], function () {});
 gulp.task('css', function () {
     return gulp.src(path.join('fetsy', 'styles', '*.css'))
         .pipe(concat('fetsy.css'))
-        .pipe(minifyCSS())
+        .pipe(cssnano())
         .pipe(gulp.dest(path.join(output_directory, 'css')));
 });
 
@@ -105,7 +109,7 @@ gulp.task('css', function () {
 gulp.task('css-libs', function () {
     return gulp.src(mainBowerFiles({ filter: /\.css$/ }))
         .pipe(concat('fetsy-libs.css'))
-        .pipe(minifyCSS())
+        .pipe(cssnano())
         .pipe(gulp.dest(path.join(output_directory, 'css')));
 });
 
