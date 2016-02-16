@@ -6,14 +6,16 @@
 // See https://github.com/postcss/postcss#nodejs-010-and-the-promise-api
 require('es6-promise').polyfill();
 
-var coffee = require('gulp-coffee'),
+var argv = require('yargs').argv,
+    coffee = require('gulp-coffee'),
     coffeelint = require('gulp-coffeelint'),
     concat = require('gulp-concat'),
     gulp = require('gulp'),
+    gulpif = require('gulp-if'),
     jshint = require('gulp-jshint'),
     mainBowerFiles = require('main-bower-files'),
     cssnano = require('gulp-cssnano'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
     path = require('path'),
     uglify = require('gulp-uglify');
 
@@ -22,7 +24,12 @@ var coffee = require('gulp-coffee'),
  * Helper objects.
  */
 
-// Directory where the results go
+// Function to check production mode.
+var runsInProductionMode = function () {
+    return argv.production;
+};
+
+// Directory where the results go.
 var output_directory = path.join('dist');
 
 // Filter for some special JavaScript libraries: HTML5 Shiv and Respond.js.
@@ -62,7 +69,7 @@ gulp.task('coffee', function () {
     return gulp.src(path.join('fetsy', 'scripts', '*.coffee.md'))
         .pipe(coffee({ literate: true }))
         .pipe(concat('fetsy.js'))
-        .pipe(uglify())
+        .pipe(gulpif(runsInProductionMode(), uglify()))
         .pipe(gulp.dest(path.join(output_directory, 'js')));
 });
 
@@ -78,7 +85,7 @@ gulp.task('js-special', function () {
 gulp.task('js-libs', function () {
     return gulp.src(mainBowerFiles({ filter: specialJSFilter(true) }))
         .pipe(concat('fetsy-libs.js'))
-        .pipe(uglify())
+        .pipe(gulpif(runsInProductionMode(), uglify()))
         .pipe(gulp.dest(path.join(output_directory, 'js')));
 });
 
@@ -100,7 +107,7 @@ gulp.task('css-all', ['css', 'css-libs', 'fonts-libs'], function () {});
 gulp.task('css', function () {
     return gulp.src(path.join('fetsy', 'styles', '*.css'))
         .pipe(concat('fetsy.css'))
-        .pipe(cssnano())
+        .pipe(gulpif(runsInProductionMode(), cssnano()))
         .pipe(gulp.dest(path.join(output_directory, 'css')));
 });
 
@@ -109,7 +116,7 @@ gulp.task('css', function () {
 gulp.task('css-libs', function () {
     return gulp.src(mainBowerFiles({ filter: /\.css$/ }))
         .pipe(concat('fetsy-libs.css'))
-        .pipe(cssnano())
+        .pipe(gulpif(runsInProductionMode(), cssnano()))
         .pipe(gulp.dest(path.join(output_directory, 'css')));
 });
 
