@@ -66,31 +66,35 @@ to fetch all tickets from server.
         'Ticket'
         ($rootScope, $wamp, Ticket) ->
             $rootScope.$on '$wamp.open', (event, info) ->
-                info.session.subscribe 'org.fetsy.changedTicket', (args, kwargs, details) ->
-                    if kwargs.ticket.id?
-                        Ticket.inject kwargs.ticket
-                    else
-                        console.error 'Received invalid data. ID is missing. Received', kwargs.ticket
-                    return
 
-                # TODO: Remove timeout and reestablish inner function. It was only for testing.
-                setTimeout(
-                    ->
-                        info.session.call 'org.fetsy.listTickets'
-                        .then (result) ->
-                            for item in result
-                                if item.id?
-                                    ticket = Ticket.get item.id
-                                    if ticket?
-                                        angular.extend item, ticket
-                                    Ticket.inject item
-                                else
-                                    console.error 'Received invalid data. ID is missing. Received', item.ticket
-                            return
-                    5000
-                )
+Subscribe to the channel for changed tickets. If a ticket comes in, check
+ticket id and inject it into data store.
 
+                info.session.subscribe 'org.fetsy.changedTicket',
+                    (args, kwargs, details) ->
+                        if kwargs.ticket.id?
+                            Ticket.inject kwargs.ticket
+                        else
+                            console.error 'Received invalid data.',
+                                'ID is missing. Received'
+                                kwargs.ticket
+                        return
 
+Fetch all tickets from server via procedure call.
+
+                info.session.call 'org.fetsy.listTickets'
+                    .then (result) ->
+                        for item in result
+                            if item.id?
+                                ticket = Ticket.get item.id
+                                if ticket?
+                                    angular.extend item, ticket
+                                Ticket.inject item
+                            else
+                                console.error 'Received invalid data.',
+                                    'ID is missing. Received'
+                                    item.ticket
+                        return
                 return
             return
     ]
