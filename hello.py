@@ -1,44 +1,26 @@
 import random
-from asyncio import coroutine
+from asyncio import async, coroutine
 from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
+from motor.motor_asyncio import AsyncIOMotorClient
 
 
-def returnlistOfTickets(*args, **kwargs):
-    return [
-        {
-            'id': 1,
-            'content': 'Hallo',
-            'status': 'New',
-            'priority': 4,
-            'assignee': 'Dr. Berend Koll',
-            'periodOrDeadline': 120,
-        },
-        {
-            'id': 2,
-            'content': 'AHallo ihr da mit dem wichtigen Text dort drüben.',
-            'status': 'Closed',
-            'priority': 1,
-            'assignee': 'Professor Dr. Christoph Enders',
-            'periodOrDeadline': 42,
-        },
-        {
-            'id': 3,
-            'content': 'Kurzer Text ...',
-            'status': 'Assigned',
-            'priority': 5,
-            'assignee': 'Max',
-            'periodOrDeadline': -12,
-        },
-        {
-            'id': 4,
-            'content': 'KKKKKurzer MittelText ...',
-            'status': 'Assigned',
-            'priority': 2,
-            'assignee': 'Maxi',
-            'periodOrDeadline': -11,
-        }
-    ]
 
+def listOfTickets(database):
+
+    @coroutine
+    def mycoro():
+        curser = database.tickets.find()
+        tickets = yield from curser.to_list(length=100)
+        print(tickets)
+        return tickets
+
+
+    def returnlistOfTickets(*args, **kwargs):
+        coro = mycoro()
+        async(coro)
+        return ['sdf']
+
+    return returnlistOfTickets
 
 
 
@@ -47,7 +29,10 @@ def returnlistOfTickets(*args, **kwargs):
 class MyComponent(ApplicationSession):
     @coroutine
     def onJoin(self, details):
-        yield from self.register(returnlistOfTickets, 'org.fetsy.listTickets')
+
+        database = self.config.extra['database']
+
+        yield from self.register(listOfTickets(database), 'org.fetsy.listTickets')
 
         def newTicket(*args, **kwargs):
             example_data = {
@@ -65,5 +50,10 @@ class MyComponent(ApplicationSession):
 
 
 if __name__ == '__main__':
-    runner = ApplicationRunner(url='ws://localhost:8080/ws', realm='realm1')
+    client = AsyncIOMotorClient()
+    database = client.fetsy
+    runner = ApplicationRunner(
+        url='ws://localhost:8080/ws',
+        realm='realm1',
+        extra={'database': database})
     runner.run(MyComponent)
