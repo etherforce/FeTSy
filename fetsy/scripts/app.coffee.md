@@ -58,7 +58,7 @@ definitions.
     ]
 
 Load the ressource during app loading and setup WAMP opening event listener
-to fetch all tickets from server.
+to get all tickets from server.
 
     .run [
         '$rootScope'
@@ -67,8 +67,8 @@ to fetch all tickets from server.
         ($rootScope, $wamp, Ticket) ->
             $rootScope.$on '$wamp.open', (event, info) ->
 
-Subscribe to the channel for changed tickets. If a ticket comes in, check
-ticket id and inject it into data store.
+Subscribe to the channel for new and changed tickets. If a ticket comes in,
+check ticket id and inject it into data store.
 
                 info.session.subscribe 'org.fetsy.changedTicket',
                     (args, kwargs, details) ->
@@ -95,6 +95,7 @@ Fetch all tickets from server via procedure call.
                                     'ID is missing. Received'
                                     item.ticket
                         return
+
                 return
             return
     ]
