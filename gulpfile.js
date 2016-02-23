@@ -135,7 +135,7 @@ gulp.task('fonts-libs', function () {
 
 // Catches Crossbar.io configuration file config.json and copies it to the crossbar directory (CBDIR)
 gulp.task('crossbar', function () {
-    return gulp.src(path.join('fetsy', 'crossbar', 'config.json'))
+    return gulp.src(path.join('fetsy', 'crossbar', 'config.yaml'))
         .pipe(gulp.dest(path.join('.crossbar')));
 });
 
@@ -173,5 +173,5 @@ gulp.task('watch', function () {
     gulp.watch(path.join('fetsy', 'webclient', 'fetsy.html'), ['html']);
     gulp.watch(path.join('fetsy', 'webclient', 'scripts', '*.coffee.md'), ['coffee']);
     gulp.watch(path.join('fetsy', 'webclient', 'styles', '*.css'), ['css']);
-    gulp.watch(path.join('fetsy', 'crossbar', 'config.json'), ['crossbar']);
+    gulp.watch(path.join('fetsy', 'crossbar', 'config.yaml'), ['crossbar']);
 });

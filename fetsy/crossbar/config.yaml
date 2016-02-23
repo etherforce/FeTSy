@@ -1,0 +1,36 @@
+controller: {}
+workers:
+  -
+    type: router
+    realms:
+      -
+        name: realm1
+        roles:
+          -
+            name: anonymous
+            permissions:
+              -
+                call: true
+                publish: true
+                register: true
+                subscribe: true
+                uri: "*"
+    transports:
+      -
+        type: web
+        endpoint:
+          port: 8080
+          type: tcp
+        paths:
+          /:
+            directory: ../dist/
+            type: static
+          ws:
+            type: websocket
+  -
+    type: guest
+    executable: python
+    arguments:
+      - fetsy/database/app.py
+    options:
+      workdir: ".."
