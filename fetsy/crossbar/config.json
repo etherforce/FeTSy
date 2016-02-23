@@ -45,7 +45,7 @@
       {
          "type": "guest",
          "executable": "python",
-         "arguments": ["hello.py"],
+         "arguments": ["fetsy/database/app.py"],
          "options": {
             "workdir": ".."
          }
