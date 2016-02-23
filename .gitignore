@@ -9,6 +9,7 @@ node_modules/
 
 # Files processed by gulp
 dist/
+.crossbar/
 
 # Private development data
 private/

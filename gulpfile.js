@@ -46,7 +46,7 @@ var specialJSFilter = function (exclude) {
 
 
 /**
- * HTML files.
+ * Webclient HTML files.
  */
 
 // Catches fetsy.html and copies it to the output directory.
@@ -58,7 +58,7 @@ gulp.task('html', function () {
 
 
 /**
- * JavaScript files.
+ * Webclient JavaScript files.
  */
 
 gulp.task('js-all', ['coffee', 'js-special', 'js-libs', 'js-libs-special'], function () {});
@@ -97,7 +97,7 @@ gulp.task('js-libs-special', function () {
 
 
 /**
- * CSS and font files.
+ * Webclient CSS and font files.
  */
 
 gulp.task('css-all', ['css', 'css-libs', 'fonts-libs'], function () {});
@@ -130,10 +130,21 @@ gulp.task('fonts-libs', function () {
 
 
 /**
+ * Crossbar.io configuration
+ */
+
+// Catches Crossbar.io configuration file config.json and copies it to the crossbar directory (CBDIR)
+gulp.task('crossbar', function () {
+    return gulp.src(path.join('fetsy', 'crossbar', 'config.json'))
+        .pipe(gulp.dest(path.join('.crossbar')));
+});
+
+
+/**
  * Gulp default task.
  */
 
-gulp.task('default', ['html', 'js-all', 'css-all'], function () {});
+gulp.task('default', ['html', 'js-all', 'css-all', 'crossbar'], function () {});
 
 
 /**
@@ -162,4 +173,5 @@ gulp.task('watch', function () {
     gulp.watch(path.join('fetsy', 'webclient', 'fetsy.html'), ['html']);
     gulp.watch(path.join('fetsy', 'webclient', 'scripts', '*.coffee.md'), ['coffee']);
     gulp.watch(path.join('fetsy', 'webclient', 'styles', '*.css'), ['css']);
+    gulp.watch(path.join('fetsy', 'crossbar', 'config.json'), ['crossbar']);
 });
