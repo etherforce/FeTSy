@@ -1,6 +1,12 @@
+"""
+FeTSy database
+
+This is a WAMP client application using MongoDB to store ticket data.
+"""
 import logging
 import random
-from asyncio import async, coroutine, sleep
+from asyncio import coroutine
+
 from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -17,6 +23,7 @@ class AppSession(ApplicationSession):
         # Register remote procedures.
         yield from self.register(self.list_tickets, 'org.fetsy.listTickets')
         yield from self.register(self.new_ticket, 'org.fetsy.newTicket')
+        # yield from self.subscribe(self.changedTicket, 'org.fetsy.changedTicket')
 
     @coroutine
     def list_tickets(self, *args, **kwargs):
@@ -55,10 +62,9 @@ class AppSession(ApplicationSession):
         # while (yield from curser.fetch_next):
         #    result = curser.next_object()
 
-
         # Insert new ticket to database.
         ticket['id'] = max_id + 1
-        result = yield from self.database.tickets.insert(ticket)
+        yield from self.database.tickets.insert(ticket)
         del ticket['_id']
 
         # Publish changedTicket event.
