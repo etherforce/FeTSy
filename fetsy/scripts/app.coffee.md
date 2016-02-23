@@ -93,7 +93,7 @@ Fetch all tickets from server via procedure call.
                             else
                                 console.error 'Received invalid data.',
                                     'ID is missing. Received'
-                                    item.ticket
+                                    item
                         return
 
                 return

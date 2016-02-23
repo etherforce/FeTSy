@@ -1,59 +1,85 @@
+import logging
 import random
-from asyncio import async, coroutine
+from asyncio import async, coroutine, sleep
 from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
+class AppSession(ApplicationSession):
 
-def listOfTickets(database):
-
-    @coroutine
-    def mycoro():
-        curser = database.tickets.find()
-        tickets = yield from curser.to_list(length=100)
-        print(tickets)
-        return tickets
-
-
-    def returnlistOfTickets(*args, **kwargs):
-        coro = mycoro()
-        async(coro)
-        return ['sdf']
-
-    return returnlistOfTickets
-
-
-
-
-
-class MyComponent(ApplicationSession):
     @coroutine
     def onJoin(self, details):
+        # Take forwarded extra configuration.
+        self.logger = self.config.extra['logger']
+        self.logger.info('Connection to WAMP router established.')
+        self.database = self.config.extra['database']
 
-        database = self.config.extra['database']
+        # Register remote procedures.
+        yield from self.register(self.list_tickets, 'org.fetsy.listTickets')
+        yield from self.register(self.new_ticket, 'org.fetsy.newTicket')
 
-        yield from self.register(listOfTickets(database), 'org.fetsy.listTickets')
+    @coroutine
+    def list_tickets(self, *args, **kwargs):
+        self.logger.debug('Remote procedure list_tickets was called.')
+        curser = self.database.tickets.find()
+        tickets = []
+        while (yield from curser.fetch_next):
+            ticket = curser.next_object()
+            del ticket['_id']
+            tickets.append(ticket)
+        self.logger.debug(tickets)
+        return tickets
 
-        def newTicket(*args, **kwargs):
-            example_data = {
-                    'id': random.choice([1, 2, 100, 101, None]),
-                    'content': 'Text vom Server ' + random.choice('qwertzuioplkjhgfdsayxcvbnmMNBVCXYASDFGHJKLOIUZTREWQ'),
-                    'status': 'Assigned',
-                    'priority': 2,
-                    'assignee': 'Maxi',
-                    'periodOrDeadline': -11,
-                }
-            self.publish('org.fetsy.changedTicket', [4,5,6], ticket=example_data)
+    @coroutine
+    def new_ticket(self, *args, **kwargs):
+        # TODO: Take data from client instead of example data.
+        ticket = {
+                'content': 'Text vom Server ' + random.choice('qwertzuioplkjhgfdsayxcvbnmMNBVCXYASDFGHJKLOIUZTREWQ'),
+                'status': 'Assigned',
+                'priority': 2,
+                'assignee': 'Maxi',
+                'periodOrDeadline': -11}
 
-        yield from self.register(newTicket, 'org.fetsy.newTicket')
-        # yield from self.register(...)
+        # Fetch biggest ID from database.
+        max_id_key = 'maxID'
+        pipeline = [
+            {'$sort': {'id': 1}},
+            {'$group': {'_id': None, max_id_key: {'$last': '$id'}}}]
+        future_result = yield from self.database.tickets.aggregate(pipeline, cursor=False)
+        self.logger.debug(future_result)
+        if future_result['result']:
+            max_id = future_result['result'][0][max_id_key]
+        else:
+            max_id = 0
+        # curser = self.database.tickets.aggregate(pipeline)  # For use of Mongo >= 2.5
+        # while (yield from curser.fetch_next):
+        #    result = curser.next_object()
+
+
+        # Insert new ticket to database.
+        ticket['id'] = max_id + 1
+        result = yield from self.database.tickets.insert(ticket)
+        del ticket['_id']
+
+        # Publish changedTicket event.
+        self.publish('org.fetsy.changedTicket', [], ticket=ticket)
 
 
 if __name__ == '__main__':
+    # Setup logging.
+    logging.info('Entering main entry point.')
+    logger = logging.getLogger(__file__)
+    logger.setLevel(logging.DEBUG)
+
+    # Setup database connection.
     client = AsyncIOMotorClient()
     database = client.fetsy
+
+    # Setup and run application.
     runner = ApplicationRunner(
         url='ws://localhost:8080/ws',
         realm='realm1',
-        extra={'database': database})
-    runner.run(MyComponent)
+        extra={
+            'database': database,
+            'logger': logger})
+    runner.run(AppSession)
