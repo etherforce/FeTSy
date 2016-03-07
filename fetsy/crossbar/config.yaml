@@ -34,3 +34,7 @@ workers:
       - fetsy/database/app.py
     options:
       workdir: ".."
+      watch:
+        directories:
+          - "../fetsy/database"
+        action: "restart"

@@ -96,7 +96,13 @@ Should open a form later. TODO: Add form
                 if userHasPermissionFactory.canAddTicket
                     ->
                         $wamp.call 'org.fetsy.newTicket', [],
-                            foo: 'bar'
+                            ticket:
+                                content: Math.random().toString()
+                        .then (result) ->
+                            if result.type == 'success'
+                                console.log 'WAMP message: ' + result.details
+                            else
+                                console.error 'WAMP error: ' + result.details
                         return
 
                     #modalInstance = $uibModal.open

@@ -4,11 +4,28 @@ FeTSy database
 This is a WAMP client application using MongoDB to store ticket data.
 """
 import logging
-import random
-from asyncio import coroutine
+from asyncio import Lock, coroutine
 
 from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
+from jsonschema import ValidationError, validate
 from motor.motor_asyncio import AsyncIOMotorClient
+
+new_ticket_schema = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Ticket",
+    "description": "A new ticket without ID.",
+    "type": "object",
+    "properties": {
+        "content": {
+            "description": "The content of the ticket",
+            "type": "string"
+        }
+    },
+    "additionalProperties": False,
+    "required": ["content"]
+}
+
+new_ticket_lock = Lock()
 
 
 class AppSession(ApplicationSession):
@@ -27,47 +44,77 @@ class AppSession(ApplicationSession):
 
     @coroutine
     def list_tickets(self, *args, **kwargs):
-        self.logger.debug('Remote procedure list_tickets was called.')
+        self.logger.debug('Remote procedure list_tickets called.')
         curser = self.database.tickets.find()
         tickets = []
         while (yield from curser.fetch_next):
             ticket = curser.next_object()
             del ticket['_id']
             tickets.append(ticket)
-        self.logger.debug(tickets)
         return tickets
 
     @coroutine
     def new_ticket(self, *args, **kwargs):
-        # TODO: Take data from client instead of example data.
-        ticket = {
-                'content': 'Text vom Server ' + random.choice('qwertzuioplkjhgfdsayxcvbnmMNBVCXYASDFGHJKLOIUZTREWQ'),
-                'status': 'Assigned',
-                'priority': 2,
-                'assignee': 'Maxi',
-                'periodOrDeadline': -11}
-
-        # Fetch biggest ID from database.
-        max_id_key = 'maxID'
-        pipeline = [
-            {'$sort': {'id': 1}},
-            {'$group': {'_id': None, max_id_key: {'$last': '$id'}}}]
-        future_result = yield from self.database.tickets.aggregate(pipeline, cursor=False)
-        self.logger.debug(future_result)
-        if future_result['result']:
-            max_id = future_result['result'][0][max_id_key]
+        """
+        Async method to create new tickets in the database.
+        """
+        self.logger.debug('Remote procedure new_ticket called.')
+        try:
+            ticket = self.validate_new_ticket(kwargs.get('ticket'))
+        except ValidationError as e:
+            result = {
+                'type': 'error',
+                'details': e.message}
         else:
-            max_id = 0
-        # curser = self.database.tickets.aggregate(pipeline)  # For use of Mongo >= 2.5
-        # while (yield from curser.fetch_next):
-        #    result = curser.next_object()
+            yield from self.save_new_ticket(ticket)
+            success = 'Ticket {} successfully created.'.format(ticket['id'])
+            result = {
+                'type': 'success',
+                'details': success}
+        return result
 
-        # Insert new ticket to database.
-        ticket['id'] = max_id + 1
-        yield from self.database.tickets.insert(ticket)
-        del ticket['_id']
+    def validate_new_ticket(self, ticket):
+        """
+        Validates data for new tickets and adds default values.
+        """
+        if ticket is None:
+            raise ValidationError('Ticket data is missing')
+        validate(ticket, new_ticket_schema)
+        ticket.setdefault('status', 'Assigned')
+        ticket.setdefault('priority', 3)
+        ticket.setdefault('assignee', 'Max')
+        ticket.setdefault('periodOrDeadline', 42)
+        return ticket
+
+    @coroutine
+    def save_new_ticket(self, ticket):
+        """
+        Async method to store a new ticket in the database. Adds a new 'id'
+        property.
+        """
+        with (yield from new_ticket_lock):
+            # Fetch biggest ID from database.
+            max_id_key = 'maxID'
+            pipeline = [
+                {'$sort': {'id': 1}},
+                {'$group': {'_id': None, max_id_key: {'$last': '$id'}}}]
+            future_result = yield from self.database.tickets.aggregate(
+                pipeline, cursor=False)
+            if future_result['result']:
+                max_id = future_result['result'][0][max_id_key]
+            else:
+                max_id = 0
+            # For use of Mongo >= 2.5
+            # curser = self.database.tickets.aggregate(pipeline)
+            # while (yield from curser.fetch_next):
+            #    result = curser.next_object()
+
+            # Insert new ticket in database.
+            ticket['id'] = max_id + 1
+            yield from self.database.tickets.insert(ticket)
 
         # Publish changedTicket event.
+        del ticket['_id']
         self.publish('org.fetsy.changedTicket', [], ticket=ticket)
 
 
