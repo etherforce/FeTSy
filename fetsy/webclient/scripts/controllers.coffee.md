@@ -79,8 +79,8 @@ Here we add a watcher to get the number of all tickets.
 
 ## Controller for the top row
 
-Append a controller for the row with the new button, the checkboxes and
-the search bar.
+Append a controller for the row with the 'New Ticket' button, the
+checkboxes and the search bar.
 
     .controller 'TopRowCtrl', [
         '$uibModal'
@@ -89,35 +89,32 @@ the search bar.
         'ticketFilterValues'
         ($uibModal, $wamp, userHasPermissionFactory, ticketFilterValues) ->
 
-Hook for the button to create a new ticket. Does nothing at the moment.
-Should open a form later. TODO: Add form
+Hook for the button to create a new ticket. The uib-modal directive from
+Angular UI Bootstrap is used.
 
             @newTicketForm =
                 if userHasPermissionFactory.canAddTicket
                     ->
-                        $wamp.call 'org.fetsy.newTicket', [],
-                            ticket:
-                                content: Math.random().toString()
-                        .then (result) ->
-                            if result.type == 'success'
-                                console.log 'WAMP message: ' + result.details
-                            else
-                                console.error 'WAMP error: ' + result.details
+                        modalInstance = $uibModal.open
+                            templateUrl: 'newTicketForm.html'
+                            controller: 'NewTicketFormCtrl as newTicketForm'
+
+                        modalInstance.result.then (result) ->
+                                $wamp.call 'org.fetsy.newTicket', [],
+                                    ticket:
+                                        content: result.content
+                                .then (result) ->
+                                    if result.type == 'success'
+                                        console.log(
+                                            'WAMP message: ' + result.details
+                                        )
+                                    else
+                                        console.error(
+                                            'WAMP error: ' + result.details
+                                        )
+                                    return
+                                return
                         return
-
-                    #modalInstance = $uibModal.open
-                    #    animation: true
-                    #    templateUrl: 'myModalContent.html'
-                    #    controller: 'NewTicketFormCtrl'
-
-                    #modalInstance.result.then (
-                    #    (result) ->
-                    #        console.log foo
-                    #        return
-                    #    (reason) ->
-                    #        console.log reason
-                    #        return
-                    #)
                 else
                     null
 
@@ -227,6 +224,45 @@ Append all tickets to the body.
                 @all = DS.getAll 'Ticket'
                 return
             $scope.$watch watchExpression, listener
+
+            return
+    ]
+
+
+## Controller for the modal for new tickets
+
+    .controller 'NewTicketFormCtrl', [
+        '$uibModalInstance'
+        'ticketFilterValues'
+        ($uibModalInstance, ticketFilterValues) ->
+
+            @remainingTimeValue = ticketFilterValues.remainingTime
+
+Default value for the periodOrDeadlineField.
+TODO: Add current time or default period
+
+            @periodOrDeadlineField = 'unknown'
+
+Hook for the save button. This validates the input and closes the modal.
+The validated data are handled back to the TopRowCtrl. TODO: This is not
+ready yet.
+
+            @save = ->
+                # TODO: Validate data
+                # If valid:
+
+                $uibModalInstance.close
+                    'content': @contentField
+                    'periodOrDeadline': @periodOrDeadlineField
+
+                # TODO: If invalid: $uibModalInstance.dismiss 'cancel'
+                return
+
+Hook for the cancel button. This does only close the modal.
+
+            @cancel = ->
+                $uibModalInstance.dismiss 'cancel'
+                return
 
             return
     ]

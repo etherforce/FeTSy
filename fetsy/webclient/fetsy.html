@@ -59,10 +59,11 @@
                 </ul>
             </div>
         </div>
-    </nav>
+    </nav><!-- / .navbar Top navbar -->
 
 
-   <div class="container">
+    <!-- Main container -->
+    <div class="container">
 
         <div style="padding: 2.9em 1.1em;">
 
@@ -282,12 +283,76 @@
         <hr>
 
         <footer>
-            <p>&copy; 2015 <a href="http://rechtsanwalt-jaeckel.de">Norman Jäckel</a></p>
+            <p>&copy; 2015–2016 <a href="http://rechtsanwalt-jaeckel.de">Norman Jäckel</a></p>
         </footer>
 
     </div><!-- / Main container -->
 
-    <!-- newTicketForm modal -->
+    <!-- New ticket form modal -->
+    <script type="text/ng-template" id="newTicketForm.html">
+
+        <!-- New ticket form modal header -->
+        <div class="modal-header">
+            <h3 class="modal-title">
+                New ticket
+            </h3>
+        </div><!-- / .modal-header New ticket form modal header -->
+
+        <!-- New ticket form modal body -->
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="newTicketPeriodOrDeadline" class="sr-only">
+                    <span ng-if="newTicketForm.remainingTimeValue">Period. Default: 120 minutes.</span>
+                    <span ng-if="!newTicketForm.remainingTimeValue">Deadline. Default: Time in 120 minutes.</span>
+                </label>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <span ng-show="newTicketForm.remainingTimeValue"
+                              id="newTicketPeriodOrDeadlineIcon"
+                              title="Period (in minutes)"
+                              class="glyphicon glyphicon-hourglass"
+                              aria-hidden="true">
+                        </span>
+                        <span ng-hide="newTicketForm.remainingTimeValue"
+                              id="newTicketPeriodOrDeadlineIcon"
+                              title="Deadline"
+                              class="glyphicon glyphicon-time"
+                              aria-hidden="true">
+                        </span>
+                    </div>
+                    <input id="newTicketPeriodOrDeadline"
+                           type="text"
+                           class="form-control"
+                           aria-describedby="newTicketPeriodOrDeadlineIcon"
+                           required
+                           ng-model="newTicketForm.periodOrDeadlineField">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="newTicketContent" class="sr-only">
+                    Content
+                </label>
+                <textarea id="newTicketContent"
+                          placeholder="Content"
+                          class="form-control"
+                          rows="3"
+                          required
+                          ng-model="newTicketForm.contentField">
+                </textarea>
+            </div>
+        </div><!-- / .modal-body New ticket form modal body -->
+
+        <!-- New ticket form modal footer -->
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="newTicketForm.save()">
+                Save
+            </button>
+            <button type="button" class="btn btn-default" ng-click="newTicketForm.cancel()">
+                Cancel
+            </button>
+        </div><!-- / .modal-footer New ticket form modal footer -->
+
+    </script><!-- / newTicketForm modal -->
 
 </body>
 
