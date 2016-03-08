@@ -13,12 +13,16 @@ from motor.motor_asyncio import AsyncIOMotorClient
 new_ticket_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "Ticket",
-    "description": "A new ticket without ID.",
+    "description": "A new ticket without ID",
     "type": "object",
     "properties": {
         "content": {
             "description": "The content of the ticket",
             "type": "string"
+        },
+        "period": {
+            "description": "The period in which the ticket has to be solved",
+            "type": "integer"
         }
     },
     "additionalProperties": False,
@@ -83,7 +87,7 @@ class AppSession(ApplicationSession):
         ticket.setdefault('status', 'Assigned')
         ticket.setdefault('priority', 3)
         ticket.setdefault('assignee', 'Max')
-        ticket.setdefault('periodOrDeadline', 42)
+        ticket.setdefault('period', 120)
         return ticket
 
     @coroutine

@@ -103,6 +103,7 @@ Angular UI Bootstrap is used.
                                 $wamp.call 'org.fetsy.newTicket', [],
                                     ticket:
                                         content: result.content
+                                        period: result.period
                                 .then (result) ->
                                     if result.type == 'success'
                                         console.log(
@@ -199,7 +200,7 @@ TODO: Change hourglass icon to time in some circumstances.
                     icon: 'user'
 
                 new ticketListHeaderFactory.Header
-                    sortKey: 'periodOrDeadline'
+                    sortKey: 'period'
                     displayName: 'Period or deadline'
                     col: '2'
                     icon: 'hourglass'  # 'time'
@@ -234,28 +235,49 @@ Append all tickets to the body.
     .controller 'NewTicketFormCtrl', [
         '$uibModalInstance'
         'ticketFilterValues'
-        ($uibModalInstance, ticketFilterValues) ->
+        'defaultPeriod'
+        ($uibModalInstance, ticketFilterValues, defaultPeriod) ->
 
             @remainingTimeValue = ticketFilterValues.remainingTime
 
 Default value for the periodOrDeadlineField.
-TODO: Add current time or default period
 
-            @periodOrDeadlineField = 'unknown'
+            @periodOrDeadlineField =
+                if @remainingTimeValue
+                    String(defaultPeriod)
+                else
+                    moment()
+                    .add defaultPeriod, 'minutes'
+                    .format 'YYYY-MM-DD HH:mm'
+
 
 Hook for the save button. This validates the input and closes the modal.
-The validated data are handled back to the TopRowCtrl. TODO: This is not
-ready yet.
+The validated data are handled back to the TopRowCtrl.
 
             @save = ->
-                # TODO: Validate data
-                # If valid:
 
-                $uibModalInstance.close
-                    'content': @contentField
-                    'periodOrDeadline': @periodOrDeadlineField
+Validate period or deadline input field depending on remainingTimeValue flag.
 
-                # TODO: If invalid: $uibModalInstance.dismiss 'cancel'
+                if @remainingTimeValue
+                    period = parseInt @periodOrDeadlineField
+                else
+                    parsedDate = moment @periodOrDeadlineField
+                    if parsedDate.isValid()
+                        period = parsedDate.diff moment(), 'minutes'
+
+Hint: We add one minute here to get real 120 minutes because the seconds are stripped off above.
+
+                        period++
+
+Save ticket if the period or deadline field is valid and there is some
+content.
+
+                if period or period is 0
+                    $uibModalInstance.close
+                        'content': @contentField
+                        'period': period
+                else
+                    $uibModalInstance.dismiss 'cancel'
                 return
 
 Hook for the cancel button. This does only close the modal.

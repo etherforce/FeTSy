@@ -1,10 +1,12 @@
 # Base file for FeTSy services
 
 Initiate new angular module with the name 'FeTSy.services'.
+TODO: Rename this to 'FeTSy.providers'.
 
     angular.module 'FeTSy.services', []
 
-Now setup some services (factory recipes, value recipes) we use.
+Now setup some provider recipes (factory recipes, value recipes, constant
+recipes) we use.
 
 
 ## User's Permission factory
@@ -53,3 +55,10 @@ Append a factory recipe with a Header constructor.
                     @col = 'col-sm-' + options.col
                     @iconCSSClass = 'glyphicon-' + options.icon
     ]
+
+## Constant for default period.
+
+Append a constant for the default period. It is used in the new ticket form
+modal.
+
+    .constant 'defaultPeriod', 120
