@@ -174,13 +174,13 @@
                          ng-click="tickets.toggleSort(header.sortKey)">
                         <a role="button">
                             <span ng-show="$first"
-                                  title="{{ header.displayName }}">
+                                  title="{{ header.getDisplayName() }}">
                                 #
                             </span>
                             <span ng-hide="$first"
-                                  title="{{ header.displayName }}"
+                                  title="{{ header.getDisplayName() }}"
                                   class="glyphicon"
-                                  ng-class="header.iconCSSClass"
+                                  ng-class="header.getIconCSSClass()"
                                   aria-hidden="true">
                             </span>
                         </a>
@@ -198,13 +198,13 @@
                          ng-click="tickets.toggleSort(header.sortKey)">
                         <a role="button">
                             <span ng-show="$first"
-                                  title="{{ header.displayName }}">
+                                  title="{{ header.getDisplayName() }}">
                                 #
                             </span>
                             <span ng-hide="$first"
-                                  title="{{ header.displayName }}"
+                                  title="{{ header.getDisplayName() }}"
                                   class="glyphicon"
-                                  ng-class="header.iconCSSClass"
+                                  ng-class="header.getIconCSSClass()"
                                   aria-hidden="true">
                             </span>
                         </a>
@@ -230,9 +230,9 @@
                     <div ng-repeat="header in tickets.headers"
                          ng-class="header.col">
                         <span ng-hide="$first"
-                              title="{{ header.displayName }}"
+                              title="{{ header.getDisplayName() }}"
                               class="glyphicon visible-xs-inline"
-                              ng-class="header.iconCSSClass"
+                              ng-class="header.getIconCSSClass()"
                               aria-hidden="true">
                         </span>
                         {{ ticket[header.sortKey] }}
@@ -263,13 +263,13 @@
                          class="hidden-xs"
                          ng-class="header.col">
                         <span ng-show="$first"
-                              title="{{ header.displayName }}">
+                              title="{{ header.getDisplayName() }}">
                             #
                         </span>
                         <span ng-hide="$first"
-                              title="{{ header.displayName }}"
+                              title="{{ header.getDisplayName() }}"
                               class="glyphicon"
-                              ng-class="header.iconCSSClass"
+                              ng-class="header.getIconCSSClass()"
                               aria-hidden="true">
                         </span>
                     </div>

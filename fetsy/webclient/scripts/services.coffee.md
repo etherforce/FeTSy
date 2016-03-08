@@ -51,9 +51,17 @@ Append a factory recipe with a Header constructor.
             Header: class
                 constructor: (options) ->
                     @sortKey = options.sortKey
-                    @displayName = options.displayName
                     @col = 'col-sm-' + options.col
-                    @iconCSSClass = 'glyphicon-' + options.icon
+                    @getDisplayName = ->
+                        if typeof options.displayName is 'function'
+                            options.displayName()
+                        else
+                            options.displayName
+                    @getIconCSSClass = ->
+                        if typeof options.icon is 'function'
+                            'glyphicon-' + options.icon()
+                        else
+                            'glyphicon-' + options.icon
     ]
 
 ## Constant for default period.

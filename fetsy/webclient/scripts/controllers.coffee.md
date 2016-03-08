@@ -167,43 +167,50 @@ control the filters used in the ngRepeat directive.
 
 Setup the headers of the ticket list/table. Use some fix initial values.
 Setup the default sorting: first column with reversed sorting.
-TODO: Change hourglass icon to time in some circumstances.
 
             @headers = [
                 new ticketListHeaderFactory.Header
                     sortKey: 'id'
-                    displayName: 'Number'
                     col: '1'
+                    displayName: 'Number'
 
                 new ticketListHeaderFactory.Header
                     sortKey: 'content'
-                    displayName: 'Content'
                     col: '4'
+                    displayName: 'Content'
                     icon: 'cog'
 
                 new ticketListHeaderFactory.Header
                     sortKey: 'status'
-                    displayName: 'Status'
                     col: '1'
+                    displayName: 'Status'
                     icon: 'star'
 
                 new ticketListHeaderFactory.Header
                     sortKey: 'priority'
-                    displayName: 'Priority'
                     col: '1'
+                    displayName: 'Priority'
                     icon: 'fire'
 
                 new ticketListHeaderFactory.Header
                     sortKey: 'assignee'
-                    displayName: 'Assignee'
                     col: '2'
+                    displayName: 'Assignee'
                     icon: 'user'
 
                 new ticketListHeaderFactory.Header
                     sortKey: 'period'
-                    displayName: 'Period or deadline'
                     col: '2'
-                    icon: 'hourglass'  # 'time'
+                    displayName: ->
+                        if ticketFilterValues.remainingTime
+                            'Period (in minutes)'
+                        else
+                            'Deadline'
+                    icon: ->
+                        if ticketFilterValues.remainingTime
+                            'hourglass'
+                        else
+                            'time'
             ]
             @sortColumn = 'id'
             @reverse = true
