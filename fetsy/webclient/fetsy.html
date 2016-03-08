@@ -227,6 +227,7 @@
                                 as filteredTickets"
                      ng-class-odd="'ticket-row-odd'">
 
+                    <!-- Ticket columns -->
                     <div ng-repeat="header in tickets.headers"
                          ng-class="header.col">
                         <span ng-hide="$first"
@@ -236,8 +237,28 @@
                               aria-hidden="true">
                         </span>
                         {{ ticket[header.sortKey] }}
-                    </div>
-                    <div class="col-sm-1">Buttons</div>
+                    </div><!-- / Ticket columns -->
+
+                    <!-- Button column -->
+                    <div class="col-sm-1">
+                        <span class="pull-right">
+                            <button type="button"
+                                    title="Close ticket"
+                                    class="btn btn-xs btn-success"
+                                    ng-show="ticket.status !== 'Closed'"
+                                    ng-click="">
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                                <span class="sr-only">Close ticket</span>
+                            </button>
+                            <button type="button"
+                                    title="Get more info"
+                                    class="btn btn-xs btn-info"
+                                    ng-click="ticket.openInfo()">
+                                <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                                <span class="sr-only">Get more info</span>
+                            </button>
+                        </span>
+                    </div><!-- / Button column -->
 
                 </div><!-- / .row Ticket list body -->
 
@@ -352,7 +373,29 @@
             </button>
         </div><!-- / .modal-footer New ticket form modal footer -->
 
-    </script><!-- / newTicketForm modal -->
+    </script><!-- / New ticket form modal -->
+
+    <!-- Ticket info modal -->
+    <script type="text/ng-template" id="ticketInfo.html">
+
+        <!-- Ticket info modal header -->
+        <div class="modal-header">
+            <h3 class="modal-title">
+                Ticket #{{ ticketInfo.ticket.id }}
+            </h3>
+        </div><!-- / .modal-header Ticket info modal header -->
+
+        <!-- Ticket info modal body -->
+        <div class="modal-body">
+            {{ ticketInfo.ticket.content }}
+        </div><!-- / Ticket info modal body -->
+
+        <!-- Ticket info modal footer -->
+        <div class="modal-footer">
+            {{ ticketInfo.ticket.created }}
+        </div><!-- / Ticket info modal footer -->
+
+    </script><!-- / Ticket info modal -->
 
 </body>
 

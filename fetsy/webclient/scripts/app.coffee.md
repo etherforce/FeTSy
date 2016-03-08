@@ -52,9 +52,19 @@ Append a factory recipe to the app which keeps the tickets ressource
 definitions.
 
     .factory 'Ticket', [
+        '$uibModal'
         'DS'
-        (DS) ->
-            DS.defineResource 'Ticket'
+        ($uibModal, DS) ->
+            DS.defineResource
+                name: 'Ticket'
+                methods:
+                    openInfo: ->
+                        $uibModal.open
+                            templateUrl: 'ticketInfo.html'
+                            controller: 'TicketInfoCtrl as ticketInfo'
+                            resolve:
+                                ticket: @
+                        return
     ]
 
 Load the ressource during app loading and setup WAMP opening event listener

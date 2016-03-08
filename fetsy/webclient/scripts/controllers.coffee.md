@@ -295,3 +295,13 @@ Hook for the cancel button. This does only close the modal.
 
             return
     ]
+
+
+## Controller for the modal for the ticket info
+
+    .controller 'TicketInfoCtrl', [
+        'ticket'
+        (ticket) ->
+            @ticket = ticket
+            return
+    ]
