@@ -56,10 +56,35 @@ definitions.
         '$uibModal'
         '$wamp'
         'DS'
-        ($uibModal, $wamp, DS) ->
+        'ticketFilterValues'
+        ($uibModal, $wamp, DS, ticketFilterValues) ->
             DS.defineResource
                 name: 'Ticket'
                 methods:
+
+The method getField() returns the value of the ticket field. In case of
+'period' the result depends on the flag 'remainingTime'.
+
+                    getField: (key) ->
+                        if key is 'period'
+                            momentDeadline = moment.unix @created
+                                .add @period, 'minutes'
+                            if 0 > momentDeadline.diff moment(), 'minutes'
+                                @expired = true
+                            if ticketFilterValues.remainingTime
+                                momentDeadline.diff moment(), 'minutes'
+                            else
+                                if momentDeadline.isSame moment(), 'day'
+                                    'Today' + ' ' + momentDeadline.format 'HH:mm'
+                                else if momentDeadline.isSame moment().add(1, 'day'), 'day'
+                                    'Tomorrow' + ' ' + momentDeadline.format 'HH:mm'
+                                else
+                                    momentDeadline.format 'YYYY-MM-DD HH:mm'
+                        else
+                            @[key]
+
+The method 'openInfo' opens a modal with more info about the ticket.
+
                     openInfo: ->
                         $uibModal.open
                             templateUrl: 'ticketInfo.html'
@@ -67,6 +92,9 @@ definitions.
                             resolve:
                                 ticket: @
                         return
+
+The method 'close' requests the server to close the ticket.
+
                     close: ->
                         $wamp.call 'org.fetsy.changeTicket', [],
                             ticket:

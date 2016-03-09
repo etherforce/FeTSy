@@ -229,14 +229,15 @@
 
                     <!-- Ticket columns -->
                     <div ng-repeat="header in tickets.headers"
-                         ng-class="header.col">
+                         ng-class="header.col"
+                         ng-style="ticket.expired && {'color': 'red'}">
                         <span ng-hide="$first"
                               title="{{ header.getDisplayName() }}"
                               class="glyphicon visible-xs-inline"
                               ng-class="header.getIconCSSClass()"
                               aria-hidden="true">
                         </span>
-                        {{ ticket[header.sortKey] }}
+                        {{ ticket.getField(header.sortKey) }}
                     </div><!-- / Ticket columns -->
 
                     <!-- Button column -->
@@ -397,7 +398,7 @@
 
         <!-- Ticket info modal footer -->
         <div class="modal-footer">
-            Created {{ ticketInfo.ticket.created | amFromUnix | amDateFormat : 'YYYY-MM-DD hh:mm' }} by ...
+            Created {{ ticketInfo.ticket.created | amFromUnix | amDateFormat : 'YYYY-MM-DD HH:mm' }} by ...
         </div><!-- / Ticket info modal footer -->
 
     </script><!-- / Ticket info modal -->
