@@ -70,3 +70,11 @@ Append a constant for the default period. It is used in the new ticket form
 modal.
 
     .constant 'defaultPeriod', 120
+
+
+## Constant for the character limit in the content field.
+
+Append a constant to set a limit of characters in the content field in the
+ticket table. If a ticket has a longer content, the text is sliced.
+
+    .constant 'contentLimit', 30

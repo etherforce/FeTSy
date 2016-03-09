@@ -279,7 +279,7 @@ Hint: We add one minute here to get correct time because the seconds are strippe
 Save ticket if the period or deadline field is valid and there is some
 content.
 
-                if period or period is 0
+                if @contentField and period or period is 0
                     $uibModalInstance.close
                         'content': @contentField
                         'period': period

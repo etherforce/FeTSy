@@ -57,22 +57,29 @@ definitions.
         '$wamp'
         'DS'
         'ticketFilterValues'
-        ($uibModal, $wamp, DS, ticketFilterValues) ->
+        'contentLimit'
+        ($uibModal, $wamp, DS, ticketFilterValues, contentLimit) ->
             DS.defineResource
                 name: 'Ticket'
                 methods:
 
 The method getField() returns the value of the ticket field. In case of
-'period' the result depends on the flag 'remainingTime'.
+'content' the text is possibly limited to the value of the 'contentLimit'
+constant. In case of 'period' the result depends on the flag
+'remainingTime'.
 
                     getField: (key) ->
-                        if key is 'period'
+                        if key is 'content' and @content.length > contentLimit
+                            @content.slice(0, contentLimit) + '...'
+                        else if key is 'period'
                             momentDeadline = moment.unix @created
                                 .add @period, 'minutes'
                             if 0 > momentDeadline.diff moment(), 'minutes'
                                 @expired = true
                             if ticketFilterValues.remainingTime
-                                momentDeadline.diff moment(), 'minutes'
+                                String(
+                                    momentDeadline.diff moment(), 'minutes'
+                                ) + ' min.'
                             else
                                 if momentDeadline.isSame moment(), 'day'
                                     'Today' + ' ' + momentDeadline.format 'HH:mm'

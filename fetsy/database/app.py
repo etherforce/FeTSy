@@ -49,7 +49,7 @@ changed_ticket_schema = {
             "type": "string",
             "enum": [
                 "New",
-                "Assigned",
+                "Work in progress",
                 "Closed"
             ]
         },
