@@ -3,6 +3,7 @@ FeTSy database
 
 This is a WAMP client application using MongoDB to store ticket data.
 """
+import datetime
 import logging
 from asyncio import Lock, coroutine
 
@@ -113,8 +114,9 @@ class AppSession(ApplicationSession):
             # while (yield from curser.fetch_next):
             #    result = curser.next_object()
 
-            # Insert new ticket in database.
+            # Insert new ticket in database. Add timestamp.
             ticket['id'] = max_id + 1
+            ticket['created'] = datetime.datetime.now().timestamp()
             yield from self.database.tickets.insert(ticket)
 
         # Publish changedTicket event.

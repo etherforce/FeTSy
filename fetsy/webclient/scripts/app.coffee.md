@@ -1,12 +1,13 @@
 # Base file for FeTSy AngularJS app
 
 Initiate new angular module with the name 'FeTSy'. Load external libraries
-(AngularWAMP and JSData) as dependencies. Load internal services and
-controllers as dependencies.
+(angular-moment, AngularWAMP and JSData) as dependencies. Load internal
+services and controllers as dependencies.
 
     angular.module 'FeTSy', [
-        'js-data'
+        'angularMoment'
         'vxWamp'
+        'js-data'
         'FeTSy.services'
         'FeTSy.controllers'
     ]

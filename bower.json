@@ -4,6 +4,7 @@
   "dependencies": {
     "angular": "~1.4.9",
     "angular-bootstrap": "0.14.3",
+    "angular-moment": "~1.0.0-beta.4",
     "angular-wamp": "~0.1.8",
     "autobahn": "~0.9.9",
     "bootstrap": "~3.3.6",
