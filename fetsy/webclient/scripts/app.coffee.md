@@ -54,8 +54,9 @@ definitions.
 
     .factory 'Ticket', [
         '$uibModal'
+        '$wamp'
         'DS'
-        ($uibModal, DS) ->
+        ($uibModal, $wamp, DS) ->
             DS.defineResource
                 name: 'Ticket'
                 methods:
@@ -65,6 +66,22 @@ definitions.
                             controller: 'TicketInfoCtrl as ticketInfo'
                             resolve:
                                 ticket: @
+                        return
+                    close: ->
+                        $wamp.call 'org.fetsy.changeTicket', [],
+                            ticket:
+                                id: @id
+                                status: 'Closed'
+                        .then (result) ->
+                            if result.type == 'success'
+                                console.log(
+                                    'WAMP message: ' + result.details
+                                )
+                            else
+                                console.error(
+                                    'WAMP error: ' + result.details
+                                )
+                            return
                         return
     ]
 

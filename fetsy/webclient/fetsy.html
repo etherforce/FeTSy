@@ -246,7 +246,7 @@
                                     title="Close ticket"
                                     class="btn btn-xs btn-success"
                                     ng-show="ticket.status !== 'Closed'"
-                                    ng-click="">
+                                    ng-click="ticket.close()">
                                 <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                 <span class="sr-only">Close ticket</span>
                             </button>
@@ -382,6 +382,11 @@
         <div class="modal-header">
             <h3 class="modal-title">
                 Ticket #{{ ticketInfo.ticket.id }}
+                <span ng-show="ticketInfo.ticket.status === 'Closed'"
+                      title="Closed"
+                      class="pull-right glyphicon glyphicon-ok"
+                      aria-hidden="true">
+                </span>
             </h3>
         </div><!-- / .modal-header Ticket info modal header -->
 

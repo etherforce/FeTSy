@@ -13,7 +13,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 new_ticket_schema = {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "Ticket",
+    "title": "New ticket",
     "description": "A new ticket without ID",
     "type": "object",
     "properties": {
@@ -28,6 +28,49 @@ new_ticket_schema = {
     },
     "additionalProperties": False,
     "required": ["content"]
+}
+
+changed_ticket_schema = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Changed ticket",
+    "description": "A subset of a ticket to be changed",
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "The ID of the ticket",
+            "type": "integer"
+        },
+        "content": {
+            "description": "The content of the ticket",
+            "type": "string"
+        },
+        "status": {
+            "description": "The status of the ticket",
+            "type": "string",
+            "enum": [
+                "New",
+                "Assigned",
+                "Closed"
+            ]
+        },
+        "priority": {
+            "description": "The priority of the ticket from low (1) to "
+                           "high (5)",
+            "type": "integer",
+            "minimum": 1,
+            "maximun": 5
+        },
+        "assignee": {
+            "description": "The person who is resposible to solved the ticket",
+            "type": "string"
+        },
+        "period": {
+            "description": "The period in which the ticket has to be solved",
+            "type": "integer"
+        }
+    },
+    "additionalProperties": False,
+    "required": ["id"]
 }
 
 new_ticket_lock = Lock()
@@ -45,7 +88,7 @@ class AppSession(ApplicationSession):
         # Register remote procedures.
         yield from self.register(self.list_tickets, 'org.fetsy.listTickets')
         yield from self.register(self.new_ticket, 'org.fetsy.newTicket')
-        # yield from self.subscribe(self.changedTicket, 'org.fetsy.changedTicket')
+        yield from self.register(self.change_ticket, 'org.fetsy.changeTicket')
 
     @coroutine
     def list_tickets(self, *args, **kwargs):
@@ -85,10 +128,10 @@ class AppSession(ApplicationSession):
         if ticket is None:
             raise ValidationError('Ticket data is missing')
         validate(ticket, new_ticket_schema)
-        ticket.setdefault('status', 'Assigned')
-        ticket.setdefault('priority', 3)
-        ticket.setdefault('assignee', 'Max')
         ticket.setdefault('period', 120)
+        ticket['status'] = 'New'
+        ticket['priority'] = 3
+        ticket['assignee'] = 'Max'
         return ticket
 
     @coroutine
@@ -121,6 +164,46 @@ class AppSession(ApplicationSession):
 
         # Publish changedTicket event.
         del ticket['_id']
+        self.publish('org.fetsy.changedTicket', [], ticket=ticket)
+
+    @coroutine
+    def change_ticket(self, *args, **kwargs):
+        """
+        Async method to change tickets in the database.
+        """
+        self.logger.debug('Remote procedure change_ticket called.')
+        try:
+            ticket = self.validate_changed_ticket(kwargs.get('ticket'))
+        except ValidationError as e:
+            result = {
+                'type': 'error',
+                'details': e.message}
+        else:
+            yield from self.save_changed_ticket(ticket)
+            success = 'Ticket {} successfully changed.'.format(ticket['id'])
+            result = {
+                'type': 'success',
+                'details': success}
+        return result
+
+    def validate_changed_ticket(self, ticket):
+        """
+        Validates data for changed tickets.
+        """
+        if ticket is None:
+            raise ValidationError('Ticket data is missing')
+        validate(ticket, changed_ticket_schema)
+        return ticket
+
+    @coroutine
+    def save_changed_ticket(self, ticket):
+        """
+        Async method to store changes of a ticket in the database.
+        """
+        yield from self.database.tickets.update(
+            {'id': ticket['id']},
+            {'$set': ticket}
+        )
         self.publish('org.fetsy.changedTicket', [], ticket=ticket)
 
 
