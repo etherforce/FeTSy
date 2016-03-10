@@ -2,7 +2,7 @@
 
 Initiate new angular module with the name 'FeTSy'. Load external libraries
 (angular-moment, AngularWAMP and JSData) as dependencies. Load internal
-services and controllers as dependencies.
+services, controllers and directives as dependencies.
 
     angular.module 'FeTSy', [
         'angularMoment'
@@ -10,6 +10,7 @@ services and controllers as dependencies.
         'js-data'
         'FeTSy.services'
         'FeTSy.controllers'
+        'FeTSy.directives'
     ]
 
 

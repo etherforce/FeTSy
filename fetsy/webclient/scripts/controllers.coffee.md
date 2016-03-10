@@ -239,6 +239,8 @@ Append all tickets to the body.
 
 ## Controller for the modal for new tickets
 
+Append a controller for the modal for new tickets.
+
     .controller 'NewTicketFormCtrl', [
         '$uibModalInstance'
         'ticketFilterValues'
@@ -298,6 +300,8 @@ Hook for the cancel button. This does only close the modal.
 
 
 ## Controller for the modal for the ticket info
+
+Append a controller for the modal for the ticket info.
 
     .controller 'TicketInfoCtrl', [
         'ticket'

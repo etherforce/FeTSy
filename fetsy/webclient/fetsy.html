@@ -237,7 +237,7 @@
                               ng-class="header.getIconCSSClass()"
                               aria-hidden="true">
                         </span>
-                        {{ ticket.getField(header.sortKey) }}
+                        <ticket-field ticket="ticket" key="header.sortKey"></ticket-field>
                     </div><!-- / Ticket columns -->
 
                     <!-- Button column -->
@@ -309,6 +309,31 @@
         </footer>
 
     </div><!-- / Main container -->
+
+    <!-- Ticket field -->
+    <script type="text/ng-template" id="ticketField.html">
+
+        {{ ticketField.ticket.getField(ticketField.key) }}
+
+    </script><!-- / Ticket field -->
+
+    <!-- Ticket field dropdown -->
+    <script type="text/ng-template" id="ticketFieldDropdown.html">
+
+        <span uib-dropdown
+            <a uib-dropdown-toggle>
+                {{ ticketField.ticket.getField(ticketField.key) }}
+            </a>
+            <ul uib-dropdown-menu>
+                <li ng-repeat="choice in ticketField.getDropdownChoices()">
+                    <a role="button" ng-click="ticketField.click(choice)">
+                        {{ choice }}
+                    </a>
+                </li>
+            </ul>
+        </span>
+
+    </script><!-- / Ticket field dropdown -->
 
     <!-- New ticket form modal -->
     <script type="text/ng-template" id="newTicketForm.html">
