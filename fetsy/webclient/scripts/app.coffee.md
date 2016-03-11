@@ -22,7 +22,7 @@ Configurate the WAMP connection. Use 'realm1' als realm.
         '$wampProvider'
         ($wampProvider) ->
             $wampProvider.init
-                url: 'ws://' + location.host + '/ws'
+                url: "ws://#{ location.host }/ws"
                 realm: 'realm1'
             return
     ]
@@ -101,13 +101,12 @@ The method 'openInfo' opens a modal with more info about the ticket.
                                 ticket: @
                         return
 
-The method 'close' requests the server to close the ticket.
+The method 'change' requests the server to change the data of the ticket.
 
-                    close: ->
+                    change: (data) ->
+                        data.id = @id
                         $wamp.call 'org.fetsy.changeTicket', [],
-                            ticket:
-                                id: @id
-                                status: 'Closed'
+                            ticket: data
                         .then (result) ->
                             if result.type == 'success'
                                 console.log(

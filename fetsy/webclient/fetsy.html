@@ -247,7 +247,7 @@
                                     title="Close ticket"
                                     class="btn btn-xs btn-success"
                                     ng-show="ticket.status !== 'Closed'"
-                                    ng-click="ticket.close()">
+                                    ng-click="ticket.change({status: 'Closed'})">
                                 <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
                                 <span class="sr-only">Close ticket</span>
                             </button>

@@ -61,7 +61,7 @@ change event.
             @itemsPerPage = ticketFilterValues.itemsPerPage
             @change = =>
                 ticketFilterValues.paginationBegin =
-                    (@.paginationPage - 1) * @.itemsPerPage
+                    (@paginationPage - 1) * @itemsPerPage
                 return
 
 Here we add a watcher to get the number of all tickets.

@@ -21,7 +21,9 @@ Properties for the isolate scope binding.
                 key: '='
 
 Controller for the field. The getTemplateURL() method returns different
-URLs for each field. This depends on the result of getDropdownChoices().
+URLs for each field. This depends on the result of getDropdownChoices(). If
+a user clicks on a dropdown field, the ticket is changed using a resource
+method.
 
             controller: [
                 '$scope'
@@ -29,22 +31,17 @@ URLs for each field. This depends on the result of getDropdownChoices().
                     @ticket = $scope.ticket
                     @key = $scope.key
                     @getDropdownChoices = ->
-                        switch $scope.key
+                        switch @key
                             when 'status' then [
                                 'New'
                                 'Work in progress'
                                 'Closed'
                             ]
                             when 'assignee' then [
-                                'v'
+                                'X TODO'
+                                'Y TODO'
                             ]
-                            when 'priority' then [
-                                1
-                                2
-                                3
-                                4
-                                5
-                            ]
+                            when 'priority' then [1..5]
                             else null
                     @getTemplateURL = ->
                         if @getDropdownChoices()
@@ -52,8 +49,9 @@ URLs for each field. This depends on the result of getDropdownChoices().
                         else
                             'ticketField.html'
                     @click = (choice) ->
-                        console.log choice
-                        console.log @key
+                        data = {}
+                        data[@key] = choice
+                        @ticket.change data
                         return
                     return
             ]
