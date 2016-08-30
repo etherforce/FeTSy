@@ -38,7 +38,8 @@ workers:
     type: guest
     executable: python
     arguments:
-      - fetsy/database/app.py
+      - -m
+      - fetsy.database
     options:
       workdir: ".."
       watch:
