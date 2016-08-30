@@ -89,6 +89,7 @@ class AppSession(ApplicationSession):
         yield from self.register(self.list_tickets, 'org.fetsy.listTickets')
         yield from self.register(self.new_ticket, 'org.fetsy.newTicket')
         yield from self.register(self.change_ticket, 'org.fetsy.changeTicket')
+        # yield from super().onJoin(details)
 
     @coroutine
     def list_tickets(self, *args, **kwargs):
