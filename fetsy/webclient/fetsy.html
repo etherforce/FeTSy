@@ -65,26 +65,26 @@
             <!-- Connection open message -->
             <div class="row" ng-controller="ConnectionMessageCtrl as connectionMessage">
                 <div class="col-sm-offset-2 col-sm-8">
-                    <uib-alert type="success" ng-show="connectionMessage.connectionOpen">
+                    <div uib-alert class="alert-success" ng-show="connectionMessage.connectionOpen">
                         Connection established. Have a nice day.
-                    </uib-alert>
-                    <uib-alert type="warning" ng-hide="connectionMessage.connectionOpen">
+                    </div>
+                    <div uib-alert class="alert-warning" ng-hide="connectionMessage.connectionOpen">
                         Connection failed. Please reload the page or call the server administrator.
-                    </uib-alert>
+                    </div>
                 </div>
             </div><!-- / .row Connection open message -->
 
             <!-- Pagination bar -->
             <div class="row" ng-controller="PaginationCtrl as pagination">
                 <div class="col-sm-12">
-                    <uib-pagination total-items="pagination.totalItems"
-                                items-per-page="pagination.itemsPerPage"
-                                max_size="7"
-                                ng-model="pagination.paginationPage"
-                                ng-change="pagination.change()"
-                                boundary-links="true"
-                                class="pagination-sm">
-                    </uib-pagination>
+                    <ul uib-pagination total-items="pagination.totalItems"
+                        items-per-page="pagination.itemsPerPage"
+                        max-size="7"
+                        ng-model="pagination.paginationPage"
+                        ng-change="pagination.change()"
+                        boundary-links="true"
+                        class="pagination-sm">
+                    </ul>
                 </div>
             </div><!-- / .row Pagination bar -->
 
