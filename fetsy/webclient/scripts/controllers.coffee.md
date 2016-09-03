@@ -304,8 +304,35 @@ Hook for the cancel button. This does only close the modal.
 Append a controller for the modal for the ticket info.
 
     .controller 'TicketInfoCtrl', [
+        '$uibModalInstance'
+        '$wamp'
         'ticket'
-        (ticket) ->
+        ($uibModalInstance, $wamp, ticket) ->
             @ticket = ticket
+
+Hook for the delete button. This closes the modal.
+
+            @delete = ->
+                $wamp.call 'org.fetsy.deleteTicket', [],
+                    id: ticket.id
+                .then (result) ->
+                    if result.type == 'success'
+                        console.log(
+                            'WAMP message: ' + result.details
+                        )
+                    else
+                        console.error(
+                            'WAMP error: ' + result.details
+                        )
+                    return
+                $uibModalInstance.close()
+                return
+
+Hook for the cancel button. This does only close the modal.
+
+            @cancel = ->
+                $uibModalInstance.dismiss 'cancel'
+                return
+
             return
     ]

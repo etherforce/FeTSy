@@ -224,7 +224,30 @@ class UpdateTicket:
         self.publish('org.fetsy.changedTicket', [], ticket=ticket)
 
 
-class Ticket(ListTicket, CreateTicket, UpdateTicket):
+class DeleteTicket:
+    """
+    Interactions to delete a ticket.
+    """
+    @coroutine
+    def onJoin(self, details):
+        yield from self.register(self.delete_ticket, 'org.fetsy.deleteTicket')
+        next_method = super().onJoin(details)
+        if next_method is not None:
+            yield from next_method
+
+    @coroutine
+    def delete_ticket(self, *args, **kwargs):
+        self.logger.debug('Remote procedure delete_ticket called.')
+        id = kwargs.get('id')
+        yield from self.database.tickets.remove({'id': id})
+        self.publish('org.fetsy.deletedTicket', [], id=id)
+        success = 'Ticket {} successfully deleted.'.format(id)
+        return {
+            'type': 'success',
+            'details': success}
+
+
+class Ticket(ListTicket, CreateTicket, UpdateTicket, DeleteTicket):
     """
     Interactions for tickets.
     """

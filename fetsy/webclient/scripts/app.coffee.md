@@ -143,6 +143,19 @@ check ticket id and inject it into data store.
                                 kwargs.ticket
                         return
 
+Subscribe to the channel for deleted tickets. If an id comes in, eject the
+ticket out of data store.
+
+                info.session.subscribe 'org.fetsy.deletedTicket',
+                    (args, kwargs, details) ->
+                        if kwargs.id?
+                            Ticket.eject kwargs.id
+                        else
+                            console.error 'Received invalid data.',
+                                'ID is missing. Received'
+                                kwargs
+                        return
+
 Fetch all tickets from server via procedure call.
 
                 info.session.call 'org.fetsy.listTickets'
