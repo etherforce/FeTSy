@@ -10,26 +10,21 @@
 
     <title>FeTSy</title>
 
-    <!-- Libraries styles -->
+    <!-- Styles -->
     <link rel="stylesheet" href="css/fetsy-libs.css">
-
-    <!-- Custom styles -->
     <link rel="stylesheet" href="css/fetsy.css">
 
     <!-- HTML5 Shiv and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-        <script src="js/html5shiv.js"></script>
-        <script src="js/respond.src.js"></script>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
     <![endif]-->
 
-    <!-- Libraries JavaScript -->
+    <!-- JavaScript -->
     <script src="js/fetsy-libs.js"></script>
-
-    <!-- Custom JavaScript -->
+    <script src="js/fetsy-extra.js"></script>
+    <script src="js/fetsy-templates.js"></script>
     <script src="js/fetsy.js"></script>
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="js/ie10-viewport-bug-workaround.js"></script>
 </head>
 
 <body>
@@ -309,130 +304,6 @@
         </footer>
 
     </div><!-- / Main container -->
-
-    <!-- Ticket field -->
-    <script type="text/ng-template" id="ticketField.html">
-
-        {{ ticketField.ticket.getField(ticketField.key) }}
-
-    </script><!-- / Ticket field -->
-
-    <!-- Ticket field dropdown -->
-    <script type="text/ng-template" id="ticketFieldDropdown.html">
-
-        <span uib-dropdown
-            <a uib-dropdown-toggle>
-                {{ ticketField.ticket.getField(ticketField.key) }}
-            </a>
-            <ul uib-dropdown-menu>
-                <li ng-repeat="choice in ticketField.getDropdownChoices()">
-                    <a role="button" ng-click="ticketField.click(choice)">
-                        {{ choice }}
-                    </a>
-                </li>
-            </ul>
-        </span>
-
-    </script><!-- / Ticket field dropdown -->
-
-    <!-- New ticket form modal -->
-    <script type="text/ng-template" id="newTicketForm.html">
-
-        <!-- New ticket form modal header -->
-        <div class="modal-header">
-            <h3 class="modal-title">
-                New ticket
-            </h3>
-        </div><!-- / .modal-header New ticket form modal header -->
-
-        <!-- New ticket form modal body -->
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="newTicketPeriodOrDeadline" class="sr-only">
-                    <span ng-if="newTicketForm.remainingTimeValue">Period. Default: 120 minutes.</span>
-                    <span ng-if="!newTicketForm.remainingTimeValue">Deadline. Default: Time in 120 minutes.</span>
-                </label>
-                <div class="input-group">
-                    <div class="input-group-addon">
-                        <span ng-show="newTicketForm.remainingTimeValue"
-                              id="newTicketPeriodOrDeadlineIcon"
-                              title="Period (in minutes)"
-                              class="glyphicon glyphicon-hourglass"
-                              aria-hidden="true">
-                        </span>
-                        <span ng-hide="newTicketForm.remainingTimeValue"
-                              id="newTicketPeriodOrDeadlineIcon"
-                              title="Deadline"
-                              class="glyphicon glyphicon-time"
-                              aria-hidden="true">
-                        </span>
-                    </div>
-                    <input id="newTicketPeriodOrDeadline"
-                           type="text"
-                           class="form-control"
-                           aria-describedby="newTicketPeriodOrDeadlineIcon"
-                           required
-                           ng-model="newTicketForm.periodOrDeadlineField">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="newTicketContent" class="sr-only">
-                    Content
-                </label>
-                <textarea id="newTicketContent"
-                          placeholder="Content"
-                          class="form-control"
-                          rows="3"
-                          required
-                          ng-model="newTicketForm.contentField">
-                </textarea>
-            </div>
-        </div><!-- / .modal-body New ticket form modal body -->
-
-        <!-- New ticket form modal footer -->
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary" ng-click="newTicketForm.save()">
-                Save
-            </button>
-            <button type="button" class="btn btn-default" ng-click="newTicketForm.cancel()">
-                Cancel
-            </button>
-        </div><!-- / .modal-footer New ticket form modal footer -->
-
-    </script><!-- / New ticket form modal -->
-
-    <!-- Ticket info modal -->
-    <script type="text/ng-template" id="ticketInfo.html">
-
-        <!-- Ticket info modal header -->
-        <div class="modal-header">
-            <h3 class="modal-title">
-                Ticket #{{ ticketInfo.ticket.id }}
-                <span ng-show="ticketInfo.ticket.status === 'Closed'"
-                      title="Closed"
-                      class="pull-right glyphicon glyphicon-ok"
-                      aria-hidden="true">
-                </span>
-            </h3>
-            <p>Created {{ ticketInfo.ticket.created | amFromUnix | amDateFormat : 'YYYY-MM-DD HH:mm' }} by ...</p>
-        </div><!-- / .modal-header Ticket info modal header -->
-
-        <!-- Ticket info modal body -->
-        <div class="modal-body">
-            {{ ticketInfo.ticket.content }}
-        </div><!-- / Ticket info modal body -->
-
-        <!-- Ticket info modal footer -->
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger" ng-click="ticketInfo.delete()">
-                Delete ticket
-            </button>
-            <button type="button" class="btn btn-default" ng-click="ticketInfo.cancel()">
-                Cancel
-            </button>
-        </div><!-- / Ticket info modal footer -->
-
-    </script><!-- / Ticket info modal -->
 
 </body>
 

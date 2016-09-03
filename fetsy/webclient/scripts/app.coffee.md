@@ -8,6 +8,7 @@ services, controllers and directives as dependencies.
         'angularMoment'
         'vxWamp'
         'js-data'
+        'FeTSy-templates'
         'FeTSy.services'
         'FeTSy.controllers'
         'FeTSy.directives'

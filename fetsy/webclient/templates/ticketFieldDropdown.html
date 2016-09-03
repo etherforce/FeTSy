@@ -1,0 +1,14 @@
+<!-- Ticket field dropdown -->
+
+<span uib-dropdown>
+    <a uib-dropdown-toggle>
+        {{ ticketField.ticket.getField(ticketField.key) }}
+    </a>
+    <ul uib-dropdown-menu>
+        <li ng-repeat="choice in ticketField.getDropdownChoices()">
+            <a role="button" ng-click="ticketField.click(choice)">
+                {{ choice }}
+            </a>
+        </li>
+    </ul>
+</span>

@@ -1,0 +1,29 @@
+<!-- Ticket info modal -->
+
+<!-- Ticket info modal header -->
+<div class="modal-header">
+    <h3 class="modal-title">
+        Ticket #{{ ticketInfo.ticket.id }}
+        <span ng-show="ticketInfo.ticket.status === 'Closed'"
+              title="Closed"
+              class="pull-right glyphicon glyphicon-ok"
+              aria-hidden="true">
+        </span>
+    </h3>
+    <p>Created {{ ticketInfo.ticket.created | amFromUnix | amDateFormat : 'YYYY-MM-DD HH:mm' }} by ...</p>
+</div><!-- / .modal-header Ticket info modal header -->
+
+<!-- Ticket info modal body -->
+<div class="modal-body">
+    {{ ticketInfo.ticket.content }}
+</div><!-- / Ticket info modal body -->
+
+<!-- Ticket info modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" ng-click="ticketInfo.delete()">
+        Delete ticket
+    </button>
+    <button type="button" class="btn btn-default" ng-click="ticketInfo.cancel()">
+        Cancel
+    </button>
+</div><!-- / Ticket info modal footer -->
