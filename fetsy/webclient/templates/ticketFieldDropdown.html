@@ -1,14 +1,17 @@
 <!-- Ticket field dropdown -->
 
-<span uib-dropdown>
-    <a uib-dropdown-toggle>
+<div uib-dropdown>
+    <a uib-dropdown-toggle
+       href
+       ng-attr-id="{{ticketField.key}}-{{ ticketField.ticket.id }}">
         {{ ticketField.ticket.getField(ticketField.key) }}
     </a>
-    <ul uib-dropdown-menu>
+    <ul uib-dropdown-menu
+        aria-labelledby="{{ticketField.key}}-{{ ticketField.ticket.id }}">
         <li ng-repeat="choice in ticketField.getDropdownChoices()">
             <a role="button" ng-click="ticketField.click(choice)">
                 {{ choice }}
             </a>
         </li>
     </ul>
-</span>
+</div>

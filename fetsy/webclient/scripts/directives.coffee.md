@@ -21,15 +21,18 @@ Properties for the isolate scope binding.
                 key: '='
 
 Controller for the field. The getTemplateURL() method returns different
-URLs for each field. This depends on the result of getDropdownChoices(). If
-a user clicks on a dropdown field, the ticket is changed using a resource
-method.
+URLs for each field. In some cases if the user clicks on a dropdown field
+or hits Enter, the ticket is changed using a resource method.
 
             controller: [
                 '$scope'
                 ($scope) ->
                     @ticket = $scope.ticket
                     @key = $scope.key
+                    getNames = (value) =>
+                        @ticket.getAssignees().then (result) ->
+                            # TODO: Filter result by value.
+                            result
                     @getDropdownChoices = ->
                         switch @key
                             when 'status' then [
@@ -37,21 +40,20 @@ method.
                                 'Work in progress'
                                 'Closed'
                             ]
-                            when 'assignee' then [
-                                'X TODO'
-                                'Y TODO'
-                            ]
+                            when 'assignee' then getNames
                             when 'priority' then [1..5]
                             else null
                     @getTemplateURL = ->
-                        if @getDropdownChoices()
-                            'ticketFieldDropdown.html'
-                        else
-                            'ticketField.html'
+                        switch @key
+                            when 'status', 'priority' then 'ticketFieldDropdown.html'
+                            when 'assignee' then 'ticketFieldTypeahead.html'
+                            else 'ticketField.html'
                     @click = (choice) ->
                         data = {}
                         data[@key] = choice
                         @ticket.change data
+                        .then =>
+                            @editMode = false
                         return
                     return
             ]

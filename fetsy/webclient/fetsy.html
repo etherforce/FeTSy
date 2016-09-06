@@ -224,8 +224,7 @@
 
                     <!-- Ticket columns -->
                     <div ng-repeat="header in tickets.headers"
-                         ng-class="header.col"
-                         ng-style="ticket.expired && {'color': 'red'}">
+                         ng-class="[ header.col, ticket.expired ? 'ticket-field-expired' : '' ]">
                         <span ng-hide="$first"
                               title="{{ header.getDisplayName() }}"
                               class="glyphicon visible-xs-inline"

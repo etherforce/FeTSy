@@ -65,7 +65,7 @@ definitions.
                 name: 'Ticket'
                 methods:
 
-The method getField() returns the value of the ticket field. In case of
+The method 'getField' returns the value of the ticket field. In case of
 'content' the text is possibly limited to the value of the 'contentLimit'
 constant. In case of 'period' the result depends on the flag
 'remainingTime'.
@@ -92,6 +92,23 @@ constant. In case of 'period' the result depends on the flag
                         else
                             @[key]
 
+The method 'getAssignees' fetches an array of all assignees of all tickets.
+It returns a promise which is resolved with this array.
+
+                    getAssignees: ->
+                        $wamp.call 'org.fetsy.listTicketAssignees'
+                        .then (result) ->
+                            if result.type == 'success'
+                                console.log(
+                                    'WAMP message: ' + result.details
+                                )
+                                result.assignees
+                            else
+                                console.error(
+                                    'WAMP error: ' + result.details
+                                )
+                                []
+
 The method 'openInfo' opens a modal with more info about the ticket.
 
                     openInfo: ->
@@ -103,6 +120,7 @@ The method 'openInfo' opens a modal with more info about the ticket.
                         return
 
 The method 'change' requests the server to change the data of the ticket.
+It returns a promise.
 
                     change: (data) ->
                         data.id = @id
@@ -118,7 +136,6 @@ The method 'change' requests the server to change the data of the ticket.
                                     'WAMP error: ' + result.details
                                 )
                             return
-                        return
     ]
 
 Load the ressource during app loading and setup WAMP opening event listener
