@@ -1,0 +1,34 @@
+<!-- Ticket field typeahead -->
+
+<div ng-hide="ticketField.editMode">
+    <a href
+       ng-attr-id="{{ticketField.key}}-{{ ticketField.ticket.id }}"
+       ng-click="ticketField.editMode = true">
+        {{ ticketField.ticket.getField(ticketField.key) }}
+    </a>
+</div>
+
+<form ng-show="ticketField.editMode" ng-submit="ticketField.click(ticketField.inputField)">
+    <div class="input-group" >
+        <input type="text"
+               class="form-control"
+               ng-model="ticketField.inputField"
+               ng-init="ticketField.inputField = ticketField.ticket.getField(ticketField.key)"
+               uib-typeahead="choice for choice in ticketField.getDropdownChoices()($viewValue)">
+        <span class="input-group-btn">
+            <button type="submit"
+                    title="Save changes"
+                    class="btn btn-default">
+                <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                <span class="sr-only">Save changes</span>
+            </button>
+            <button type="button"
+                    title="Cancel"
+                    class="btn btn-default"
+                    ng-click="">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                <span class="sr-only">Cancel</span>
+            </button>
+        </span>
+    </div>
+</form>
