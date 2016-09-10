@@ -30,8 +30,8 @@ or hits Enter, the ticket is changed using a resource method.
                     @ticket = $scope.ticket
                     @key = $scope.key
                     getNames = (value) =>
-                        @ticket.getAssignees().then (result) ->
-                            # TODO: Filter result by value.
+                        @ticket.getAssignees value
+                        .then (result) ->
                             result
                     @getDropdownChoices = ->
                         switch @key
@@ -54,6 +54,11 @@ or hits Enter, the ticket is changed using a resource method.
                         @ticket.change data
                         .then =>
                             @editMode = false
+                            return
+                        return
+                    @closeForm = ->
+                        @inputField = @ticket.getField @key
+                        @editMode = false
                         return
                     return
             ]

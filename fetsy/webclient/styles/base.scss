@@ -14,12 +14,12 @@ body {
 .ticket-row-odd {
     background-color: #F9F9F9;
 }
-.ticket-field-expired, .ticket-field-expired a {
-    color: red;
-}
 ticket-field a {
     color: #333 !important;
     &:hover, &:focus {
         text-decoration: none;
     }
+}
+.ticket-field-expired, .ticket-field-expired a {
+    color: red !important;
 }

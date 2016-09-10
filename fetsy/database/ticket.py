@@ -237,6 +237,9 @@ class DeleteTicket:
 
     @coroutine
     def delete_ticket(self, *args, **kwargs):
+        """
+        Async method to delete a ticket.
+        """
         self.logger.debug('Remote procedure delete_ticket called.')
         id = kwargs.get('id')
         yield from self.database.tickets.remove({'id': id})
@@ -247,7 +250,40 @@ class DeleteTicket:
             'details': success}
 
 
-class Ticket(ListTicket, CreateTicket, UpdateTicket, DeleteTicket):
+class MetadataTicket:
+    """
+    Interactions to retrieve metadata of tickests.
+
+    This is only a list of all assignees at the moment.
+    """
+    @coroutine
+    def onJoin(self, details):
+        yield from self.register(
+            self.list_ticket_assignees,
+            'org.fetsy.listTicketAssignees')
+        next_method = super().onJoin(details)
+        if next_method is not None:
+            yield from next_method
+
+    @coroutine
+    def list_ticket_assignees(self, *args, **kwargs):
+        """
+        Async method to get all assignees of all tickets.
+        """
+        self.logger.debug('Remote procedure list_ticket_assignees called.')
+        curser = self.database.tickets.find()
+        # TODO: For use of Mongo >= 3.2. Use $text operator.
+        assignees = set()
+        while (yield from curser.fetch_next):
+            ticket = curser.next_object()
+            assignees.add(ticket.get('assignee', ''))
+        result = [assignee for assignee in assignees
+                  if kwargs.get('filterValue', '').lower() in assignee.lower()]
+        return result
+
+
+class Ticket(ListTicket, CreateTicket, UpdateTicket, DeleteTicket,
+             MetadataTicket):
     """
     Interactions for tickets.
     """

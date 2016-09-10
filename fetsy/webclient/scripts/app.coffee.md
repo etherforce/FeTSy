@@ -95,18 +95,16 @@ constant. In case of 'period' the result depends on the flag
 The method 'getAssignees' fetches an array of all assignees of all tickets.
 It returns a promise which is resolved with this array.
 
-                    getAssignees: ->
-                        $wamp.call 'org.fetsy.listTicketAssignees'
+                    getAssignees: (filterValue) ->
+                        $wamp.call 'org.fetsy.listTicketAssignees', [],
+                            filterValue: filterValue
                         .then (result) ->
-                            if result.type == 'success'
-                                console.log(
-                                    'WAMP message: ' + result.details
-                                )
-                                result.assignees
+                            if typeof result is 'object'
+                                result
                             else
-                                console.error(
-                                    'WAMP error: ' + result.details
-                                )
+                                console.error 'Received invalid data.',
+                                    'List of assignees is missing. Received'
+                                    result
                                 []
 
 The method 'openInfo' opens a modal with more info about the ticket.
