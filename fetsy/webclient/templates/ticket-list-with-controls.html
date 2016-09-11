@@ -1,0 +1,219 @@
+<!-- Pagination bar -->
+<div class="row" ng-controller="PaginationCtrl as pagination">
+    <div class="col-sm-12">
+        <ul uib-pagination total-items="pagination.totalItems"
+            items-per-page="pagination.itemsPerPage"
+            max-size="7"
+            ng-model="pagination.paginationPage"
+            ng-change="pagination.change()"
+            boundary-links="true"
+            class="pagination-sm">
+        </ul>
+    </div>
+</div><!-- / .row Pagination bar -->
+
+<!-- Top functionality row -->
+<div class="row" style="padding-bottom:1.5em;" ng-controller="TopRowCtrl as topRow">
+
+    <!-- New ticket button -->
+    <div class="col-sm-3">
+        <button type="button"
+                class="btn btn-primary"
+                ng-show="topRow.newTicketForm"
+                ng-click="topRow.newTicketForm()">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            New Ticket
+        </button>
+    </div><!-- / .col-sm-3 New ticket button -->
+
+    <!-- Show remaining time in minutes checkbox -->
+    <div class="col-sm-3">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" ng-model="topRow.remainingTimeValue" ng-change="topRow.remainingTimeChange()">
+                Show remaining time in minutes
+            </label>
+        </div>
+    </div><!-- / .col-sm-3 Show remaining time in minutes checkbox-->
+
+    <!-- Hide closed tickets checkbox -->
+    <div class="col-sm-3">
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" ng-model="topRow.closedValue" ng-change="topRow.closedChange()">
+                Hide closed tickets
+            </label>
+        </div>
+    </div><!-- / .col-sm-3 Hide closed tickets checkbox -->
+
+    <!-- Search bar for filtering the table -->
+    <div class="col-sm-3">
+        <form role="form" class="form-inline">
+            <div class="form-group">
+                <label for="search" class="sr-only">
+                    Search
+                </label>
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <span id="searchIcon" class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        <span class="sr-only">Search</span>
+                    </div>
+                    <input id="search"
+                           type="text"
+                           class="form-control"
+                           placeholder="Search"
+                           aria-describedby="searchIcon"
+                           ng-model="topRow.searchValue"
+                           ng-change="topRow.searchChange()">
+                    <div class="input-group-btn">
+                        <span type="button"
+                              title="Reset search field"
+                              class="btn btn-default"
+                              ng-click="topRow.searchValue = ''; topRow.searchChange()">
+                            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            <span class="sr-only">Reset search field</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div><!-- / .col-sm-3 Search bar for filtering the table -->
+
+</div><!-- / .row Top functionality row -->
+
+<!-- Ticket list -->
+<div ng-controller="TicketListCtrl as tickets">
+
+    <!-- Ticket list header -->
+    <div class="row ticket-row ticket-list-header">
+
+        <!-- Header for extra small devices -->
+        <div ng-repeat="header in tickets.headers"
+             class="col-xs-2 visible-xs-inline"
+             ng-click="tickets.toggleSort(header.sortKey)">
+            <a role="button">
+                <span ng-show="$first"
+                      title="{{ header.getDisplayName() }}">
+                    #
+                </span>
+                <span ng-hide="$first"
+                      title="{{ header.getDisplayName() }}"
+                      class="glyphicon"
+                      ng-class="header.getIconCSSClass()"
+                      aria-hidden="true">
+                </span>
+            </a>
+            <span class="pull-right"
+                  ng-class="tickets.reverse ? null : 'dropup'"
+                  ng-show="tickets.sortColumn === header.sortKey">
+                <span class="caret"></span>
+            </span>
+        </div>
+
+        <!-- Header for small devices and greater -->
+        <div ng-repeat="header in tickets.headers"
+             class="hidden-xs"
+             ng-class="header.col"
+             ng-click="tickets.toggleSort(header.sortKey)">
+            <a role="button">
+                <span ng-show="$first"
+                      title="{{ header.getDisplayName() }}">
+                    #
+                </span>
+                <span ng-hide="$first"
+                      title="{{ header.getDisplayName() }}"
+                      class="glyphicon"
+                      ng-class="header.getIconCSSClass()"
+                      aria-hidden="true">
+                </span>
+            </a>
+            <span class="pull-right"
+                  ng-class="tickets.reverse ? null : 'dropup'"
+                  ng-show="tickets.sortColumn === header.sortKey">
+                <span class="caret"></span>
+            </span>
+        </div>
+
+    </div><!-- / .row Ticket list header -->
+
+    <!-- Ticket list body -->
+    <div class="row ticket-row"
+         ng-repeat="ticket in tickets.all |
+                    orderBy : tickets.sortColumn : tickets.reverse |
+                    filter : tickets.getSearch() |
+                    filter: tickets.closedFilter |
+                    limitTo : tickets.itemsPerPage : tickets.getPaginationBegin()
+                    as filteredTickets"
+         ng-class-odd="'ticket-row-odd'">
+
+        <!-- Ticket columns -->
+        <div ng-repeat="header in tickets.headers"
+             ng-class="[ header.col, ticket.expired ? 'ticket-field-expired' : '' ]">
+            <span ng-hide="$first"
+                  title="{{ header.getDisplayName() }}"
+                  class="glyphicon visible-xs-inline"
+                  ng-class="header.getIconCSSClass()"
+                  aria-hidden="true">
+            </span>
+            <ticket-field ticket="ticket" key="header.sortKey"></ticket-field>
+        </div><!-- / Ticket columns -->
+
+        <!-- Button column -->
+        <div class="col-sm-1">
+            <span class="pull-right">
+                <button type="button"
+                        title="Close ticket"
+                        class="btn btn-xs btn-success"
+                        ng-show="ticket.status !== 'Closed'"
+                        ng-click="ticket.change({status: 'Closed'})">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    <span class="sr-only">Close ticket</span>
+                </button>
+                <button type="button"
+                        title="Get more info"
+                        class="btn btn-xs btn-info"
+                        ng-click="ticket.openInfo()">
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                    <span class="sr-only">Get more info</span>
+                </button>
+            </span>
+        </div><!-- / Button column -->
+
+    </div><!-- / .row Ticket list body -->
+
+    <!-- Ticket list body empty -->
+    <div class="row ticket-row ticket-row-odd"
+         ng-show="filteredTickets.length == 0">
+
+         <div class="col-sm-8 col-sm-offset-2">
+            No tickets found. Try to move back in the pagination bar or reset the checkboxes or search field.
+         </div>
+
+    </div><!-- / .row Ticket list body empty -->
+
+    <!-- Second ticket list header -->
+    <div class="row ticket-row ticket-row-last ticket-list-header"
+         ng-class="filteredTickets.length === 0 || filteredTickets.length % 2 !== 0 ? '' : 'ticket-row-odd'">
+
+        <!-- Second header for extra small devices -->
+        <!-- None -->
+
+        <!-- Second header for small devices and greater -->
+        <div ng-repeat="header in tickets.headers"
+             class="hidden-xs"
+             ng-class="header.col">
+            <span ng-show="$first"
+                  title="{{ header.getDisplayName() }}">
+                #
+            </span>
+            <span ng-hide="$first"
+                  title="{{ header.getDisplayName() }}"
+                  class="glyphicon"
+                  ng-class="header.getIconCSSClass()"
+                  aria-hidden="true">
+            </span>
+        </div>
+
+    </div><!-- / .row Second ticket list header -->
+
+</div><!-- / Ticket list -->

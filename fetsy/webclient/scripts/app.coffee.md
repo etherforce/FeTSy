@@ -1,17 +1,48 @@
 # Base file for FeTSy AngularJS app
 
 Initiate new angular module with the name 'FeTSy'. Load external libraries
-(angular-moment, AngularWAMP and JSData) as dependencies. Load internal
-services, controllers and directives as dependencies.
+(angular-moment, AngularWAMP, JSData and UI-Router for Angular 1) as
+dependencies. Load internal services, controllers and directives as
+dependencies.
 
     angular.module 'FeTSy', [
         'angularMoment'
         'vxWamp'
         'js-data'
+        'ui.router'
         'FeTSy-templates'
         'FeTSy.services'
         'FeTSy.controllers'
         'FeTSy.directives'
+    ]
+
+
+## Configurate UI-Router for Angular 1 (ui.rooter).
+
+    .config [
+        '$locationProvider'
+        '$urlRouterProvider'
+        ($locationProvider, $urlRouterProvider) ->
+
+            # Uses HTML5 mode for location in browser address bar
+            $locationProvider.html5Mode true
+
+            # For any unmatched url, redirect to /
+            $urlRouterProvider.otherwise '/'
+    ]
+
+    .config [
+        '$stateProvider'
+        ($stateProvider) ->
+            $stateProvider
+            .state
+                name: 'home'
+                url: '/'
+                templateUrl: 'home.html'
+            .state
+                name: 'administration'
+                url: '/administration/'
+            return
     ]
 
 

@@ -1,0 +1,11 @@
+<!-- Connection open message -->
+<div class="row" ng-controller="ConnectionMessageCtrl as connectionMessage">
+    <div class="col-sm-offset-2 col-sm-8">
+        <div uib-alert class="alert-success" ng-show="connectionMessage.connectionOpen">
+            Connection established. Have a nice day.
+        </div>
+        <div uib-alert class="alert-warning" ng-hide="connectionMessage.connectionOpen">
+            Connection failed. Please reload the page or call the server administrator.
+        </div>
+    </div>
+</div><!-- / .row Connection open message -->
