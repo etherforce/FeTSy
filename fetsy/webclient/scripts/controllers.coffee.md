@@ -336,3 +336,15 @@ Hook for the cancel button. This does only close the modal.
 
             return
     ]
+
+
+## Controller for the tag administration.
+
+Append a controller for the administration of ticket tags.
+
+    .controller 'TagAdministrationCtrl', [
+        '$wamp'
+        ($wamp) ->
+            @tags = []
+            return
+    ]

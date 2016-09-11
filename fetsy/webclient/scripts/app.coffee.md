@@ -42,6 +42,7 @@ dependencies.
             .state
                 name: 'administration'
                 url: '/administration/'
+                templateUrl: 'administration.html'
             return
     ]
 

@@ -1,0 +1,97 @@
+<div ng-include="'connection-message.html'"></div>
+
+<!-- Tag administration -->
+<div ng-controller="TagAdministrationCtrl as tagAdministration">
+
+    <!-- Tag administration header -->
+    <div class="row ticket-row ticket-list-header">
+
+        <!-- Header for extra small devices -->
+        <!-- None -->
+
+        <!-- Header for small devices and greater -->
+        <div class="col-sm-6 hidden-xs">
+            <span title="Tag"
+                  class="glyphicon glyphicon-tag"
+                  aria-hidden="true">
+            </span>
+        </div>
+        <div class="col-sm-5 hidden-xs">
+            <span title="Color"
+                  class="glyphicon glyphicon-grain"
+                  aria-hidden="true">
+            </span>
+        </div>
+
+    </div><!-- / .row Tag administration header -->
+
+    <!-- Tag administration body -->
+    <div class="row ticket-row"
+         ng-repeat="tag in tagAdministration.tags"
+         ng-class-odd="'ticket-row-odd'">
+
+        <!-- Tag administration columns -->
+        <div class="col-sm-6">
+            <span title="Tag"
+                  class="glyphicon glyphicon-tag visible-xs-inline"
+                  aria-hidden="true">
+            </span>
+            Tag 1
+        </div>
+        <div class="col-sm-5">
+            <span title="Color"
+                  class="glyphicon glyphicon-grain visible-xs-inline"
+                  aria-hidden="true">
+            </span>
+            Color 1
+        </div>
+
+        <!-- Button column -->
+        <div class="col-sm-1">
+            <span class="pull-right">
+                <button type="button"
+                        title="Remove tag"
+                        class="btn btn-xs btn-danger"
+                        ng-click="">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                    <span class="sr-only">Remove tag</span>
+                </button>
+            </span>
+        </div>
+
+    </div><!-- / .row Tag administration body -->
+
+    <!-- Tag administration body empty -->
+    <div class="row ticket-row ticket-row-odd"
+         ng-show="tagAdministration.tags.length == 0">
+
+         <div class="col-sm-8 col-sm-offset-2">
+            No tags found.  Try to add a new tag using the button above.
+         </div>
+
+    </div><!-- / .row Tag administration body empty -->
+
+    <!-- Second tag administration header -->
+    <div class="row ticket-row ticket-row-last ticket-list-header"
+         ng-class="tagAdministration.tags.length === 0 || tagAdministration.tags.length % 2 !== 0 ? '' : 'ticket-row-odd'">
+
+        <!-- Second header for extra small devices -->
+        <!-- None -->
+
+        <!-- Second header for small devices and greater -->
+        <div class="col-sm-6 hidden-xs">
+            <span title="Tag"
+                  class="glyphicon glyphicon-tag"
+                  aria-hidden="true">
+            </span>
+        </div>
+        <div class="col-sm-5 hidden-xs">
+            <span title="Color"
+                  class="glyphicon glyphicon-grain"
+                  aria-hidden="true">
+            </span>
+        </div>
+
+    </div><!-- / .row Second tag administration header -->
+
+</div>
