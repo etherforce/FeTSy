@@ -1,0 +1,69 @@
+<!-- New tag form modal -->
+
+<!-- New tag form modal header -->
+<div class="modal-header">
+    <h3 class="modal-title">
+        New tag
+    </h3>
+</div><!-- / .modal-header New tag form modal header -->
+
+<!-- New tag form modal body -->
+<div class="modal-body">
+    <div class="form-group">
+        <label for="newTagName" class="sr-only">
+            Name
+        </label>
+        <div class="input-group">
+            <div class="input-group-addon">
+                <span id="newTagNameIcon"
+                      title="Name"
+                      class="glyphicon glyphicon-tag"
+                      aria-hidden="true">
+                </span>
+            </div>
+            <input id="newTagName"
+                   type="text"
+                   class="form-control"
+                   aria-describedby="newTagNameIcon"
+                   required
+                   placeholder="Name"
+                   ng-model="newTagForm.nameField">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="newTagColor" class="sr-only">
+            Color
+        </label>
+        <div class="input-group">
+            <div class="input-group-addon">
+                <span id="newTagColorIcon"
+                      title="Color"
+                      class="glyphicon glyphicon-grain"
+                      aria-hidden="true">
+                </span>
+            </div>
+            <select id="newTagColor"
+                    class="form-control"
+                    aria-describedby="newTagColorIcon"
+                    ng-model="newTagForm.colorField">
+                  <option value="default">default</option>
+                  <option value="primary">primary</option>
+                  <option value="success">success</option>
+                  <option value="info">info</option>
+                  <option value="warning">warning</option>
+                  <option value="danger">danger</option>
+            </select>
+        </div>
+    </div>
+</div><!-- / .modal-body New tag form modal body -->
+
+<!-- New tag form modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-click="newTagForm.save()">
+        Save
+    </button>
+    <button type="button" class="btn btn-default" ng-click="newTagForm.cancel()">
+        Cancel
+    </button>
+</div><!-- / .modal-footer New tag form modal footer -->
+

@@ -1,5 +1,21 @@
 <div ng-include="'connection-message.html'"></div>
 
+<!-- Top functionality row -->
+<div class="row" style="padding-bottom:1.5em;" ng-controller="TagAdministrationTopRowCtrl as tagAdministrationTopRow">
+
+    <!-- New tag button -->
+    <div class="col-sm-3">
+        <button type="button"
+                class="btn btn-primary"
+                ng-show="tagAdministrationTopRow.newTagForm"
+                ng-click="tagAdministrationTopRow.newTagForm()">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+            New Tag
+        </button>
+    </div><!-- / .col-sm-3 New tag button -->
+
+</div><!-- / .row Top functionality row -->
+
 <!-- Tag administration -->
 <div ng-controller="TagAdministrationCtrl as tagAdministration">
 
@@ -36,14 +52,14 @@
                   class="glyphicon glyphicon-tag visible-xs-inline"
                   aria-hidden="true">
             </span>
-            Tag 1
+            {{ tag.name }}
         </div>
         <div class="col-sm-5">
             <span title="Color"
                   class="glyphicon glyphicon-grain visible-xs-inline"
                   aria-hidden="true">
             </span>
-            Color 1
+            {{ tag.color }}
         </div>
 
         <!-- Button column -->

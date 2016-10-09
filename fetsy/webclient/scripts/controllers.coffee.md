@@ -338,13 +338,101 @@ Hook for the cancel button. This does only close the modal.
     ]
 
 
+## Controller for the tag administration top row.
+
+Append a controller for the row with the 'New Tag' button.
+
+    .controller 'TagAdministrationTopRowCtrl', [
+        '$uibModal'
+        '$wamp'
+        'userHasPermissionFactory'
+        ($uibModal, $wamp, userHasPermissionFactory) ->
+
+Hook for the button to create a new tag. The uib-modal directive from
+Angular UI Bootstrap is used.
+
+            @newTagForm =
+                if userHasPermissionFactory.isStaff
+                    ->
+                        modalInstance = $uibModal.open
+                            templateUrl: 'newTagForm.html'
+                            controller: 'NewTagFormCtrl as newTagForm'
+
+                        modalInstance.result.then (result) ->
+                                $wamp.call 'org.fetsy.newTag', [],
+                                    tag:
+                                        name: result.name
+                                        color: result.color
+                                        weight: result.weight
+                                .then (result) ->
+                                    if result.type == 'success'
+                                        console.log(
+                                            'WAMP message: ' + result.details
+                                        )
+                                    else
+                                        console.error(
+                                            'WAMP error: ' + result.details
+                                        )
+                                    return
+                                return
+                        return
+                else
+                    null
+            return
+    ]
+
+
 ## Controller for the tag administration.
 
 Append a controller for the administration of ticket tags.
 
     .controller 'TagAdministrationCtrl', [
-        '$wamp'
-        ($wamp) ->
-            @tags = []
+        '$scope'
+        'DS'
+        ($scope, DS) ->
+
+Append all tags to the body.
+
+            watchExpression = -> DS.lastModified('Tag')
+            listener = =>
+                @tags = DS.getAll 'Tag'
+                return
+            $scope.$watch watchExpression, listener
+
+            return
+    ]
+
+
+## Controller for the modal for new tags
+
+Append a controller for the modal for new tags.
+
+    .controller 'NewTagFormCtrl', [
+        '$uibModalInstance'
+        ($uibModalInstance) ->
+
+Default value for the colorField.
+
+            @colorField = 'default'
+
+Hook for the save button. This validates the input and closes the modal.
+The validated data are handled back to the TagAdministrationTopRowCtrl.
+
+            @save = ->
+                if @nameField
+                    $uibModalInstance.close
+                        'name': @nameField
+                        'color': @colorField
+                        'weight': 0
+                else
+                    $uibModalInstance.dismiss 'cancel'
+                return
+
+Hook for the cancel button. This does only close the modal.
+
+            @cancel = ->
+                $uibModalInstance.dismiss 'cancel'
+                return
+
             return
     ]

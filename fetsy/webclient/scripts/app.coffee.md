@@ -81,7 +81,7 @@ This does nothing at the moment. TODO: Remove this stuff.
     ]
 
 
-## Setup and load JSData ressource for tickets
+## Setup and load JSData ressource for tickets and tags
 
 Append a factory recipe to the app which keeps the tickets ressource
 definitions.
@@ -168,14 +168,24 @@ It returns a promise.
                             return
     ]
 
+Append a factory recipe to the app which keeps the tags ressource definitions.
+
+    .factory 'Tag', [
+        'DS'
+        (DS) ->
+            DS.defineResource
+                name: 'Tag'
+    ]
+
 Load the ressource during app loading and setup WAMP opening event listener
-to get all tickets from server.
+to get all tickets and tags from server.
 
     .run [
         '$rootScope'
         '$wamp'
         'Ticket'
-        ($rootScope, $wamp, Ticket) ->
+        'Tag'
+        ($rootScope, $wamp, Ticket, Tag) ->
             $rootScope.$on '$wamp.open', (event, info) ->
 
 Subscribe to the channel for new and changed tickets. If a ticket comes in,
@@ -214,6 +224,22 @@ Fetch all tickets from server via procedure call.
                                 if ticket?
                                     angular.extend item, ticket
                                 Ticket.inject item
+                            else
+                                console.error 'Received invalid data.',
+                                    'ID is missing. Received'
+                                    item
+                        return
+
+Fetch all tags from server via procedure call.
+
+                info.session.call 'org.fetsy.listTags'
+                    .then (result) ->
+                        for item in result
+                            if item.id?
+                                tag = Tag.get item.id
+                                if tag?
+                                    angular.extend item, tag
+                                Tag.inject item
                             else
                                 console.error 'Received invalid data.',
                                     'ID is missing. Received'

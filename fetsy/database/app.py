@@ -9,10 +9,11 @@ from asyncio import coroutine
 from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from .tag import Tag
 from .ticket import Ticket
 
 
-class AppSession(Ticket, ApplicationSession):
+class AppSession(Ticket, Tag, ApplicationSession):
 
     @coroutine
     def onJoin(self, details):
