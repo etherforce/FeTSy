@@ -219,12 +219,12 @@ check tag id and inject it into data store.
 
                 info.session.subscribe 'org.fetsy.changedTag',
                     (args, kwargs, details) ->
-                        if kwargs.tag.id?
-                            Tag.inject kwargs.tag
+                        if kwargs.object.id?
+                            Tag.inject kwargs.object
                         else
                             console.error 'Received invalid data.',
                                 'ID is missing. Received'
-                                kwargs.tag
+                                kwargs.object
                         return
 
 Fetch all tickets from server via procedure call.
@@ -245,7 +245,7 @@ Fetch all tickets from server via procedure call.
 
 Fetch all tags from server via procedure call.
 
-                info.session.call 'org.fetsy.listTags'
+                info.session.call 'org.fetsy.listTag'
                     .then (result) ->
                         for item in result
                             if item.id?

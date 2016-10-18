@@ -13,7 +13,7 @@ from .tag import Tag
 from .ticket import Ticket
 
 
-class AppSession(Ticket, Tag, ApplicationSession):
+class AppSession(Ticket, ApplicationSession):
 
     @coroutine
     def onJoin(self, details):
@@ -21,7 +21,13 @@ class AppSession(Ticket, Tag, ApplicationSession):
         self.logger = self.config.extra['logger']
         self.logger.info('Connection to WAMP router established.')
         self.database = self.config.extra['database']
-        yield from super().onJoin(details)
+
+        # Register Ticket ViewSet.
+        yield from super().onJoin(details) #TODO
+
+        # Register Tag ViewSet.
+        tag = Tag(self)
+        yield from tag.register_viewset()
 
 
 def get_config():

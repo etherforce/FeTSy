@@ -359,8 +359,8 @@ Angular UI Bootstrap is used.
                             controller: 'NewTagFormCtrl as newTagForm'
 
                         modalInstance.result.then (result) ->
-                                $wamp.call 'org.fetsy.newTag', [],
-                                    tag:
+                                $wamp.call 'org.fetsy.createTag', [],
+                                    object:
                                         name: result.name
                                         color: result.color
                                         weight: result.weight
