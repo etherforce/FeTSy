@@ -3,6 +3,9 @@ controller: {}
 workers:
   -
     type: router
+    options:
+      pythonpath:
+        - ..
     realms:
       -
         name: realm1
@@ -30,8 +33,12 @@ workers:
           port: 8080
         paths:
           /:
+            type: wsgi
+            module: dist.wsgi
+            object: application
+          static:
             type: static
-            directory: ../dist/
+            directory: ../dist/static/
           ws:
             type: websocket
   -
@@ -41,8 +48,8 @@ workers:
       - -m
       - fetsy.database
     options:
-      workdir: ".."
+      workdir: ..
       watch:
         directories:
-          - "../fetsy/database"
-        action: "restart"
+          - ../fetsy/database
+        action: restart

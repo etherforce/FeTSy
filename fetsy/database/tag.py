@@ -40,7 +40,7 @@ new_tag_schema = {
     ]
 }
 
-changed_ticket_schema = {}  #TODO
+changed_tag_schema = {}  #TODO
 
 
 class ListTag:

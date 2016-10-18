@@ -214,6 +214,19 @@ ticket out of data store.
                                 kwargs
                         return
 
+Subscribe to the channel for new and changed tags. If a tag comes in,
+check tag id and inject it into data store.
+
+                info.session.subscribe 'org.fetsy.changedTag',
+                    (args, kwargs, details) ->
+                        if kwargs.tag.id?
+                            Tag.inject kwargs.tag
+                        else
+                            console.error 'Received invalid data.',
+                                'ID is missing. Received'
+                                kwargs.tag
+                        return
+
 Fetch all tickets from server via procedure call.
 
                 info.session.call 'org.fetsy.listTickets'

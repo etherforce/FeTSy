@@ -23,10 +23,12 @@ productionMode = argv.production
 
 outputDirectory = path.join __dirname, 'dist'
 
+outputDirectoryStatic = path.join outputDirectory, 'static'
+
 
 # Gulp default task
 
-gulp.task 'default', ['index', 'js', 'css', 'crossbar'], ->
+gulp.task 'default', ['index', 'wsgi', 'js', 'css', 'crossbar'], ->
 
 
 # Main index file
@@ -34,6 +36,13 @@ gulp.task 'default', ['index', 'js', 'css', 'crossbar'], ->
 gulp.task 'index', ->
     gulp.src path.join 'fetsy', 'webclient', 'fetsy.html'
         .pipe rename 'index.html'
+        .pipe gulp.dest path.join outputDirectory
+
+
+# WSGI file
+
+gulp.task 'wsgi', ->
+    gulp.src path.join 'fetsy', 'wsgi.py'
         .pipe gulp.dest path.join outputDirectory
 
 
@@ -54,7 +63,7 @@ gulp.task 'coffee', ->
     .pipe concat 'fetsy.js'
     .pipe sourcemaps.write()
     .pipe gulpif productionMode, uglify()
-    .pipe gulp.dest path.join outputDirectory, 'js'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'js'
 
 gulp.task 'templates', ->
     gulp.src path.join 'fetsy', 'webclient', 'templates', '**', '*.html'
@@ -63,7 +72,7 @@ gulp.task 'templates', ->
         standalone: true
         moduleSystem: 'IIFE'
     .pipe gulpif productionMode, uglify()
-    .pipe gulp.dest path.join outputDirectory, 'js'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'js'
 
 gulp.task 'js-extra', ->
     gulp.src path.join 'fetsy', 'webclient', 'static', 'js', '*.js'
@@ -71,7 +80,7 @@ gulp.task 'js-extra', ->
     .pipe concat 'fetsy-extra.js'
     .pipe sourcemaps.write()
     .pipe gulpif productionMode, uglify()
-    .pipe gulp.dest path.join outputDirectory, 'js'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'js'
 
 gulp.task 'js-libs', ->
     isntSpecialFile = (file) ->
@@ -85,7 +94,7 @@ gulp.task 'js-libs', ->
         filter: /\.js$/
     .pipe gulpif isntSpecialFile, concatChannel()
     .pipe gulpif productionMode, uglify()
-    .pipe gulp.dest path.join outputDirectory, 'js'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'js'
 
 
 # CSS and font files
@@ -103,7 +112,7 @@ gulp.task 'sass', ->
     .pipe sass().on 'error', sass.logError
     .pipe concat 'fetsy.css'
     .pipe sourcemaps.write()
-    .pipe gulp.dest path.join outputDirectory, 'css'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'css'
 
 gulp.task 'css-extra', ->
     gulp.src path.join 'fetsy', 'webclient', 'static', 'css', '*.css'
@@ -112,7 +121,7 @@ gulp.task 'css-extra', ->
     .pipe sourcemaps.write()
     .pipe gulpif productionMode, cleanCSS
         compatibility: 'ie8'
-    .pipe gulp.dest path.join outputDirectory, 'css'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'css'
 
 gulp.task 'css-libs', ->
     gulp.src mainBowerFiles
@@ -122,12 +131,12 @@ gulp.task 'css-libs', ->
     .pipe sourcemaps.write()
     .pipe gulpif productionMode, cleanCSS
         compatibility: 'ie8'
-    .pipe gulp.dest path.join outputDirectory, 'css'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'css'
 
 gulp.task 'fonts-libs', ->
     gulp.src mainBowerFiles
         filter: /\.(eot)|(svg)|(ttf)|(woff)|(woff2)$/
-    .pipe gulp.dest path.join outputDirectory, 'fonts'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'fonts'
 
 
 # Crossbar.io configuration
@@ -139,9 +148,11 @@ gulp.task 'crossbar', ->
 
 # Helper tasks.
 
-gulp.task 'watch', ['index', 'coffee', 'templates', 'sass', 'crossbar'], ->
+gulp.task 'watch', ['index', 'wsgi', 'coffee', 'templates', 'sass', 'crossbar'], ->
     gulp.watch path.join('fetsy', 'webclient', 'fetsy.html'),
         ['index']
+    gulp.watch path.join('fetsy', 'wsgi.py'),
+        ['wsgi']
     gulp.watch path.join('fetsy', 'webclient', 'scripts', '**', '*.coffee.md'),
         ['coffee']
     gulp.watch path.join('fetsy', 'webclient', 'templates', '**', '*.html'),
