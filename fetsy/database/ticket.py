@@ -3,6 +3,8 @@ import datetime
 from asyncio import Lock, coroutine
 from jsonschema import ValidationError, validate
 
+from .viewset import ObjectViewSet
+
 new_ticket_lock = Lock()
 
 new_ticket_schema = {
@@ -66,6 +68,71 @@ changed_ticket_schema = {
     "additionalProperties": False,
     "required": ["id"]
 }
+
+
+class Ticket2(ObjectViewSet):
+    name='Ticket'
+    uri_prefix = 'org.fetsy'
+    new_object_schema = {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "New ticket",
+        "description": "A new ticket without ID",
+        "type": "object",
+        "properties": {
+            "content": {
+                "description": "The content of the ticket",
+                "type": "string"
+            },
+            "period": {
+                "description": "The period in which the ticket has to be solved",
+                "type": "integer"
+            }
+        },
+        "additionalProperties": False,
+        "required": ["content"]
+    }
+    update_object_schema = {
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "title": "Changed ticket",
+        "description": "A subset of a ticket to be changed",
+        "type": "object",
+        "properties": {
+            "id": {
+                "description": "The ID of the ticket",
+                "type": "integer"
+            },
+            "content": {
+                "description": "The content of the ticket",
+                "type": "string"
+            },
+            "status": {
+                "description": "The status of the ticket",
+                "type": "string",
+                "enum": [
+                    "New",
+                    "Work in progress",
+                    "Closed"
+                ]
+            },
+            "priority": {
+                "description": "The priority of the ticket from low (1) to "
+                               "high (5)",
+                "type": "integer",
+                "minimum": 1,
+                "maximun": 5
+            },
+            "assignee": {
+                "description": "The person who is resposible to solved the ticket",
+                "type": "string"
+            },
+            "period": {
+                "description": "The period in which the ticket has to be solved",
+                "type": "integer"
+            }
+        },
+        "additionalProperties": False,
+        "required": ["id"]
+    }
 
 
 class ListTicket:

@@ -4,7 +4,7 @@ from asyncio import Lock, coroutine
 from jsonschema import ValidationError, validate
 
 
-class ListObjectsMixin:
+class ListObjectMixin:
     """
     Interactions to list some or all objects from the database.
     """
@@ -34,7 +34,7 @@ class ListObjectsMixin:
         return objects
 
 
-class CreateObjectsMixin:
+class CreateObjectMixin:
     """
     Interactions to create a new object in the database.
     """
@@ -93,6 +93,7 @@ class CreateObjectsMixin:
         Async method to store a new object in the database. Adds a new 'id'
         property.
         """
+        # Use lock to get new ID and insert object into database.
         with (yield from self.create_object_lock):
             # Get greatest ID from database.
             max_id_key = 'maxID'
@@ -118,8 +119,70 @@ class CreateObjectsMixin:
             obj['id'] = max_id + 1
             yield from self.database[self.name].insert(obj)
 
-        # Publish event that the object chaned.
+        # Publish event that the object changed.
         del obj['_id']
+        self.app_session.publish(self.get_uri('changed'), [], object=obj)
+
+
+class UpdateObjectMixin:
+    """
+    Interactions to update an existing object in the database.
+    """
+    update_object_schema = None
+
+    @coroutine
+    def register_viewset(self):
+        """
+        Registeres update_object procedure.
+        """
+        yield from self.app_session.register(self.update_object, self.get_uri('update'))
+        self.logger.debug('Remote procedure to update {} registered.'.format(self.name))
+        if hasattr(super(), 'register_viewset'):
+            yield from super().register_viewset()
+
+    @coroutine
+    def update_object(self, *args, **kwargs):
+        """
+        Async method to update an existing object in the database.
+        """
+        self.logger.debug('Remote procedure update_object called.')
+        try:
+            obj = self.validate_changed_object(kwargs.get('object'))
+        except ValidationError as e:
+            result = {
+                'type': 'error',
+                'details': e.message}
+        else:
+            yield from self.save_changed_object(obj)
+            success = '{} object {} successfully changed.'.format(self.name, obj.get('id'))
+            result = {
+                'type': 'success',
+                'details': success}
+        return result
+
+    def validate_changed_object(self, obj):
+        """
+        Validates data for changed objects.
+        """
+        if self.update_object_schema is None:
+            raise NotImplementedError('ViewSet update_object_schema is missing.')
+        if obj is None:
+            raise ValidationError('Object data is missing')
+        validate(obj, self.update_object_schema)
+        return obj
+
+    @coroutine
+    def save_changed_object(self, obj):
+        """
+        Async method to store updated object in the database.
+        """
+        # Update object in database.
+        # TODO: Check if update was successful and handle different cases.
+        yield from self.database[self.name].update(
+            {'id': obj.get('id')},
+            {'$set': obj})
+
+        # Publish event that the object changed.
         self.app_session.publish(self.get_uri('changed'), [], object=obj)
 
 
@@ -162,7 +225,7 @@ class ViewSet:
         yield from super().register_viewset()
 
 
-class ObjectViewSet(ViewSet, ListObjectsMixin, CreateObjectsMixin):
+class ObjectViewSet(ViewSet, ListObjectMixin, CreateObjectMixin, UpdateObjectMixin):
     """
     Interactions for database objects: List, Create, Update, Destroy.
     """

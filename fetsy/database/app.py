@@ -10,7 +10,7 @@ from autobahn.asyncio.wamp import ApplicationRunner, ApplicationSession
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from .tag import Tag
-from .ticket import Ticket
+from .ticket import Ticket, Ticket2
 
 
 class AppSession(Ticket, ApplicationSession):
@@ -23,7 +23,9 @@ class AppSession(Ticket, ApplicationSession):
         self.database = self.config.extra['database']
 
         # Register Ticket ViewSet.
-        yield from super().onJoin(details) #TODO
+        yield from super().onJoin(details)  #TODO: Remove line.
+        ticket = Ticket2(self)  #TODO: Change name to Ticket.
+        yield from ticket.register_viewset()
 
         # Register Tag ViewSet.
         tag = Tag(self)
