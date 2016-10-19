@@ -154,8 +154,8 @@ It returns a promise.
 
                     change: (data) ->
                         data.id = @id
-                        $wamp.call 'org.fetsy.changeTicket', [],
-                            ticket: data
+                        $wamp.call 'org.fetsy.updateTicket', [],
+                            object: data
                         .then (result) ->
                             if result.type == 'success'
                                 console.log(
@@ -193,12 +193,12 @@ check ticket id and inject it into data store.
 
                 info.session.subscribe 'org.fetsy.changedTicket',
                     (args, kwargs, details) ->
-                        if kwargs.ticket.id?
-                            Ticket.inject kwargs.ticket
+                        if kwargs.object.id?
+                            Ticket.inject kwargs.object
                         else
                             console.error 'Received invalid data.',
                                 'ID is missing. Received'
-                                kwargs.ticket
+                                kwargs.object
                         return
 
 Subscribe to the channel for deleted tickets. If an id comes in, eject the
@@ -229,7 +229,7 @@ check tag id and inject it into data store.
 
 Fetch all tickets from server via procedure call.
 
-                info.session.call 'org.fetsy.listTickets'
+                info.session.call 'org.fetsy.listTicket'
                     .then (result) ->
                         for item in result
                             if item.id?

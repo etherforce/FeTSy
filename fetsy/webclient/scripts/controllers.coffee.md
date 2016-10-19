@@ -100,8 +100,8 @@ Angular UI Bootstrap is used.
                             controller: 'NewTicketFormCtrl as newTicketForm'
 
                         modalInstance.result.then (result) ->
-                                $wamp.call 'org.fetsy.newTicket', [],
-                                    ticket:
+                                $wamp.call 'org.fetsy.createTicket', [],
+                                    object:
                                         content: result.content
                                         period: result.period
                                 .then (result) ->

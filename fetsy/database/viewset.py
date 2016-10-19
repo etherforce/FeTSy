@@ -68,7 +68,7 @@ class CreateObjectMixin:
                 'type': 'error',
                 'details': e.message}
         else:
-            # TODO: obj = self.set_defaults(obj)
+            obj = self.set_defaults(obj)
             yield from self.save_new_object(obj)
             success = '{} object {} successfully created.'.format(self.name, obj['id'])
             result = {
@@ -85,6 +85,14 @@ class CreateObjectMixin:
         if obj is None:
             raise ValidationError('Object data is missing.')
         validate(obj, self.new_object_schema)
+        return obj
+
+    def set_defaults(self, obj):
+        """
+        Hook to set default values for a new object.
+
+        Default: Does nothing.
+        """
         return obj
 
     @coroutine
@@ -186,6 +194,36 @@ class UpdateObjectMixin:
         self.app_session.publish(self.get_uri('changed'), [], object=obj)
 
 
+class DeleteObjectMixin:
+    """
+    Interactions to delete an existing object in the database.
+    """
+    @coroutine
+    def register_viewset(self):
+        """
+        Registeres delete_object procedure.
+        """
+        yield from self.app_session.register(self.delete_object, self.get_uri('delete'))
+        self.logger.debug('Remote procedure to delete {} registered.'.format(self.name))
+        if hasattr(super(), 'register_viewset'):
+            yield from super().register_viewset()
+
+    @coroutine
+    def delete_object(self, *args, **kwargs):
+        """
+        Async method to delete an existing object in the database.
+        """
+        self.logger.debug('Remote procedure delete_object called.')
+        id = kwargs.get('id')
+        # TODO: Check if delete was successful and handle different cases.
+        yield from self.database[self.name].remove({'id': id})
+        self.app_session.publish(self.get_uri('deleted'), [], id=id)
+        success = '{} object {} successfully deleted.'.format(self.name, id)
+        return {
+            'type': 'success',
+            'details': success}
+
+
 class ViewSet:
     """
     Container for interactions for database objects.
@@ -225,8 +263,8 @@ class ViewSet:
         yield from super().register_viewset()
 
 
-class ObjectViewSet(ViewSet, ListObjectMixin, CreateObjectMixin, UpdateObjectMixin):
+class ObjectViewSet(ViewSet, ListObjectMixin, CreateObjectMixin, UpdateObjectMixin, DeleteObjectMixin):
     """
-    Interactions for database objects: List, Create, Update, Destroy.
+    Interactions for database objects: List, Create, Update, Delete.
     """
     pass
