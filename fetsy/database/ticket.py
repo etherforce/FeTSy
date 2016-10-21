@@ -69,6 +69,16 @@ class Ticket(ObjectViewSet):
         "required": ["id"]
     }
 
+    @coroutine
+    def register_viewset(self):
+        """
+        Registeres all default procedures for this viewset. Additionally
+        registeres list_ticket_assignees procedure.
+        """
+        yield from super().register_viewset()
+        yield from self.app_session.register(self.list_ticket_assignees, self.uri_prefix + '.listTicketAssignees')
+        self.logger.debug('Remote procedure to list ticket assignees registered.')
+
     def set_defaults(self, obj):
         """
         Set defaults for new tickets.
@@ -79,30 +89,13 @@ class Ticket(ObjectViewSet):
         obj['assignee'] = '–'
         return obj
 
-
-#TODO
-class MetadataTicket:
-    """
-    Interactions to retrieve metadata of tickests.
-
-    This is only a list of all assignees at the moment.
-    """
-    @coroutine
-    def onJoin(self, details):
-        yield from self.register(
-            self.list_ticket_assignees,
-            'org.fetsy.listTicketAssignees')
-        next_method = super().onJoin(details)
-        if next_method is not None:
-            yield from next_method
-
     @coroutine
     def list_ticket_assignees(self, *args, **kwargs):
         """
         Async method to get all assignees of all tickets.
         """
         self.logger.debug('Remote procedure list_ticket_assignees called.')
-        curser = self.database.tickets.find()
+        curser = self.database[self.name].find()
         # TODO: For use of Mongo >= 3.2. Use $text operator.
         assignees = set()
         while (yield from curser.fetch_next):
