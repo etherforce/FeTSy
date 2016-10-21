@@ -1,0 +1,38 @@
+<!-- Ticket field textarea -->
+
+<div ng-hide="ticketField.editMode">
+    <a href
+       ng-attr-id="{{ticketField.key}}-{{ ticketField.ticket.id }}"
+       ng-click="ticketField.editMode = true">
+        {{ ticketField.ticket.getField(ticketField.key) }}
+    </a>
+</div>
+
+<form ng-show="ticketField.editMode" ng-submit="ticketField.click(ticketField.inputField)">
+    <div class="form-group" >
+        <label for="{{ticketField.key}}-{{ ticketField.ticket.id }}-textarea" class="sr-only">
+            Content
+        </label>
+        <textarea id="{{ticketField.key}}-{{ ticketField.ticket.id }}-textarea"
+                  class="form-control"
+                  rows=3
+                  ng-model="ticketField.inputField"
+                  ng-init="ticketField.inputField = ticketField.ticket.getField(ticketField.key, true)">
+        </textarea>
+
+        <button type="submit"
+                title="Save changes"
+                class="btn btn-default">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+            <span class="sr-only">Save changes</span>
+        </button>
+        <button type="button"
+                title="Cancel"
+                class="btn btn-default"
+                ng-click="ticketField.closeForm()">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            <span class="sr-only">Cancel</span>
+        </button>
+
+    </div>
+</form>

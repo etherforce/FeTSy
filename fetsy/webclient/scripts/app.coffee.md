@@ -102,8 +102,8 @@ The method 'getField' returns the value of the ticket field. In case of
 constant. In case of 'period' the result depends on the flag
 'remainingTime'.
 
-                    getField: (key) ->
-                        if key is 'content' and @content.length > contentLimit
+                    getField: (key, noSlice) ->
+                        if not noSlice and key is 'content' and @content.length > contentLimit
                             @content.slice(0, contentLimit) + '...'
                         else if key is 'period'
                             momentDeadline = moment.unix @created
