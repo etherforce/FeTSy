@@ -148,7 +148,14 @@ gulp.task 'crossbar', ->
 
 # Helper tasks.
 
-gulp.task 'watch', ['index', 'wsgi', 'coffee', 'templates', 'sass', 'crossbar'], ->
+gulp.task 'watch', [
+    'index'
+    'wsgi'
+    'coffee'
+    'templates'
+    'sass'
+    'crossbar'
+], ->
     gulp.watch path.join('fetsy', 'webclient', 'fetsy.html'),
         ['index']
     gulp.watch path.join('fetsy', 'wsgi.py'),
@@ -166,12 +173,13 @@ gulp.task 'watch', ['index', 'wsgi', 'coffee', 'templates', 'sass', 'crossbar'],
 gulp.task 'hint', ['jshint', 'coffeelint'], ->
 
 gulp.task 'jshint', ->
-    gulp.src path.join 'fetsy', 'webclient', 'static', 'js', '*.js'
+    gulp.src path.join 'fetsy', 'webclient', 'static', 'js', '**', '*.js'
         .pipe jshint()
         .pipe jshint.reporter 'default'
 
 gulp.task 'coffeelint', ->
-    gulp.src ['gulpfile.coffee', path.join 'fetsy', 'webclient', 'scripts', '*.coffee.md']
+    coffeePath = path.join 'fetsy', 'webclient', 'scripts', '**', '*.coffee.md'
+    gulp.src ['gulpfile.coffee', coffeePath]
         .pipe coffeelint
             indentation:
                 value: 4

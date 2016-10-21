@@ -274,7 +274,8 @@ Validate period or deadline input field depending on remainingTimeValue flag.
                     if parsedDate.isValid()
                         period = parsedDate.diff moment(), 'minutes'
 
-Hint: We add one minute here to get correct time because the seconds are stripped off above.
+Hint: We add one minute here to get correct time because the seconds are
+stripped off above.
 
                         period++
 

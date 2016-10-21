@@ -45,7 +45,8 @@ or hits Enter, the ticket is changed using a resource method.
                             else null
                     @getTemplateURL = ->
                         switch @key
-                            when 'status', 'priority' then 'ticketFieldDropdown.html'
+                            when 'status' then 'ticketFieldDropdown.html'
+                            when 'priority' then 'ticketFieldDropdown.html'
                             when 'assignee' then 'ticketFieldTypeahead.html'
                             else 'ticketField.html'
                     @click = (choice) ->

@@ -117,7 +117,10 @@ constant. In case of 'period' the result depends on the flag
                             else
                                 if momentDeadline.isSame moment(), 'day'
                                     'Today' + ' ' + momentDeadline.format 'HH:mm'
-                                else if momentDeadline.isSame moment().add(1, 'day'), 'day'
+                                else if momentDeadline.isSame(
+                                    moment().add(1, 'day')
+                                    'day'
+                                )
                                     'Tomorrow' + ' ' + momentDeadline.format 'HH:mm'
                                 else
                                     momentDeadline.format 'YYYY-MM-DD HH:mm'
