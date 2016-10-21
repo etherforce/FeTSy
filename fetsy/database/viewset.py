@@ -13,8 +13,11 @@ class ListObjectMixin:
         """
         Registeres list_objects procedure.
         """
-        yield from self.app_session.register(self.list_objects, self.get_uri('list'))
-        self.logger.debug('Remote procedure to list {} registered.'.format(self.name))
+        yield from self.app_session.register(
+            self.list_objects,
+            self.get_uri('list'))
+        self.logger.debug(
+            'Remote procedure to list {} registered.'.format(self.name))
         if hasattr(super(), 'register_viewset'):
             yield from super().register_viewset()
 
@@ -24,7 +27,8 @@ class ListObjectMixin:
         Async method to list some or all objects from the database.
         """
         # TODO: Use filtering here.
-        self.logger.debug('Remote procedure list_objects for {} called.'.format(self.name))
+        self.logger.debug(
+            'Remote procedure list_objects for {} called.'.format(self.name))
         curser = self.database[self.name].find()
         objects = []
         while (yield from curser.fetch_next):
@@ -50,8 +54,11 @@ class CreateObjectMixin:
         """
         Registeres create_object procedure.
         """
-        yield from self.app_session.register(self.create_object, self.get_uri('create'))
-        self.logger.debug('Remote procedure to create {} registered.'.format(self.name))
+        yield from self.app_session.register(
+            self.create_object,
+            self.get_uri('create'))
+        self.logger.debug(
+            'Remote procedure to create {} registered.'.format(self.name))
         if hasattr(super(), 'register_viewset'):
             yield from super().register_viewset()
 
@@ -60,7 +67,8 @@ class CreateObjectMixin:
         """
         Async method to create a new object in the database.
         """
-        self.logger.debug('Remote procedure create_object for {} called.'.format(self.name))
+        self.logger.debug(
+            'Remote procedure create_object for {} called.'.format(self.name))
         try:
             obj = self.validate_new_object(kwargs.get('object'))
         except ValidationError as e:
@@ -70,7 +78,8 @@ class CreateObjectMixin:
         else:
             obj = self.set_defaults(obj)
             yield from self.save_new_object(obj)
-            success = '{} object {} successfully created.'.format(self.name, obj['id'])
+            success = '{} object {} successfully created.'.format(
+                self.name, obj['id'])
             result = {
                 'type': 'success',
                 'details': success}
@@ -143,8 +152,11 @@ class UpdateObjectMixin:
         """
         Registeres update_object procedure.
         """
-        yield from self.app_session.register(self.update_object, self.get_uri('update'))
-        self.logger.debug('Remote procedure to update {} registered.'.format(self.name))
+        yield from self.app_session.register(
+            self.update_object,
+            self.get_uri('update'))
+        self.logger.debug(
+            'Remote procedure to update {} registered.'.format(self.name))
         if hasattr(super(), 'register_viewset'):
             yield from super().register_viewset()
 
@@ -162,7 +174,8 @@ class UpdateObjectMixin:
                 'details': e.message}
         else:
             yield from self.save_changed_object(obj)
-            success = '{} object {} successfully changed.'.format(self.name, obj.get('id'))
+            success = '{} object {} successfully changed.'.format(
+                self.name, obj.get('id'))
             result = {
                 'type': 'success',
                 'details': success}
@@ -173,7 +186,8 @@ class UpdateObjectMixin:
         Validates data for changed objects.
         """
         if self.update_object_schema is None:
-            raise NotImplementedError('ViewSet update_object_schema is missing.')
+            raise NotImplementedError(
+                'ViewSet update_object_schema is missing.')
         if obj is None:
             raise ValidationError('Object data is missing')
         validate(obj, self.update_object_schema)
@@ -203,8 +217,11 @@ class DeleteObjectMixin:
         """
         Registeres delete_object procedure.
         """
-        yield from self.app_session.register(self.delete_object, self.get_uri('delete'))
-        self.logger.debug('Remote procedure to delete {} registered.'.format(self.name))
+        yield from self.app_session.register(
+            self.delete_object,
+            self.get_uri('delete'))
+        self.logger.debug(
+            'Remote procedure to delete {} registered.'.format(self.name))
         if hasattr(super(), 'register_viewset'):
             yield from super().register_viewset()
 
@@ -263,7 +280,8 @@ class ViewSet:
         yield from super().register_viewset()
 
 
-class ObjectViewSet(ViewSet, ListObjectMixin, CreateObjectMixin, UpdateObjectMixin, DeleteObjectMixin):
+class ObjectViewSet(ViewSet, ListObjectMixin, CreateObjectMixin,
+                    UpdateObjectMixin, DeleteObjectMixin):
     """
     Interactions for database objects: List, Create, Update, Delete.
     """

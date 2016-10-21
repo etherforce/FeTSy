@@ -23,7 +23,7 @@ class AppSession(ApplicationSession):
         self.database = self.config.extra['database']
 
         # Register Ticket ViewSet.
-        ticket = Ticket(self)  #TODO: Change name to Ticket.
+        ticket = Ticket(self)
         yield from ticket.register_viewset()
 
         # Register Tag ViewSet.

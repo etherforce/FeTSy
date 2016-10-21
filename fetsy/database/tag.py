@@ -30,8 +30,9 @@ class Tag(ObjectViewSet):
                 ]
             },
             "weight": {
-                "description": "The weight of the tag compared with other tags. "
-                               "Tags should be sorted by ascending weight.",
+                "description": "The weight of the tag compared with other "
+                               "tags. Tags should be sorted by ascending "
+                               "weight.",
                 "type": "integer"
             }
         },
@@ -42,6 +43,3 @@ class Tag(ObjectViewSet):
             "weight"
         ]
     }
-
-
-changed_tag_schema = {}  #TODO

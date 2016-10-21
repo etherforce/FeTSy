@@ -18,7 +18,8 @@ class Ticket(ObjectViewSet):
                 "type": "string"
             },
             "period": {
-                "description": "The period in which the ticket has to be solved",
+                "description": "The period in which the ticket has to be "
+                               "solved",
                 "type": "integer"
             }
         },
@@ -56,12 +57,14 @@ class Ticket(ObjectViewSet):
                 "maximun": 5
             },
             "assignee": {
-                "description": "The person who is resposible to solved the ticket",
+                "description": "The person who is resposible to solved the "
+                               "ticket",
                 "type": "string",
                 "minLength": 1
             },
             "period": {
-                "description": "The period in which the ticket has to be solved",
+                "description": "The period in which the ticket has to be "
+                               "solved",
                 "type": "integer"
             }
         },
@@ -76,8 +79,11 @@ class Ticket(ObjectViewSet):
         registeres list_ticket_assignees procedure.
         """
         yield from super().register_viewset()
-        yield from self.app_session.register(self.list_ticket_assignees, self.uri_prefix + '.listTicketAssignees')
-        self.logger.debug('Remote procedure to list ticket assignees registered.')
+        yield from self.app_session.register(
+            self.list_ticket_assignees,
+            self.uri_prefix + '.listTicketAssignees')
+        self.logger.debug('Remote procedure to list ticket assignees '
+                          'registered.')
 
     def set_defaults(self, obj):
         """
