@@ -103,6 +103,7 @@ gulp.task 'css', [
     'sass'
     # 'css-extra'
     'css-libs'
+    'css-pngs'
     'fonts-libs'
 ], ->
 
@@ -131,6 +132,11 @@ gulp.task 'css-libs', ->
     .pipe sourcemaps.write()
     .pipe gulpif productionMode, cleanCSS
         compatibility: 'ie8'
+    .pipe gulp.dest path.join outputDirectoryStatic, 'css'
+
+gulp.task 'css-pngs', ->
+    gulp.src mainBowerFiles
+        filter: /\.png$/
     .pipe gulp.dest path.join outputDirectoryStatic, 'css'
 
 gulp.task 'fonts-libs', ->
