@@ -4,7 +4,7 @@
     <a href
        ng-attr-id="{{ticketField.key}}-{{ ticketField.ticket.id }}"
        ng-click="ticketField.editMode = true">
-        {{ ticketField.ticket.getField(ticketField.key) }}
+        {{ ticketField.ticket.getField(ticketField.key, true) }}
     </a>
 </div>
 
@@ -17,6 +17,7 @@
                 class="form-control"
                 multiple
                 chosen
+                placeholder-text-multiple="'Select tags'"
                 width="'100%'"
                 ng-model="ticketField.tagField"
                 ng-options="tag for tag in [1,2,3]">
@@ -31,7 +32,7 @@
                   class="form-control"
                   rows=3
                   ng-model="ticketField.inputField"
-                  ng-init="ticketField.inputField = ticketField.ticket.getField(ticketField.key, true)">
+                  ng-init="ticketField.inputField = ticketField.ticket.getField(ticketField.key)">
         </textarea>
     </div>
     <button type="submit" class="btn btn-primary">

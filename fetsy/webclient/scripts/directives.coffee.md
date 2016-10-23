@@ -24,6 +24,8 @@ Controller for the field. The getTemplateURL() method returns different
 URLs for each field. In some cases if the user clicks on a dropdown field
 or hits Enter, the ticket is changed using a resource method.
 
+But we have to change something: See http://blog.thoughtram.io/angularjs/2015/01/02/exploring-angular-1.3-bindToController.html
+
             controller: [
                 '$scope'
                 ($scope) ->

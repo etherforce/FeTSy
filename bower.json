@@ -31,6 +31,13 @@
         "dist/js/bootstrap.js"
       ]
     },
+    "chosen": {
+      "main": [
+        "chosen.jquery.js",
+        "chosen-sprite@2x.png",
+        "chosen-sprite.png"
+      ]
+    },
     "html5shiv": {
       "main": "dist/html5shiv.min.js"
     },

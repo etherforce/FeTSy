@@ -151,8 +151,9 @@
              ng-class="[ header.col, ticket.expired ? 'ticket-field-expired' : '' ]">
             <span ng-hide="$first"
                   title="{{ header.getDisplayName() }}"
-                  class="glyphicon visible-xs-inline"
+                  class="pull-left visible-xs-block glyphicon"
                   ng-class="header.getIconCSSClass()"
+                  style="padding-right: 0.5em"
                   aria-hidden="true">
             </span>
             <ticket-field ticket="ticket" key="header.sortKey"></ticket-field>
