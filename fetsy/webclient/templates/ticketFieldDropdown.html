@@ -8,8 +8,8 @@
     </a>
     <ul uib-dropdown-menu
         aria-labelledby="{{ticketField.key}}-{{ ticketField.ticket.id }}">
-        <li ng-repeat="choice in ticketField.getDropdownChoices()">
-            <a role="button" ng-click="ticketField.click(choice)">
+        <li ng-repeat="choice in ticketField.dropdownChoices">
+            <a role="button" ng-click="ticketField.save(choice)">
                 {{ choice }}
             </a>
         </li>

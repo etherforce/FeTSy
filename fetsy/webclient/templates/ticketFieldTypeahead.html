@@ -8,13 +8,13 @@
     </a>
 </div>
 
-<form ng-show="ticketField.editMode" ng-submit="ticketField.click(ticketField.inputField)">
+<form ng-show="ticketField.editMode" ng-submit="ticketField.save(ticketField.inputField)">
     <div class="input-group" >
         <input type="text"
                class="form-control"
                ng-model="ticketField.inputField"
                ng-init="ticketField.inputField = ticketField.ticket.getField(ticketField.key)"
-               uib-typeahead="choice for choice in ticketField.getDropdownChoices()($viewValue)">
+               uib-typeahead="choice for choice in ticketField.dropdownChoices($viewValue)">
         <span class="input-group-btn">
             <button type="submit"
                     title="Save changes"

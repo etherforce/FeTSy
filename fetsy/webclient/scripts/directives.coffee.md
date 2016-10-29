@@ -12,7 +12,8 @@ Append a directive which is used for every field of a ticket in the ticket
 list/ticket table.
 
     .directive 'ticketField', [
-        ->
+        'Tag'
+        (Tag) ->
 
 Properties for the isolate scope binding.
 
@@ -24,52 +25,53 @@ Controller for the field. The getTemplateURL() method returns different
 URLs for each field. In some cases if the user clicks on a dropdown field
 or hits Enter, the ticket is changed using a resource method.
 
-But we have to change something: See http://blog.thoughtram.io/angularjs/2015/01/02/exploring-angular-1.3-bindToController.html
-
             controller: [
-                '$scope'
-                ($scope) ->
-                    @ticket = $scope.ticket
-                    @key = $scope.key
-                    getNames = (value) =>
-                        @ticket.getAssignees value
-                        .then (result) ->
-                            result
-                    @getDropdownChoices = ->
-                        switch @key
-                            when 'status' then [
-                                'New'
-                                'Work in progress'
-                                'Closed'
-                            ]
-                            when 'assignee' then getNames
-                            when 'priority' then [1..5]
-                            else null
-                    @getTemplateURL = ->
-                        switch @key
-                            when 'content' then 'ticketFieldTextarea.html'
-                            when 'status' then 'ticketFieldDropdown.html'
-                            when 'priority' then 'ticketFieldDropdown.html'
-                            when 'assignee' then 'ticketFieldTypeahead.html'
-                            else 'ticketField.html'
-                    @click = (choice) ->
+                ->
+                    @save = (value) ->
                         data = {}
-                        data[@key] = choice
+                        data[@key] = value
                         @ticket.change data
                         .then =>
                             @editMode = false
                             return
                         return
+
                     @closeForm = ->
                         @inputField = @ticket.getField @key
                         @editMode = false
                         return
+
+                    switch @key
+                        when 'content'
+                            @templateURL = 'ticketFieldTextarea.html'
+                            @tags = Tag.getAll()
+                            @submitContentChanges = @save
+                        when 'status'
+                            @templateURL = 'ticketFieldDropdown.html'
+                            @dropdownChoices = [
+                                'New'
+                                'Work in progress'
+                                'Closed'
+                            ]
+                        when 'priority'
+                            @templateURL = 'ticketFieldDropdown.html'
+                            @dropdownChoices = [1..5]
+                        when 'assignee'
+                            @templateURL = 'ticketFieldTypeahead.html'
+                            @dropdownChoices = (value) =>
+                                @ticket.getAssignees value
+                                .then (result) ->
+                                    result
+                        else
+                            @templateURL = 'ticketField.html'
+
                     return
             ]
             controllerAs: 'ticketField'
+            bindToController: true
 
 The template is just a ngInclude to fetch the template returned by
 getTemplateURL().
 
-            template: '<div ng-include="ticketField.getTemplateURL()"></div>'
+            template: '<div ng-include="ticketField.templateURL"></div>'
     ]

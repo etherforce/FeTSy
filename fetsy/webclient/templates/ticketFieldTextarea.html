@@ -8,7 +8,7 @@
     </a>
 </div>
 
-<form ng-show="ticketField.editMode" ng-submit="ticketField.click(ticketField.inputField)">
+<form ng-show="ticketField.editMode" ng-submit="ticketField.submitContentChanges(ticketField.inputField)">
     <div class="form-group">
         <label for="{{ticketField.key}}-{{ ticketField.ticket.id }}-tags-select" class="sr-only">
             Tags
@@ -20,7 +20,7 @@
                 placeholder-text-multiple="'Select tags'"
                 width="'100%'"
                 ng-model="ticketField.tagField"
-                ng-options="tag for tag in [1,2,3]">
+                ng-options="tag for tag in ticketField.tags">
             <option value=""></option>
         </select>
     </div>
