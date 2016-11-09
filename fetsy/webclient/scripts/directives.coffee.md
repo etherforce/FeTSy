@@ -45,7 +45,15 @@ or hits Enter, the ticket is changed using a resource method.
                         when 'content'
                             @templateURL = 'ticketFieldTextarea.html'
                             @tags = Tag.getAll()
-                            @submitContentChanges = @save
+                            @submitContentChanges = (content, tags) ->
+                                data =
+                                    content: content
+                                    tags: tag.id for tag in tags
+                                @ticket.change data
+                                .then =>
+                                    @editMode = false
+                                    return
+                                return
                         when 'status'
                             @templateURL = 'ticketFieldDropdown.html'
                             @dropdownChoices = [

@@ -40,6 +40,16 @@ class Ticket(ObjectViewSet):
                 "description": "The content of the ticket",
                 "type": "string"
             },
+            "tags": {
+                "description": "A list of ids refering to tags for this "
+                               "ticket.",
+                "type": "array",
+                "items": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "uniqueItems": True
+            },
             "status": {
                 "description": "The status of the ticket",
                 "type": "string",

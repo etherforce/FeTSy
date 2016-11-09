@@ -170,6 +170,14 @@ It returns a promise.
                                     'WAMP error: ' + result.details
                                 )
                             return
+
+Setup many-to-many relation to tags.
+
+                relations:
+                    hasMany:
+                        Tag:
+                            localKeys: 'tags'
+                            localField: 'tagsObjects'
     ]
 
 Append a factory recipe to the app which keeps the tags ressource definitions.

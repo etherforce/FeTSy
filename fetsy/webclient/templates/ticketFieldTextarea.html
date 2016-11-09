@@ -1,6 +1,11 @@
 <!-- Ticket field textarea -->
 
 <div ng-hide="ticketField.editMode">
+    <span ng-repeat="tag in ticketField.ticket.getField('tagsObjects')"
+          class="label label-{{ tag.color }}"
+          style="margin-right:0.3em;">
+          {{ tag.name }}
+    </span>
     <a href
        ng-attr-id="{{ticketField.key}}-{{ ticketField.ticket.id }}"
        ng-click="ticketField.editMode = true">
@@ -8,7 +13,7 @@
     </a>
 </div>
 
-<form ng-show="ticketField.editMode" ng-submit="ticketField.submitContentChanges(ticketField.inputField)">
+<form ng-show="ticketField.editMode" ng-submit="ticketField.submitContentChanges(ticketField.inputField, ticketField.tagField)">
     <div class="form-group">
         <label for="{{ticketField.key}}-{{ ticketField.ticket.id }}-tags-select" class="sr-only">
             Tags
@@ -20,7 +25,7 @@
                 placeholder-text-multiple="'Select tags'"
                 width="'100%'"
                 ng-model="ticketField.tagField"
-                ng-options="tag for tag in ticketField.tags">
+                ng-options="tag.name for tag in ticketField.tags">
             <option value=""></option>
         </select>
     </div>
