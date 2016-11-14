@@ -325,7 +325,7 @@ Hook for the delete button. This closes the modal.
                             'WAMP error: ' + result.details
                         )
                     return
-                $uibModalInstance.close()
+                $uibModalInstance.dismiss 'ticket deleted'
                 return
 
 Hook for the cancel button. This does only close the modal.
@@ -355,8 +355,8 @@ Angular UI Bootstrap is used.
                 if userHasPermissionFactory.isStaff
                     ->
                         modalInstance = $uibModal.open
-                            templateUrl: 'newTagForm.html'
-                            controller: 'NewTagFormCtrl as newTagForm'
+                            templateUrl: 'tagForm.html'
+                            controller: 'NewTagFormCtrl as tagForm'
 
                         modalInstance.result.then (result) ->
                                 $wamp.call 'org.fetsy.createTag', [],
@@ -387,9 +387,11 @@ Angular UI Bootstrap is used.
 Append a controller for the administration of ticket tags.
 
     .controller 'TagAdministrationCtrl', [
+        '$uibModal'
         '$scope'
         'Tag'
-        ($scope, Tag) ->
+        'userHasPermissionFactory'
+        ($uibModal, $scope, Tag, userHasPermissionFactory) ->
 
 Append all tags to the body.
 
@@ -399,6 +401,25 @@ Append all tags to the body.
                     orderBy: 'weight'
                 return
             $scope.$watch watchExpression, listener
+
+Hook for the button to update or delete a tag. The uib-modal directive from
+Angular UI Bootstrap is used.
+
+            @updateTagForm =
+                if userHasPermissionFactory.isStaff
+                    (tag) ->
+                        modalInstance = $uibModal.open
+                            templateUrl: 'tagForm.html'
+                            controller: 'UpdateTagFormCtrl as tagForm'
+                            resolve:
+                                tag: tag
+
+                        modalInstance.result.then (data) ->
+                            tag.change data
+                            return
+                        return
+                else
+                    null
 
             return
     ]
@@ -411,6 +432,10 @@ Append a controller for the modal for new tags.
     .controller 'NewTagFormCtrl', [
         '$uibModalInstance'
         ($uibModalInstance) ->
+
+Set type of this form ('new' or 'update')
+
+            @type = 'new'
 
 Default value for colorField and weightField.
 
@@ -430,10 +455,59 @@ The validated data are handled back to the TagAdministrationTopRowCtrl.
                     $uibModalInstance.dismiss 'cancel'
                 return
 
-Hook for the cancel button. This does only close the modal.
+Hook for the cancel button. This only closes the modal.
 
             @cancel = ->
                 $uibModalInstance.dismiss 'cancel'
+                return
+
+            return
+    ]
+
+
+## Controller for the modal to update (or delete) tags
+
+Append a controller for the modal for to update (or delete) tags.
+
+    .controller 'UpdateTagFormCtrl', [
+        '$uibModalInstance'
+        'tag'
+        ($uibModalInstance, tag) ->
+
+Set type of this form ('new' or 'update')
+
+            @type = 'update'
+
+Initial values.
+
+            @nameField = tag.name
+            @colorField = tag.color
+            @weightField = tag.weight
+
+Hook for the save button. This validates the input and closes the modal.
+The validated data are handled back to the TagAdministrationCtrl.
+
+            @save = ->
+                if @nameField
+                    $uibModalInstance.close
+                        'name': @nameField
+                        'color': @colorField
+                        'weight': @weightField
+                else
+                    $uibModalInstance.dismiss 'cancel'
+                return
+
+Hook for the cancel button. This only closes the modal.
+
+            @cancel = ->
+                $uibModalInstance.dismiss 'cancel'
+                return
+
+Hook for the delete button.
+
+            @deleteTag = ->
+                tag.delete()
+                $uibModalInstance.dismiss 'tag deleted'
                 return
 
             return

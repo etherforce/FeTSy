@@ -1,51 +1,52 @@
-<!-- New tag form modal -->
+<!-- Tag form modal -->
 
-<!-- New tag form modal header -->
+<!-- Tag form modal header -->
 <div class="modal-header">
     <h3 class="modal-title">
-        New tag
+        <span ng-if="tagForm.type === 'new'">New tag</span>
+        <span ng-if="tagForm.type === 'update'">Update tag</span>
     </h3>
-</div><!-- / .modal-header New tag form modal header -->
+</div><!-- / .modal-header Tag form modal header -->
 
-<!-- New tag form modal body -->
+<!-- Tag form modal body -->
 <div class="modal-body">
     <div class="form-group">
-        <label for="newTagName" class="sr-only">
+        <label for="tagName" class="sr-only">
             Name
         </label>
         <div class="input-group">
             <div class="input-group-addon">
-                <span id="newTagNameIcon"
+                <span id="tagNameIcon"
                       title="Name"
                       class="glyphicon glyphicon-tag"
                       aria-hidden="true">
                 </span>
             </div>
-            <input id="newTagName"
+            <input id="tagName"
                    type="text"
                    class="form-control"
-                   aria-describedby="newTagNameIcon"
+                   aria-describedby="tagNameIcon"
                    required
                    placeholder="Name"
-                   ng-model="newTagForm.nameField">
+                   ng-model="tagForm.nameField">
         </div>
     </div>
     <div class="form-group">
-        <label for="newTagColor" class="sr-only">
+        <label for="tagColor" class="sr-only">
             Color
         </label>
         <div class="input-group">
             <div class="input-group-addon">
-                <span id="newTagColorIcon"
+                <span id="tagColorIcon"
                       title="Color"
                       class="glyphicon glyphicon-text-color"
                       aria-hidden="true">
                 </span>
             </div>
-            <select id="newTagColor"
+            <select id="tagColor"
                     class="form-control"
-                    aria-describedby="newTagColorIcon"
-                    ng-model="newTagForm.colorField">
+                    aria-describedby="tagColorIcon"
+                    ng-model="tagForm.colorField">
                   <option value="default">gray</option>
                   <option value="primary">dark blue</option>
                   <option value="success">green</option>
@@ -56,35 +57,38 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="newTagWeight" class="sr-only">
+        <label for="tagWeight" class="sr-only">
             Weight
         </label>
         <div class="input-group">
             <div class="input-group-addon">
-                <span id="newTagWeightIcon"
+                <span id="tagWeightIcon"
                       title="Weight"
                       class="glyphicon glyphicon-sort-by-attributes"
                       aria-hidden="true">
                 </span>
             </div>
-            <input id="newTagWeight"
+            <input id="tagWeight"
                    type="number"
                    class="form-control"
-                   aria-describedby="newTagWeightIcon"
+                   aria-describedby="tagWeightIcon"
                    required
                    placeholder="Weight"
-                   ng-model="newTagForm.weightField">
+                   ng-model="tagForm.weightField">
         </div>
     </div>
-</div><!-- / .modal-body New tag form modal body -->
+</div><!-- / .modal-body Tag form modal body -->
 
-<!-- New tag form modal footer -->
+<!-- Tag form modal footer -->
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" ng-click="newTagForm.save()">
+    <button type="button" class="btn btn-primary" ng-click="tagForm.save()">
         Save
     </button>
-    <button type="button" class="btn btn-default" ng-click="newTagForm.cancel()">
+    <button type="button" class="btn btn-default" ng-click="tagForm.cancel()">
         Cancel
     </button>
-</div><!-- / .modal-footer New tag form modal footer -->
+    <button type="button" class="btn btn-danger" ng-if="tagForm.type === 'update'" ng-click="tagForm.deleteTag()">
+        Delete tag
+    </button>
+</div><!-- / .modal-footer Tag form modal footer -->
 

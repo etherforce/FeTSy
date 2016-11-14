@@ -32,7 +32,7 @@
                   aria-hidden="true">
             </span>
         </div>
-        <div class="col-sm-5 hidden-xs">
+        <div class="col-sm-4 hidden-xs">
             <span title="Weight"
                   class="glyphicon glyphicon-sort-by-attributes"
                   aria-hidden="true">
@@ -54,7 +54,7 @@
             </span>
             <span ng-class="'label label-' + tag.color">{{ tag.name }}</span>
         </div>
-        <div class="col-sm-5">
+        <div class="col-sm-4">
             <span title="Weight"
                   class="glyphicon glyphicon-sort-by-attributes visible-xs-inline"
                   aria-hidden="true">
@@ -63,14 +63,14 @@
         </div>
 
         <!-- Button column -->
-        <div class="col-sm-1">
-            <span class="pull-right">
+        <div class="col-sm-2">
+            <span class="pull-right" ng-if="tagAdministration.updateTagForm">
                 <button type="button"
-                        title="Remove tag"
-                        class="btn btn-xs btn-danger"
-                        ng-click="">
-                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                    <span class="sr-only">Remove tag</span>
+                        title="Update or delete tag"
+                        class="btn btn-xs btn-info"
+                        ng-click="tagAdministration.updateTagForm(tag)">
+                    <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                    <span class="sr-only">Update or delete tag</span>
                 </button>
             </span>
         </div>
@@ -101,7 +101,7 @@
                   aria-hidden="true">
             </span>
         </div>
-        <div class="col-sm-5 hidden-xs">
+        <div class="col-sm-4 hidden-xs">
             <span title="Color"
                   class="glyphicon glyphicon-sort-by-attributes"
                   aria-hidden="true">
