@@ -33,8 +33,8 @@
             </span>
         </div>
         <div class="col-sm-5 hidden-xs">
-            <span title="Color"
-                  class="glyphicon glyphicon-grain"
+            <span title="Weight"
+                  class="glyphicon glyphicon-sort-by-attributes"
                   aria-hidden="true">
             </span>
         </div>
@@ -52,14 +52,14 @@
                   class="glyphicon glyphicon-tag visible-xs-inline"
                   aria-hidden="true">
             </span>
-            {{ tag.name }}
+            <span ng-class="'label label-' + tag.color">{{ tag.name }}</span>
         </div>
         <div class="col-sm-5">
-            <span title="Color"
-                  class="glyphicon glyphicon-grain visible-xs-inline"
+            <span title="Weight"
+                  class="glyphicon glyphicon-sort-by-attributes visible-xs-inline"
                   aria-hidden="true">
             </span>
-            {{ tag.color }}
+            {{ tag.weight }}
         </div>
 
         <!-- Button column -->
@@ -82,7 +82,7 @@
          ng-show="tagAdministration.tags.length == 0">
 
          <div class="col-sm-8 col-sm-offset-2">
-            No tags found.  Try to add a new tag using the button above.
+            No tags found. Try to add a new tag using the button above.
          </div>
 
     </div><!-- / .row Tag administration body empty -->
@@ -103,7 +103,7 @@
         </div>
         <div class="col-sm-5 hidden-xs">
             <span title="Color"
-                  class="glyphicon glyphicon-grain"
+                  class="glyphicon glyphicon-sort-by-attributes"
                   aria-hidden="true">
             </span>
         </div>

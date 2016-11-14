@@ -38,7 +38,7 @@
             <div class="input-group-addon">
                 <span id="newTagColorIcon"
                       title="Color"
-                      class="glyphicon glyphicon-grain"
+                      class="glyphicon glyphicon-text-color"
                       aria-hidden="true">
                 </span>
             </div>
@@ -46,13 +46,34 @@
                     class="form-control"
                     aria-describedby="newTagColorIcon"
                     ng-model="newTagForm.colorField">
-                  <option value="default">default</option>
-                  <option value="primary">primary</option>
-                  <option value="success">success</option>
-                  <option value="info">info</option>
-                  <option value="warning">warning</option>
-                  <option value="danger">danger</option>
+                  <option value="default">gray</option>
+                  <option value="primary">dark blue</option>
+                  <option value="success">green</option>
+                  <option value="info">light blue</option>
+                  <option value="warning">yellow</option>
+                  <option value="danger">red</option>
             </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="newTagWeight" class="sr-only">
+            Weight
+        </label>
+        <div class="input-group">
+            <div class="input-group-addon">
+                <span id="newTagWeightIcon"
+                      title="Weight"
+                      class="glyphicon glyphicon-sort-by-attributes"
+                      aria-hidden="true">
+                </span>
+            </div>
+            <input id="newTagWeight"
+                   type="number"
+                   class="form-control"
+                   aria-describedby="newTagWeightIcon"
+                   required
+                   placeholder="Weight"
+                   ng-model="newTagForm.weightField">
         </div>
     </div>
 </div><!-- / .modal-body New tag form modal body -->

@@ -50,9 +50,9 @@ Append a controller for the pagination bar.
 
     .controller 'PaginationCtrl', [
         '$scope'
-        'DS'
+        'Ticket'
         'ticketFilterValues'
-        ($scope, DS, ticketFilterValues) ->
+        ($scope, Ticket, ticketFilterValues) ->
 
 The uib-pagination directive from Angular UI Bootstrap is used. Here we get
 the settings out of our `ticketFilterValues` store and the hook for the
@@ -66,10 +66,9 @@ change event.
 
 Here we add a watcher to get the number of all tickets.
 
-            watchExpression = -> DS.lastModified('Ticket')
+            watchExpression = -> Ticket.lastModified()
             listener = =>
-                @totalItems = DS.getAll 'Ticket'
-                    .length
+                @totalItems = Ticket.getAll().length
                 return
             $scope.$watch watchExpression, listener
 
@@ -149,10 +148,10 @@ Append a controller for the ticket list/ticket table.
 
     .controller 'TicketListCtrl', [
         '$scope'
-        'DS'
+        'Ticket'
         'ticketFilterValues'
         'ticketListHeaderFactory'
-        ($scope, DS, ticketFilterValues, ticketListHeaderFactory) ->
+        ($scope, Ticket, ticketFilterValues, ticketListHeaderFactory) ->
 
 Setup values as given by the pagination bar and top functionality row to
 control the filters used in the ngRepeat directive.
@@ -227,9 +226,9 @@ sorted column or the direction.
 
 Append all tickets to the body.
 
-            watchExpression = -> DS.lastModified('Ticket')
+            watchExpression = -> Ticket.lastModified()
             listener = =>
-                @all = DS.getAll 'Ticket'
+                @all = Ticket.getAll()
                 return
             $scope.$watch watchExpression, listener
 
@@ -389,14 +388,15 @@ Append a controller for the administration of ticket tags.
 
     .controller 'TagAdministrationCtrl', [
         '$scope'
-        'DS'
-        ($scope, DS) ->
+        'Tag'
+        ($scope, Tag) ->
 
 Append all tags to the body.
 
-            watchExpression = -> DS.lastModified('Tag')
+            watchExpression = -> Tag.lastModified()
             listener = =>
-                @tags = DS.getAll 'Tag'
+                @tags = Tag.filter
+                    orderBy: 'weight'
                 return
             $scope.$watch watchExpression, listener
 
@@ -412,9 +412,10 @@ Append a controller for the modal for new tags.
         '$uibModalInstance'
         ($uibModalInstance) ->
 
-Default value for the colorField.
+Default value for colorField and weightField.
 
             @colorField = 'default'
+            @weightField = 0
 
 Hook for the save button. This validates the input and closes the modal.
 The validated data are handled back to the TagAdministrationTopRowCtrl.
@@ -424,7 +425,7 @@ The validated data are handled back to the TagAdministrationTopRowCtrl.
                     $uibModalInstance.close
                         'name': @nameField
                         'color': @colorField
-                        'weight': 0
+                        'weight': @weightField
                 else
                     $uibModalInstance.dismiss 'cancel'
                 return

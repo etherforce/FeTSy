@@ -44,7 +44,8 @@ or hits Enter, the ticket is changed using a resource method.
                     switch @key
                         when 'content'
                             @templateURL = 'ticketFieldTextarea.html'
-                            @tags = Tag.getAll()
+                            @tags = Tag.filter
+                                orderBy: 'weight'
                             @submitContentChanges = (content, tags) ->
                                 data =
                                     content: content

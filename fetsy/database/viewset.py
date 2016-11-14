@@ -7,7 +7,12 @@ from jsonschema import ValidationError, validate
 class ListObjectMixin:
     """
     Interactions to list some or all objects from the database.
+
+    To sort the result set the list_sort attribute to a list of (key,
+    direction) pairs.
     """
+    list_sort = None
+
     @coroutine
     def register_viewset(self):
         """
@@ -29,10 +34,12 @@ class ListObjectMixin:
         # TODO: Use filtering here.
         self.logger.debug(
             'Remote procedure list_objects for {} called.'.format(self.name))
-        curser = self.database[self.name].find()
+        cursor = self.database[self.name].find()
+        if self.list_sort is not None:
+            cursor = cursor.sort(self.list_sort)
         objects = []
-        while (yield from curser.fetch_next):
-            obj = curser.next_object()
+        while (yield from cursor.fetch_next):
+            obj = cursor.next_object()
             del obj['_id']
             objects.append(obj)
         return objects

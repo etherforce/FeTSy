@@ -25,6 +25,7 @@
                 placeholder-text-multiple="'Select tags'"
                 width="'100%'"
                 ng-model="ticketField.tagField"
+                ng-init="ticketField.tagField = ticketField.ticket.getField('tagsObjects')"
                 ng-options="tag.name for tag in ticketField.tags">
             <option value=""></option>
         </select>

@@ -92,7 +92,7 @@ class Ticket(ObjectViewSet):
         yield from self.app_session.register(
             self.list_ticket_assignees,
             self.uri_prefix + '.listTicketAssignees')
-        self.logger.debug('Remote procedure to list ticket assignees '
+        self.logger.debug('Remote procedure to list Ticket assignees '
                           'registered.')
 
     def set_defaults(self, obj):
